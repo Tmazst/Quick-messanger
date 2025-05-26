@@ -31,13 +31,14 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOADED"] = 'static/uploads'
 app.config["ADVERTS_IMAGES"] = 'static/ad-images'
 
-
-# Local
-if os.environ.get('EMAIL_INFO') == 'info@techxolutions.com':
-    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db.db"
-else:#Online
-    app.config[
+app.config[
     "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db"
+# # Local
+# if os.environ.get('EMAIL_INFO') == 'info@techxolutions.com':
+#     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db.db"
+# else:#Online
+#     app.config[
+#     "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db"
 
 
 db.init_app(app)
