@@ -53,6 +53,7 @@ encrypt_password = Bcrypt(app)
 def load_user(user_id):
     return User.query.get(user_id)
 
+application = app
 
 def current_time_wlzone():
     # Get the current UTC time
