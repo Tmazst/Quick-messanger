@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f4f4f4;
+    } */
+     .category-title-animated {
+        display: inline-block;
+        font-weight: 600;
+        font-size: 25px;
+        font-family: "Montserrat";
+        color: #333;
+        letter-spacing: 1px;
+        overflow: hidden;
+        }
+
+    .category-char {
+        opacity: 0;
+        display: inline-block;
+        transition: opacity 0.3s, transform 0.3s;
+        transform: translateY(20px);
+        /* min-width: 1ch; */
+    }
+
+    .category-char.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .business-card {
+        max-width: 450px;
+        width:100%;
+        /* background: #ffffff; */
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
+        padding: 20px;
+        text-align: center;
+    }
+
+    .community-logo {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 15px;
+        border-radius: 15px;
+        /* background-color: #0078d7; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-size: 24px;
+        font-weight: bold;
+        position: absolute;
+        top:15px;
+        right:15px;
+    }
+    .company-name {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    .company-details {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 20px;
+    }
+    .links a {
+        display: block;
+        text-decoration: none;
+        color: #0078d7;
+        font-size: 14px;
+        margin: 5px 0;
+    }
+    .links a:hover {
+        text-decoration: underline;
+    }
+</style>
+<script>
+function randomChar() {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    return chars[Math.floor(Math.random() * chars.length)];
+}
+
+function animateCategoryTitle(el, delayPerChar = 80, scrambleDuration = 600) {
+    const text = el.textContent;
+    el.textContent = "";
+    const chars = [];
+
+    // Wrap each character in a span
+    for (let i = 0; i < text.length; i++) {
+        const span = document.createElement("span");
+        span.className = "category-char";
+        span.textContent = " ";
+        el.appendChild(span);
+        chars.push(span);
+    }
+
+    // Animate each character in sequence
+    chars.forEach((span, idx) => {
+        setTimeout(() => {
+            let scrambleTime = 0;
+            const originalChar = text[idx];
+            // Only animate letters, not spaces
+            if (originalChar === " ") {
+                span.textContent = " ";
+                span.classList.add("visible");
+                return;
+            }
+            // Scramble effect
+            const scrambleInterval = setInterval(() => {
+                span.textContent = randomChar();
+                scrambleTime += 30;
+                if (scrambleTime >= scrambleDuration) {
+                    clearInterval(scrambleInterval);
+                    span.textContent = originalChar;
+                    span.classList.add("visible");
+                }
+            }, 30);
+        }, idx * delayPerChar);
+    });
+}
+
+// Intersection Observer to trigger animation when in viewport
+function animateAllCategoryTitles() {
+    const titles = document.querySelectorAll('.category-title-animated');
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animateCategoryTitle(entry.target);
+                obs.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.2 });
+
+    titles.forEach(title => observer.observe(title));
+}
+
+document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
+</script>
+<br>
+
+<div style="padding-left:15px;padding-right:15px;" class="view-container">
+    <div class="advertise-here">
+        <div style="position: relative;height:inherit;width:100%">
+            <div class="advert-welcome">
+            Discover new business partners with QM’s dynamic directory —<span style="font-weight: 400;color:rgb(96, 120, 139)"> connect and grow your network today.</span>
+            </div>
+            <button onclick="window.location.href='/advert_form'" class="advert-btn" >Register</button>
+             <img src="static/icons/add-icon.png" class="close-btn" />
+        </div>
+    </div>
+    <h2> </h2>
+    {%for category in categories%}
+    <div class="category-cont gen-flex sticky-category">
+        <img src="static/icons/category-icon.png" class="cat-icon" />
+         <div class="category-title category-title-animated " >{{category}}</div><div style="flex-grow: 1;"></div>
+         <div class="other-cat-info gen-flex"><span>(26) This week</span></div>
+    </div><br>
+    <div style="flex-wrap:wrap;justify-content: flex-start;align-items: stretch;" class="gen-flex">
+        {%for company in companies%}
+        {%if category == company.category%}
+        <div style="background-image: url('{{ url_for('static', filename='uploads/' ~ company.image) }}');opacity:0" class="business-card gen-flex-col"> 
+            <div class="overlay"></div> 
+            <div style="z-index:5" class="sub-layout-1 gen-flex">
+                <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
+                    <div class="company-name">{{company.company_name}}</div>
+                    
+                    {%if company.category %}
+                        <label class="category">{{company.category}}</label>
+                    {%endif%}
+
+                    <div style="align-items: flex-start;" class="company-details gen-flex-col">
+
+                        {%if company.postal_address %}
+                            <div>{{company.postal_address}}</div>
+                        {%endif%}
+
+                        {%if company.company_address%}
+                            <div style="text-align: left;">{{company.company_address[:60]}}</div>
+                        {%endif%}
+
+                        {%if company.company_contacts%}
+                            <a href="tel:{{company.company_contacts}}" target="_blank">
+                                <div class="comm-icons-cont gen-flex">
+                                    <img src="static/icons/tel-blue-outline.png" />
+                                    <span>{{company.company_contacts}}</span>
+                                </div>
+                            </a>
+                        {%endif%}
+
+                        {%if company.email%}
+                            <a href="mailto:{{company.email}}">
+                                <div class="comm-icons-cont gen-flex">
+                                    <img src="static/icons/email-blue-outline.png" />
+                                    <span>{{company.email}}</span>
+                                </div>
+                            </a>
+                        {%endif%}
+                        
+                    </div>
+
+                </div>
+                
+            </div>
+            {%if company.image %}
+                <div class="community-logo"><img src="static\uploads\{{company.image}}"></div>
+            {%endif%}
+             {%if company.tagline %}
+            <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
+            {%endif%}
+            <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
+                {%if company.website %}
+                <a href="{{company.website}}" target="_blank">
+                    <div class="social-media-cont">
+                        <img src="static/icons/website-outline-icon.png" />
+                    </div>
+                </a>
+                {%endif%}
+                {%if company.fb_link %}
+                <a href="{{company.fb_link}}" target="_blank">
+                    <div class="social-media-cont">
+                        <img src="static/icons/facebook-outline-icon.png" />
+                    </div>
+                </a>
+                {%endif%}
+                {%if company.instagram_link%}
+                <a href="{{comapny.instagram_link}}" target="_blank">
+                    <div class="social-media-cont">
+                        <img src="static/icons/insta-outline-icon.png" />
+                    </div>
+                </a>
+                {%endif%}
+                {%if company.linkedIn_link%}
+                <a href="{{company.linkedIn_link}}" target="_blank">
+                    <div class="social-media-cont">
+                        <img src="static/icons/linkedin-outline-icon.png" />
+                    </div>
+                </a>
+                {%endif%}
+            </div>
+            
+            <div class="imbc-icon">
+                <a href="/compose?id={{ser.dumps({'data':company.id})}}" target="_blank">
+                    <img src="static/icons/imbc-icon.png" />
+                </a>
+            </div>
+
+        </div>
+        {%endif%}
+        {%endfor%}   
+    </div><br><br>
+    {%endfor%}
+</div>
+<script>
+    var closeBtn = document.querySelector(".close-btn");
+    var adContainer = document.querySelector('.advertise-here');
+    var contanier = document.querySelector('.view-container');
+
+    closeBtn.addEventListener('click', function(){
+        adContainer.style.display = 'none';
+        contanier.style.paddingTop = '7px';
+    });
+
+
+    // Function to handle the intersection event
+    function handleIntersection(entries, observer) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+            console.log('Element has entered the viewport:', entry.target);
+            entry.target.classList.add("show-card");
+            // You can add your logic here, for example:
+            // entry.target.classList.add('visible'); // Modify the element's class
+            // observer.unobserve(entry.target); // Stop observing if you only want to detect once
+            }
+        });
+    }
+
+    // Create an Intersection Observer instance
+    const observer = new IntersectionObserver(handleIntersection, {
+        root: null, // Use the viewport as the root
+        rootMargin: '0px', // No margin
+        threshold: 0.8 // Trigger when 10% of the element is in the viewport
+    });
+
+    const targetFeatured = document.querySelectorAll('.business-card'); // Adjust the selector as needed
+
+    // Start observing each target element
+    targetFeatured.forEach(el => {
+        observer.observe(el);
+    });
+
+</script>
+<!-- </html> -->
+{%endblock%}

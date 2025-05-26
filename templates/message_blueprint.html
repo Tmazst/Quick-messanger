@@ -1,0 +1,888 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* .saving{
+        display: none;
+    }
+    @import url('https://fonts.googleapis.com/css?family=Montserrat:600');
+
+*{
+  margin:0;
+  padding:0;
+  font-family: 'Montserrat', sans-serif;
+  box-sizing:border-box;
+  animation-timing-function:ease;
+}
+
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  overflow:hidden;
+}
+
+#wrapper{
+  position:relative;
+  width:350px;
+  animation:out .3s forwards ease;
+  animation-delay:5s;
+  transform:scale(1);
+  opacity:1;
+  transform-origin:center -80%;
+  
+  
+  @keyframes out{
+    0%{
+      transform:scale(1);
+      opacity:1;
+    }
+    100%{
+      transform:scale(0);
+      opacity:0;
+    }
+  }
+  
+  .loader{
+    animation: rotation 3.5s forwards linear;
+    position:absolute;
+    top:-120px;
+    left:calc(50% - 35px);
+    border: 5px solid #fff;
+    border-radius: 50%;
+    border-top-color: #a29bfe;
+    height: 70px;
+    width: 70px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    
+    @keyframes rotation {
+      0% {
+        transform: rotate(0);
+      }
+      84% {
+        transform: rotate(500deg);
+      }
+      95%{
+        border: 5px solid #fff;
+        border-top-color: #a29bfe;
+      }
+      100%{
+        transform: rotate(1800deg);
+        border: 5px solid #2ed573;
+      }
+    }
+    
+    &:before{
+      content:"\f00c";
+      font-family:"Font Awesome 5 Free";
+      font-weight:900;
+      font-size:2em;
+      color:#2ed573;
+      animation:overspin .5s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      animation-delay: 3.4s;
+      transform:rotate(180deg);
+      opacity:0;
+      
+      @keyframes overspin{
+        0%{
+          transform:rotate(180deg);
+          opacity:0;
+        }
+        100%{
+          transform:rotate(0);
+          opacity:1;
+        }
+      }
+    }
+  }
+  
+  #mouse{
+    position:absolute;
+    top:100px;
+    left:80%;
+    animation:mouse-pos 3.5s forwards, mouse-pos2 1s forwards;
+    animation-delay:0s, 4s;
+    z-index:20;
+    
+    @keyframes mouse-pos{
+      30%{
+        top:100px;
+        left:80%;
+      }
+      50%{
+        top:15px;
+        left:4%;
+      }
+      60%{
+        top:15px;
+        left:4%;
+      }
+      75%{
+        top:5px;
+        left:7.3%;
+      }
+      85%{
+        top:5px;
+        left:7.3%;
+      }
+      95%{
+        top:15px;
+        left:105%;
+      }
+      100%{
+        top:15px;
+        left:105%;
+      }
+    }
+    
+    @keyframes mouse-pos2{
+      0%{
+        top:15px;
+        left:105%;
+      }
+      100%{
+        top:-85px;
+        left:53%;
+      }
+    }
+    
+    &:after{
+      content:"\f245";
+      position:absolute;
+      top:0;
+      left:0;
+      font-family:"Font Awesome 5 Free";
+      font-weight:900;
+      font-size:20px;
+      animation:mouse-cont 2s forwards;
+      animation-delay:1.7s;
+      color:#341f97;
+      text-shadow:0 1px 10px rgba(0,0,0,0.3);
+      
+      @keyframes mouse-cont{
+        0%{
+          font-size:20px;
+        }
+        2%{
+          font-size:15px;
+        }
+        4%{
+          font-size:20px;
+        }
+        33%{
+          content:"\f245";
+        }
+        34%{
+          content:"\f337";
+        }
+        80%{
+          content:"\f337";
+        }
+        81%{
+          content:"\f245";
+        }
+      }
+    }
+    
+    &:before{
+      content:"";
+      position:absolute;
+      top:-22px;
+      left:-24px;
+      width:50px;
+      height:50px;
+      border-radius:50%;
+      border:2px solid #222f3e;
+      animation: circle 3.5s forwards;
+      animation-delay:1.7s;
+      opacity:0;
+      transform:scale(0);
+      
+      // since adding the same animations 2 times resulted in a weird look of the circle, i created 1 animation with both animations in it.
+      
+      @keyframes circle{
+        0%{
+          transform:scale(0);
+        }
+        4%{
+          opacity:1;
+        }
+        8%{
+          transform:scale(1);
+          opacity:0;
+        }
+        92%{
+          transform:scale(0);
+          opacity:0;
+        }
+        95%{
+          opacity:1;
+        }
+        100%{
+          transform:scale(1);
+          opacity:0;
+        }
+      }
+    }
+  }
+  
+  .loading-bar{
+    width:100%;
+    height:30px;
+    background:#dfe6e9;
+    border-radius:5px;
+
+    .progress-bar{
+      animation:progress 3.5s forwards;
+      width:6%;
+      height:100%;
+      background:#a29bfe;
+      border-radius:5px;
+      border:0 solid #0abde3;
+      
+      @keyframes progress{
+        0%{
+          width:6%;
+        }
+        50%{
+          border:0 solid #0abde3;
+        }
+        51%{
+          border:4px solid #0abde3;
+        }
+        85%{
+          width:11%;
+        }
+        95%{
+          border:4px solid #0abde3;
+          width:100%;
+        }
+        100%{
+          width:100%;
+        }
+      }
+    }
+  }
+  
+  .status{
+    margin-top:10px;
+    
+    .state{
+      float:left;
+      font-size:0.9em;
+      letter-spacing:1pt;
+      text-transform:uppercase;
+      width:100px;
+      height:20px;
+      position:relative;
+      
+      &:before{
+        content:"Loading";
+        position:absolute;
+        left:0;
+        top:0;
+        animation: fadeLeft .5s forwards ease;
+        animation-delay:3.2s;
+        
+        @keyframes fadeLeft{
+          0%{
+            text-indent:0;
+            opacity:1;
+          }
+          100%{
+            text-indent:-100px;
+            opacity:0;
+          }
+        }
+      }
+      &:after{
+        content:"Complete";
+        position:absolute;
+        left:0;
+        top:0;
+        text-indent:100px;
+        opacity:0;
+        animation: fadeLeft2 .5s forwards ease;
+        animation-delay:3.2s;
+        
+        @keyframes fadeLeft2{
+          0%{
+            text-indent:100px;
+            opacity:0;
+          }
+          100%{
+            text-indent:0;
+            opacity:1;
+          }
+        }
+      }
+    }
+    
+    .percentage{
+      float:right;
+
+    &:before{
+        -webkit-animation: percentage-slow 3s forwards, percentage-fast .4s forwards;
+        -webkit-animation-delay: 0s, 3s;
+        content:"10%";
+        font-size:0.9em;
+        letter-spacing:1pt;
+
+        @keyframes percentage-slow {
+          0%{ content: "6%" }
+          25%{ content: "7%" }
+          50%{ content: "8%" }
+          75%{ content: "9%" }
+          100%{ content: "10%" }
+        }
+
+        @keyframes percentage-fast {
+          @for $i from 11 through 100 {
+            #{$i * 1%} {
+              content: $i + '%';
+            }
+          }
+        }
+      }
+    }
+  }
+} */
+</style>
+<div style="width:100%;height:100vh ;position: relative;visibility: hidden;" class="all-chats-cont">
+{%for msg in  chat_messages%}
+{%if msg.sender == current%}
+<!-- Current User -->
+<div style="width:100% !important;height: max-content;justify-content: flex-start;" class="gen-flex">
+    <div class="letterhead-container user-msg">
+        <div style="justify-content: flex-start;" class="letterhead-header gen-flex left-header">
+            <img src="{{ url_for('static', filename='uploads/'~company.image) }}" alt="Logo" class="letterhead-logo">
+            <div class="details-cont">
+                <h1 class="company_name">{{company.company_name}}</h1>
+                <div class="comp-details">
+                    <div class="sender-company-details">
+                        <div id="comp-details-header" class="comp-details">
+                            {%if company.postal_address%}
+                                <div style="justify-content: flex-start;" class="editable-field gen-flex">
+                                    <div contenteditable="false" class="chat-fields postal_address_field" data-name="postal_address" placeholder="Postal Address">{{company.postal_address}}</div>
+                                </div>
+                            {%endif%}
+                            {%if company.company_contacts%}
+                                <div class="editable-field gen-flex">
+                                    <div contenteditable="false" class="chat-fields company_contacts_field" data-name="company_contacts" placeholder="e.g. 251 XXXX XX">{{company.company_contacts}}</div>
+                                </div>
+                            {%endif%}
+                            {%if company.website%}
+                                <div class="editable-field gen-flex">
+                                    <div contenteditable="false" class="chat-fields website_field" data-name="website" placeholder="e.g. www.xyzlimited.com">{{company.website}}</div>
+                                </div>
+                            {%endif%}
+                            <div id="header-save" class="saving gen-flex">
+                                <span style="color:rgb(66, 48, 48)">Saving....</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="letterhead-body"><br>
+            <!-- Formerly <form> replaced by container div -->
+            <div id="message-compose">
+                <div class="message-cont">
+                    {%if msg.subject%}
+                        <label for="message" class="subject-field">{{msg.subject}}</label>
+                    {%else%}
+                        <label for="message" class="subject-field">Message</label>
+                    {%endif%}
+                    <div contenteditable="false" class="form-control message message-body" data-message="{{msg.message}}" id="message" style="min-height: 100px;">{{msg.message}}</div>
+                    <div class="msg-timestamp">{{msg.date.strftime("%d %b, %H:%M")}}</div>
+                </div>
+            </div>
+        </div><br>
+        {%set user_details = chat_user.query.filter_by(username=current).first().user_details[0]%}
+        <div style="justify-content: flex-start;" class="sender-profile gen-flex">
+            <div class="footer-sender-profile-cont gen-flex">
+                <img src="{{ url_for('static', filename='uploads/'~user_details.image) }}" alt="profile" class="footer-sender-profile">
+            </div>
+            <div class="sender-profile-details">
+                <div style="align-items: flex-start;gap:0" class="comp-details gen-flex-col">
+                    <div class="editable-field-user gen-flex">
+                        <div contenteditable="false" class="chat-fields sender-name" data-name="name" placeholder="Your Name" style="font-weight: 600 !important;">{{user_details.name}}</div>
+                    </div>
+                    <div class="editable-field-user gen-flex">
+                        <div contenteditable="false" class="chat-fields position-field" data-name="position" placeholder="e.g. Sales Manager">{% if user_details.position %}{{user_details.position}}{% endif %}</div>
+                    </div>
+                    <div class="editable-field-user gen-flex">
+                        <div contenteditable="false" class="chat-fields email-field" data-name="email" placeholder="e.g. Your email">{% if user_details.email %}{{ user_details.email }}{% endif %}</div>
+                    </div>
+                    <div class="editable-field-user gen-flex">
+                        <div contenteditable="false" class="chat-fields contacts-field" data-name="contacts" placeholder="e.g. 7546 135489">{% if user_details.contacts %}{{ user_details.contacts }}{% endif %}</div>
+                    </div>
+                    <div id="user-save" class="saving gen-flex">
+                        <span style="color:rgb(66, 48, 48)">Saving....</span>
+                    </div>
+                </div>
+            </div>
+        </div><br>
+        <div class="letterhead-footer gen-flex-col left-footer">
+            <div>
+                <div class="sender-company-details">
+                    <div class="comp-details">
+                        
+                        {% if company.tagline %}
+                        <div class="editable-field gen-flex">
+                            <img src="static/icons/handshake-icon.png" class="location-icon" id="handshake-icon" />
+                            <div contenteditable="false" class="chat-fields tagline" data-name="tagline"
+                                placeholder="Eco-friendly cleaning products that are safe for the environment, effective for consumers."
+                                style="overflow:hidden; resize:none;color:rgb(59, 35, 77);font-weight: 600;"
+                                oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';">
+                                {{ company.tagline }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if company.company_address %}
+                        <div class="editable-field gen-flex-col">
+                            <img src="static/icons/location-icon.png" class="location-icon" />
+                            <div contenteditable="false" class="chat-fields company-address-field" data-name="company_address"
+                                placeholder="e.g XYZ Innovations LLC1234 Innovate Way Suite 567 San Francisco, CA 94107 United States"
+                                style="overflow:hidden; resize:none;color:rgb(43, 43, 43);"
+                                oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';">
+                                {{ company.company_address }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div><br>
+                    <div class="social-media gen-flex">
+                        {%if company.website %}
+                        <a href="{{company.website}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/website-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                        {%if company.fb_link %}
+                        <a href="{{company.fb_link}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/facebook-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                        {%if company.instagram_link%}
+                        <a href="{{comapny.instagram_link}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/insta-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                        {%if company.linkedIn_link%}
+                        <a href="{{company.linkedIn_link}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/linkedin-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                    </div>
+                    <div style="margin:0 auto;width:max-content !important" class="rights"> &copy; 2025 {{ company.company_name }}. All rights reserved.</div>
+                </div>
+            </div>
+        </div><br><br>
+        <div class="min-max-btn">minimize</div>
+        <!-- <button type="button" onclick="sendMessage()" class="btns btn-primary">Send</button> -->
+        <!-- <button type="button" onclick="checkScriptBlock()">Check</button> -->
+    </div>
+</div>
+<br><br>
+{%else%}
+<!-- The other user's details  -->
+<div style="width:100% !important;height: max-content;justify-content: flex-end;padding:10px" class="gen-flex">
+    <div class="letterhead-container right">
+        <div style="justify-content: flex-start;" class="letterhead-header gen-flex ">
+            <img src="{{ url_for('static', filename='uploads/'~other_usr_company_info.logo) }}" alt="Logo" class="letterhead-logo">
+            <div class="details-cont">
+                <h1 class="company_name">{{other_usr_company_info.company_name}}</h1>
+                <div class="comp-details">
+                    <div class="sender-company-details">
+                        <div id="comp-details-header" class="comp-details">
+                            {%if other_usr_company_info.postal_address%}
+                            <div style="justify-content: flex-start;" class="editable-field gen-flex">
+                                <div contenteditable="false" class="chat-fields postal_address_field" data-name="postal_address" placeholder="Postal Address">{{other_usr_company_info.postal_address}}</div>
+                            </div>
+                            {%endif%}
+                            {%if other_usr_company_info.company_contacts%}
+                            <div class="editable-field gen-flex">
+                                <div contenteditable="false" class="chat-fields company_contacts_field" data-name="company_contacts" placeholder="e.g. 251 XXXX XX">{{other_usr_company_info.company_contacts}}</div>
+                            </div>
+                            {%endif%}
+                            {%if other_usr_company_info.website%}
+                            <div class="editable-field gen-flex">
+                                <div contenteditable="false" class="chat-fields website_field" data-name="website" placeholder="e.g. www.xyzlimited.com">{{other_usr_company_info.website}}</div>
+                            </div>
+                            {%endif%}
+                            <div id="header-save" class="saving gen-flex">
+                                <span style="color:rgb(66, 48, 48)">Saving....</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="letterhead-body">
+            <!-- Formerly <form> replaced by container div -->
+            <div id="message-compose">
+                <div class="message-cont">
+                    {%if msg.subject%}
+                    <label for="message" class="subject-field">{{msg.subject}}</label>
+                    {%else%}
+                    <label for="message" class="subject-field">Message</label>
+                    {%endif%}
+                    <div contenteditable="false" class="form-control message message-body" data-message="{{msg.message}}" id="message" style="min-height: 100px;">{{msg.message}}</div>
+                    <div class="msg-timestamp">{{msg.date.strftime("%d %b, %H:%M")}}</div>
+                </div>
+            </div>
+        </div><br>
+        {%set other_user_details = chat_user.query.filter_by(username=other_usrname).first().user_details[0]%}
+        <div style="justify-content: flex-start;" class="sender-profile gen-flex">
+            <div class="footer-sender-profile-cont gen-flex">
+                <img src="{{ url_for('static', filename='uploads/'~other_user_details.image) }}" alt="profile" class="footer-sender-profile">
+            </div>
+            <div class="sender-profile-details">
+                <div style="align-items: flex-start;gap:0" class="comp-details gen-flex-col">
+                    <div class="editable-field-user gen-flex">
+                        <div contenteditable="false" class="chat-fields sender-name" data-name="name" placeholder="Your Name" style="font-weight: 600 !important;">{{other_user_details.name}}</div>
+                    </div>
+                    <div class="editable-field-user gen-flex">
+                        <div contenteditable="false" class="chat-fields position-field" data-name="position" placeholder="e.g. Sales Manager">{% if other_user_details.position %}{{other_user_details.position}}{% endif %}</div>
+                    </div>
+                    <div class="editable-field-user gen-flex">
+                        <div contenteditable="false" class="chat-fields email-field" data-name="email" placeholder="e.g. Your email">{% if other_user_details.email %}{{ other_user_details.email }}{% endif %}</div>
+        
+                    </div>
+                    <div class="editable-field-user gen-flex">
+                        <div contenteditable="false" class="chat-fields contacts-field" data-name="contacts" placeholder="e.g. 7546 135489">{% if other_user_details.contacts %}{{ other_user_details.contacts }}{% endif %}</div>
+                    </div>
+                    <div id="user-save" class="saving gen-flex">
+                        <span style="color:rgb(66, 48, 48)">Saving....</span>
+                    </div>
+                </div>
+            </div>
+        </div><br>
+        <div class="letterhead-footer gen-flex-col">
+            <div>
+                <div class="sender-company-details">
+                    <div class="comp-details">
+                        {% if other_usr_company_info.tagline %}
+                        <div class="editable-field gen-flex">
+                            <img src="static/icons/handshake-icon.png" class="location-icon" id="handshake-icon" />
+                            <div contenteditable="false" class="chat-fields tagline" data-name="tagline"
+                                placeholder="Eco-friendly cleaning products that are safe for the environment, effective for consumers."
+                                style="overflow:hidden; resize:none;color:rgb(59, 35, 77);font-weight: 600;"
+                                oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';">
+                                {{ other_usr_company_info.tagline }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if other_usr_company_info.company_address %}
+                        <div class="editable-field gen-flex-col">
+                            <img src="static/icons/location-icon.png" class="location-icon" />
+                            <div contenteditable="false" class="chat-fields company-address-field" data-name="company_address"
+                                placeholder="e.g XYZ Innovations LLC1234 Innovate Way Suite 567 San Francisco, CA 94107 United States"
+                                style="overflow:hidden; resize:none;color:rgb(43, 43, 43);"
+                                oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';">
+                                {{ other_usr_company_info.company_address }}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div><br>
+                    <div class="social-media gen-flex">
+                        {%if other_usr_company_info.website %}
+                        <a href="{{other_usr_company_info.website}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/website-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                        {%if other_usr_company_info.fb_link %}
+                        <a href="{{other_usr_company_info.fb_link}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/facebook-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                        {%if other_usr_company_info.instagram_link%}
+                        <a href="{{other_usr_company_info.instagram_link}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/insta-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                        {%if other_usr_company_info.linkedIn_link%}
+                        <a href="{{other_usr_company_info.linkedIn_link}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/linkedin-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                    </div>
+                    <div style="margin:0 auto;width:max-content !important" class="rights"> &copy; 2025 {{ company.company_name }}. All rights reserved.</div>
+                </div>
+            </div>
+        </div><br><br>
+        <!-- <button type="button" onclick="sendMessage()" class="btns btn-primary">Send</button> -->
+        <!-- <button type="button" onclick="checkScriptBlock()">Check</button> -->
+    </div>
+</div>
+<br><br>
+{%endif%}
+{%endfor%}
+<div style="height: 250px;">
+</div>
+
+{% set reply_other_usrname =  chat_user.query.filter_by(username=other_usrname).first()%}
+<form  id="reply-form" action="/message_blueprint" method="POST" onsubmit="return encryptMessageChat(event);">
+    <div style="position: relative;" class="message-input-container gen-flex-col">
+        <input style="align-self: flex-start;width: max-content;margin-bottom: 0;" id="subject-field" class="form-control" type="text" name="subject" placeholder="Subject" class="subject-input" >
+        <textarea name="reply-message" id="reply-message" class="form-control"  placeholder="Type your message here..." class="message-textarea"></textarea>
+        <input type="hidden" id="rec-duplicated-msg" name="rec_encrypted-msg" value="">
+        <input type="hidden" name="recipient_username" value="{{ reply_other_usrname.username }}">
+        <input type="hidden" id="recipient_pkey" name="recipient_pkey" value="{{ reply_other_usrname.pkey }}">
+        <input type="hidden" class="form-control" name="recipient_email" id="recipient-email" value="{{ reply_other_usrname.email }}">
+        <div onclick="" id="reply-icon">
+          <button type="submit" id="chat_submit"  class="btns btn-primary gen-flex"><img src="static/icons/sendmessage-icon-bg.png"  /></button>
+        </div>
+    </div>
+</form>
+</div>
+
+
+<!-- <div id="wrapper">
+  <div id="mouse"></div>
+  <div class="loader">
+  </div>
+  <div class="loading-bar">
+    <div class="progress-bar"></div>
+  </div>
+  <div class="status">
+    <div class="state"></div>
+    <div class="percentage"></div>
+  </div>
+</div> -->
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var allChatContainer = document.querySelector('.all-chats-cont');
+    var chatContainer = document.querySelector('.displaying-section');
+    var scrollHeight = chatContainer.scrollHeight; // Adjusted to scroll to the bottom with some padding
+    if (chatContainer) {
+        chatContainer.scrollTo({ top: scrollHeight, behavior: 'smooth' });
+    }
+
+     setTimeout(function() {
+        allChatContainer.style.visibility = 'visible'; // Show the chat container after loading-bar
+    }, 900); 
+    
+    
+});
+
+  document.addEventListener('DOMContentLoaded', function () {
+      var replyMessage = document.getElementById('reply-message');
+      if (replyMessage) {
+          replyMessage.addEventListener('input', function () {
+              this.style.height = 'auto'; // Reset height
+              this.style.height = (this.scrollHeight) + 'px'; // Set to scrollHeight
+          });
+          // Optional: trigger once to set initial height
+          replyMessage.dispatchEvent(new Event('input'));
+      }
+  });
+
+    var minMaxBtn = document.querySelector(".min-max-btn");
+    var header = document.querySelectorAll(".left-header");
+    var footer = document.querySelectorAll(".left-footer");
+
+    addEventListener('click', function(){
+        header.forEach((msg)=>{
+            msg.classList.toggle('hide-header-footer');
+        });
+
+        footer.forEach((msg)=>{
+            msg.classList.toggle('hide-header-footer');
+        });
+        
+
+    })
+
+     async function updateEmailField(event){
+        value = event.target.value;
+        console.log("Selected Value: ",value)
+        var emailField = document.querySelector("#recipient-email");
+
+        const response = await fetch("/get_email", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: value})
+        });
+        var email = await response.json();
+        console.log("Fetched Email: ",email.email )
+        emailField.value = email.email || value;
+            
+            // emailField.value = value;
+        }
+        
+
+    function checkScriptBlock(){
+        console.log("Script loaded");
+    }
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputs = document.querySelectorAll('.editable-field input');
+        const inputsTextArea = document.querySelectorAll('.editable-field textarea');
+        const inputsUser = document.querySelectorAll('.editable-field-user input');
+
+        inputs.forEach(input => {
+            input.addEventListener('blur', function () {
+                console.log("Blur Event Triggered...");
+                const saving = document.querySelector("#header-save");
+                saving.style.display="block"
+                const fieldName = input.name;
+                const fieldValue = input.value;
+
+                fetch('/update_field', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if required
+                    },
+
+                    body: JSON.stringify({
+                        field: fieldName,
+                        value: fieldValue
+                    })
+
+                    
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to update field');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Field updated successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Error updating field:', error);
+                });
+                saving.classList.add("turn-off-saving");
+                // Listen for the animation end event
+                saving.addEventListener("animationend", () => {
+                    // Hide the element after the animation ends
+                    saving.style.display = "none";
+                    saving.classList.remove("turn-off-saving"); // Optional: Remove the class if needed
+                });
+            });
+        });
+
+        inputsUser.forEach(input => {
+            input.addEventListener('blur', function () {
+                console.log("Blur Event Triggered...");
+                const saving = document.querySelector("#user-save");
+                saving.style.display="block"
+                const fieldName = input.name;
+                const fieldValue = input.value;
+
+                fetch('/update_field_user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if required
+                    },
+                    body: JSON.stringify({
+                        field: fieldName,
+                        value: fieldValue
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to update field');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Field updated successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Error updating field:', error);
+                });
+                saving.classList.add("turn-off-saving");
+                // Listen for the animation end event
+                saving.addEventListener("animationend", () => {
+                    // Hide the element after the animation ends
+                    saving.style.display = "none";
+                    saving.classList.remove("turn-off-saving"); // Optional: Remove the class if needed
+                });
+            });
+        });//
+
+        inputsTextArea.forEach(input => {
+                input.addEventListener('blur', function () {
+                console.log("Blur in Text Area Event Triggered...");
+                const fieldName = input.name;
+                const fieldValue = input.value; // For textarea, use .value to get the content
+
+                fetch('/update_field', {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    // 'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if required
+                    },
+                    body: JSON.stringify({
+                    field: fieldName,
+                    value: fieldValue
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                    throw new Error('Failed to update field');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Field updated successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Error updating field:', error);
+                });
+                });
+            });//
+
+});
+
+    
+
+    function sendMessage() {
+        const form = document.querySelector('form');
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to send message');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('Message sent successfully!');
+        })
+        .catch(error => {
+            console.error('Error sending message:', error);
+        });
+    }
+</script>
+{%endblock%}

@@ -1,0 +1,450 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="margin: 0 auto" class="letterhead-container">
+    <div style="justify-content: flex-start;" class="letterhead-header gen-flex">
+        {%if company.image%}
+        <div style="position:relative;" class="upload-logo">
+            <img src="{{ url_for('static', filename='uploads/' + company.image) }}" alt="Logo" class="letterhead-logo">
+            <form  method="POST" enctype="multipart/form-data" class="form-image gen-flex">
+                <input type="file" id="image-upload" style="display: none;" onchange="uploadImage(event, '{{current}}')" class="upload-logo-input" />
+                <label for="image-upload" class="upload-label upload-logo-input">&#9998;</label>
+            </form>
+        </div>
+        {%else%}
+        <div style="position:relative;" class="upload-logo2">
+            <form  method="POST" enctype="multipart/form-data" class="form-image gen-flex">
+                <input type="file" id="image-upload" style="display: none;" onchange="uploadImage(event, '{{current}}')" class="upload-logo-input" />
+                <label for="image-upload" class="upload-label upload-logo-input">&#9998;</label>
+            </form>
+            <!-- <img src="{{url_for('static', filename='icons/upload-imge-icon.png')}}" alt="upload" class="upload-image-icon" /> -->
+        </div>
+        {%endif%}
+        <div class="details-cont">
+            <h1>{{company.company_name}}</h1>
+            <div class="comp-details">
+                <div class="sender-company-details">
+                    <div id="comp-details-header" class="comp-details">
+                        <div style="justify-content: flex-start;" class="editable-field gen-flex">
+                            <input type="text" class="form-control" name="postal_address" {% if company.postal_address%} value="{{ company.postal_address}}" {%endif%}  placeholder="Postal Address"/>
+                            {%if not company.postal_address%}
+                            <span class="edit-icon">&#9998;</span> <!-- ASCII code for a pencil icon -->
+                            {%endif%}
+                        </div>
+                        <div class="editable-field gen-flex">
+                            <input type="text" class="form-control" name="company_contacts"  {% if company.company_contacts%} value="{{ company.company_contacts}}" {%endif%}  placeholder="e.g. 251 XXXX XX" />
+                            {%if not company.company_contacts%}
+                            <span class="edit-icon">&#9998;</span>
+                            {%endif%}
+                        </div>
+                        <div class="editable-field gen-flex">
+                            <input type="text" class="form-control" name="website" {% if company.website%} value="{{ company.website}}" {%endif%}  placeholder="e.g. www.xyzlimited.com" />
+                            {%if not usr.website%}
+                            <span class="edit-icon">&#9998;</span>
+                            {%endif%}
+                        </div>
+                        <div id="header-save" class="saving gen-flex">
+                            <span style="color:rgb(66, 48, 48)">Saving....</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><br>
+    <div class="letterhead-body">
+        <form id="message-form" action="" method="POST" enctype="multipart/form-data">
+            
+                {{ form.hidden_tag()}}
+                
+                {%if chat_with %} <!-- If chat_with is defined, use it to pre-fill the recipient field -->
+                    <label for="recipient">Sending To:</label>
+                    <div style="justify-content: flex-start;" class="gen-flex">
+                        <input type="hidden" id="recipient" name="recipient" value="{{ chat_with.username }}" class="form-control" /><div >{{ chat_with.user_details[0].name }} - <span style="font-weight:500;color:rgb(173, 30, 30) !important"
+                            >{{chat_with_company.company_name}}</span></div>
+                    </div><br>
+                    <input type="hidden" id="recipient-pkey" name="recipient-pkey" class="form-control" value="{{ chat_with.pkey }}" readonly>
+                    
+                    <div class="form-group">
+                        <label for="recipient">Include email: <span style="font-size:13px;font-weight:400px;color:rgb(165, 96, 5)">(If they are not in the list above they will only receive an email)</span></label>
+                        <!-- <input type="text" id="recipient-email" name="recipient-email" class="form-control" > -->
+                        {{form.email(class="form-control",id="recipient-email", value=chat_with.user_details[0].email, readonly=true)}}
+                        {% set errors = form.email.errors %}
+                        {% if form.email.errors %}
+                            {% for error in errors %}
+                                <div class="alert alert-danger">{{ error }}</div>
+                            {% endfor %}
+                        {% endif %}
+                        {% if form.errors%}
+                            {%for error in errors%}
+                                {{error}}
+                            {%endfor%}
+                        {%endif%}
+                    </div>
+                {%else%}
+                    <div class="form-group"> <!-- If chat_with is not defined, show the recipient dropdown -->
+                        <label for="recipient">To:</label>
+                        <select onchange="updateRecField(event)" id="recipient" name="recipient" class="form-control" required>
+                            <option value=""><span>Select User</span></option>
+                            {%if users%}
+                                {% for user in users %}
+                                    {%if not user.username == current%} <!--DO not include the current user in the list-->
+                                        {%if chat_with %}
+                                        <option value="{{ chat_with.username }}" selected>{{ chat_with.user_details[0].name }} - <span style="font-weight:500;color:rgb(173, 30, 30) !important"
+                                                >{{chat_with_company.company_name}}</span>
+                                            </option>
+                                        {%else%} 
+                                            <option value="{{ user.username }}">{{ user.user_details[0].name }} - 
+                                                <span style="font-weight:500;color:rgb(173, 30, 30) !important">{{user.company_details[0].company_name}}</span>
+                                            </option>
+                                        {%endif%}
+                                    {%endif%}
+                                {% endfor %}
+                            {%endif%}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient">Rec pkey:</label>
+                        <input type="hidden" id="recipient-pkey" name="recipient-pkey" class="form-control" value="" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="recipient">Include email: <span style="font-size:13px;font-weight:400px;color:rgb(165, 96, 5)">(If they are not in the list above they will only receive an email)</span></label>
+                        <!-- <input type="text" id="recipient-email" name="recipient-email" class="form-control" > -->
+                        {{form.email(class="form-control",id="recipient-email")}}
+                        {% if form.errors%}
+                            {%for error in errors%}
+                                {{error}}
+                            {%endfor%}
+                        {%endif%}
+                    </div>
+                {%endif%}
+            <div class="form-group">
+                <label for="subject">Subject:</label>
+                <!-- <input type="text" id="subject" name="subject" class="form-control" > -->
+                {{form.subject(class="form-control",id="subject")}}
+                {% if form.errors%}
+                    {%for error in errors%}
+                        {{error}}
+                    {%endfor%}
+                {%endif%}
+            </div>
+            <div class="form-group">
+                <label for="message">Message:</label>
+                <!-- <textarea id="message" name="message" class="form-control" rows="10" required></textarea> -->
+                {{form.message(class="form-control",id="message",rows="10")}}
+                {% if form.errors%}
+                    {%for error in errors%}
+                        {{error}}
+                    {%endfor%}
+                {%endif%}
+            </div>
+            <input type="hidden" id="rec-duplicated-msg" name="rec-msg-ownpkey-enryptd" value="">
+            <div class="form-group">
+                <!-- <textarea id="message" name="message" class="form-control" rows="10" required></textarea> -->
+                {{form.submit(class="btns btn-primary",id="submit-form",style="z-index:-1")}}
+            </div>
+             
+        </form>
+    </div>
+    <div style="justify-content: flex-start;" class="sender-profile gen-flex">
+        {%if usr_obj.image%}
+            <div class="footer-sender-profile-cont gen-flex">
+                <img src="{{ url_for('static', filename='uploads/'+ usr_obj.image) }}" alt="profile" class="footer-sender-profile">
+            </div>
+        {%else%}
+            <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="profile" class="footer-sender-profile">
+        {%endif%}
+        <div class="sender-profile-details">
+            <div style="align-items: flex-start;gap:0" class="comp-details gen-flex-col">
+                <div class="editable-field-user gen-flex">
+                    <input style="font-weight: 600 !important;" type="text" class="form-control" name="name"  {% if usr_obj.name%} value="{{ usr_obj.name}}" {%endif%} placeholder="Your Name" />
+                    {%if not usr_obj.name%}
+                    <span class="edit-icon">&#9998;</span> <!-- ASCII code for a pencil icon -->
+                    {%endif%}
+                </div>
+                <div class="editable-field-user gen-flex">
+                    <input type="text" class="form-control" name="position" {% if usr_obj.position%} value="{{ usr_obj.position}}" {%endif%} placeholder="e.g. Sales Manager" />
+                    {% if not usr_obj.position or usr_obj.position == 'None' %}
+                    <span class="edit-icon">&#9998;</span>
+                    {% endif %}
+                </div>
+                <div class="editable-field-user gen-flex">
+                    <input type="text" class="form-control" name="email" {% if usr_obj.email%} value="{{ usr_obj.email}}" {%endif%} placeholder=" e.g. Your email"/>
+                    {%if not usr_obj.email%}
+                    <span class="edit-icon">&#9998;</span>
+                    {%endif%}
+                </div>
+                <div class="editable-field-user gen-flex">
+                    <input type="tel" class="form-control" name="contacts" {% if usr_obj.contacts  %} value="{{ usr_obj.contacts}}" {%endif%} placeholder=" e.g. 7546 135489" />
+                    {%if not usr_obj.contacts%}
+                    <span class="edit-icon">&#9998;</span>
+                    {%endif%}
+                </div>
+                <div id="user-save" class="saving gen-flex">
+                    <span style="color:rgb(66, 48, 48)">Saving....</span>
+                </div>
+            </div>
+        </div>
+    </div><br>
+    <div class="letterhead-footer gen-flex-col">
+        <div>
+            <div class="sender-company-details">
+                <div class="comp-details">
+                    <div class="editable-field gen-flex">
+                        <textarea type="text" class="form-control" name="tagline" 
+                         placeholder="Eco-friendly cleaning products that are safe for the environment, effective for consumers." 
+                         oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';" 
+                         style="overflow:hidden; resize:none;color:rgb(59, 35, 77);font-weight: 600;">{% if company.tagline%}{{company.tagline}}{%endif%}</textarea>
+                        {%if not company.tagline%}
+                        <span class="edit-icon">&#9998;</span> <!-- ASCII code for a pencil icon -->
+                        {%endif%}
+                    </div>
+                    <div class="editable-field gen-flex-col"> 
+                        <img src="static/icons/location-icon.png" class="location-icon" />
+                            <textarea type="text" class="form-control" name="company_address" 
+                            oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';" 
+                            style="overflow:hidden; resize:none;color:rgb(87, 33, 55);font-weight: 600;"
+                            placeholder="e.g XYZ Innovations LLC1234 Innovate Way Suite 567 San Francisco, CA 94107 United States">{% if company.company_address%}{{ company.company_address}}{%endif%}</textarea>
+                             {%if not company.company_address%}
+                                <span class="edit-icon">&#9998;</span>
+                            {%endif%}
+                    </div>
+                </div>
+            <div class="social-media gen-flex">
+                <a href="#"><img src="{{ url_for('static', filename='icons/facebook-icon.png') }}" alt="Facebook"></a>
+                <a href="#"><img src="{{ url_for('static', filename='icons/instagram-icon.png') }}" alt="Instagram"></a>
+                <a href="#"><img src="{{ url_for('static', filename='icons/linkedin-icon.png') }}" alt="LinkedIn"></a>
+                <a href="#"><img src="{{ url_for('static', filename='icons/whatsapp-icon.png') }}" alt="LinkedIn"></a>
+            </div>
+            <div style="margin:0 auto;width:max-content !important"> &copy; 2025 {{ company.company_name }}. All rights reserved.</div>
+        </div>
+    </div><br><br><br>
+   
+    <button class="btns btn-primary" onclick="encryptMessage()" id="activate-submit" >Send</button> 
+    <!-- <button onclick="checkScriptBlock()">Check</button> -->
+</div>
+
+
+<script>
+    // document.addEventListener('DOMContentLoaded', function() {
+    // var activateBtn = document.getElementById('activate-submit');
+    // var submitBtn = document.getElementById('submit-form');
+    // if (activateBtn && submitBtn) {
+    //     activateBtn.addEventListener('click', function(e) {
+    //         e.preventDefault(); // Prevent any default action
+    //         submitBtn.click();
+    //     });
+    //     }
+    // });
+
+
+
+     async function updateRecField(event){
+        value = event.target.value;
+        console.log("Selected Value: ",value)
+        var emailField = document.querySelector("#recipient-email");
+        var pkeyField = document.querySelector("#recipient-pkey");
+
+        const response = await fetch("/get_email", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: value})
+        });
+
+        var res = await response.json();
+            console.log("Fetched Email: ",res.email )
+            console.log("Fetched pKey: ",res.pkey ) 
+            emailField.value = res.email || value; 
+            pkeyField.value = res.rec_pKey || value;
+            // emailField.value = value;
+        }
+        
+
+    function checkScriptBlock(){
+        console.log("Script loaded");
+    }
+
+    function uploadImage(event,username) {
+        const fileInput = event.target;
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('username', username);
+
+        // Display a preview of the uploaded image
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const previewImage = document.querySelector('.upload-image-icon');
+            previewImage.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+
+        // Send the image to Flask
+        fetch('/upload_image', {
+            method: 'POST',
+            body:  formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to upload image');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Image uploaded successfully:', data);
+        })
+        .catch(error => {
+            console.error('Error uploading image:', error);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputs = document.querySelectorAll('.editable-field input');
+        const inputsTextArea = document.querySelectorAll('.editable-field textarea');
+        const inputsUser = document.querySelectorAll('.editable-field-user input');
+
+        inputs.forEach(input => {
+            input.addEventListener('blur', function () {
+                console.log("Blur Event Triggered...");
+                const saving = document.querySelector("#header-save");
+                saving.style.display="block"
+                const fieldName = input.name;
+                const fieldValue = input.value;
+
+                fetch('/update_field', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if required
+                    },
+
+                    body: JSON.stringify({
+                        field: fieldName,
+                        value: fieldValue
+                    })
+
+                    
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to update field');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Field updated successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Error updating field:', error);
+                });
+                saving.classList.add("turn-off-saving");
+                // Listen for the animation end event
+                saving.addEventListener("animationend", () => {
+                    // Hide the element after the animation ends
+                    saving.style.display = "none";
+                    saving.classList.remove("turn-off-saving"); // Optional: Remove the class if needed
+                });
+            });
+        });
+
+        inputsUser.forEach(input => {
+            input.addEventListener('blur', function () {
+                console.log("Blur Event Triggered...");
+                const saving = document.querySelector("#user-save");
+                saving.style.display="block"
+                const fieldName = input.name;
+                const fieldValue = input.value;
+
+                fetch('/update_field_user', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if required
+                    },
+                    body: JSON.stringify({
+                        field: fieldName,
+                        value: fieldValue
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to update field');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Field updated successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Error updating field:', error);
+                });
+                saving.classList.add("turn-off-saving");
+                // Listen for the animation end event
+                saving.addEventListener("animationend", () => {
+                    // Hide the element after the animation ends
+                    saving.style.display = "none";
+                    saving.classList.remove("turn-off-saving"); // Optional: Remove the class if needed
+                });
+            });
+        });//
+
+        inputsTextArea.forEach(input => {
+                input.addEventListener('blur', function () {
+                console.log("Blur in Text Area Event Triggered...");
+                const fieldName = input.name;
+                const fieldValue = input.value; // For textarea, use .value to get the content
+
+                fetch('/update_field', {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    // 'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if required
+                    },
+                    body: JSON.stringify({
+                    field: fieldName,
+                    value: fieldValue
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                    throw new Error('Failed to update field');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Field updated successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Error updating field:', error);
+                });
+                });
+            });//
+
+});
+
+    
+
+    function sendMessage() {
+        const form = document.querySelector('form');
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to send message');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('Message sent successfully!');
+        })
+        .catch(error => {
+            console.error('Error sending message:', error);
+        });
+    }
+
+</script>
+
+{% endblock %}

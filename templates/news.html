@@ -1,0 +1,411 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <style>
+.news-status-cont {
+    position: relative;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    background: #f8f8f8;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow:  0px 1px 7px rgba(17, 17, 17,0.3);
+    
+}
+.scrolling-statuses {
+    display: flex;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    gap: 20px;
+    padding: 0 60px;
+}
+.status-item {
+    min-width: 200px;
+    height: 200px;
+    background: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.status-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    background: rgba(255,255,255,0.8);
+    border: none;
+    font-size: 2rem;
+    width: 40px;
+    height: 60px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+.scroll-btn.left { left: 10px; }
+.scroll-btn.right { right: 10px; }
+
+.min-preview {
+    display: flex;
+    height: 600px;
+    gap: 20px;
+    width:95%;
+    max-width:1224px;
+    margin:0 auto;
+}
+
+.image-viewer {
+    flex: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow:  0px 1px 7px rgba(17, 17, 17,0.3);
+    position: relative;
+}
+
+#main-image {
+    /* max-width: 100%;
+    max-height: 100%; */
+    height:inherit;
+    border-radius: 10px;
+}
+
+.content-viewer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content:flex-start;
+    align-items: center;
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    padding-top: 30px;
+    overflow-y: auto;
+    box-shadow:  0px 1px 7px rgba(17, 17, 17,0.3);
+}
+
+.thumbnails {
+    display: flex;
+    /* flex-direction: column; */
+    gap: 10px;
+    position: absolute;
+    bottom: 10px;
+}
+
+.thumbnails-initial {
+    display: flex;
+    /* flex-direction: column; */
+    gap: 10px;
+    position: absolute;
+    bottom: 10px;
+}
+
+.thumbnail-initial {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid #eee;
+    transition: border 0.2s;
+    
+}
+
+.thumbnail {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid #eee;
+    transition: border 0.2s;
+    
+}
+.thumbnail:hover {
+    border: 2px solid #0078d7;
+}
+
+/* Modal styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(3px);
+    align-items: center;
+    justify-content: center;
+}
+.modal-content {
+    width: 900px;
+    height: 900px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+}
+.close {
+    position: absolute;
+    top: 30px;
+    right: 60px;
+    color: #fff;
+    font-size: 3rem;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 1001;
+}
+.modal-scroll {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.7);
+    border: none;
+    font-size: 2.5rem;
+    width: 60px;
+    height: 80px;
+    cursor: pointer;
+    border-radius: 8px;
+    z-index: 1001;
+}
+.modal-scroll.left { left: 40px; }
+.modal-scroll.right { right: 40px; }
+
+.cont-title{
+    color:#1f1d1a;
+    font-size:24px;
+    font-weight: 500;
+}
+ 
+</style>
+<div class="advertise-here">
+    <div class="advert-welcome">Your Business Partners are Waiting to Hear From You!</div>
+    <div class="advert-welcome-elab">
+        Share your company’s stories with the world. What’s new in your business this week? Got exciting events happening this month?  
+        Pick a highlight from your company newsletter — whether it’s a milestone, community initiative, or valuable business insight — and let others know.  
+        Your network wants to stay connected, inspired, and informed. Start sharing today!
+    </div>
+    <button onclick="window.location.href='/news_form'" class="advert-btn" >Post Story</button>
+</div>
+<br><br>
+
+<div style="margin-top: 200px;"></div>
+    <!-- Top: Statuses with scroll buttons -->
+{% if news%}
+<div class="news-status-cont">
+    <button class="scroll-btn left" onclick="scrollStatuses(-1)">&#8592;</button>
+    <div class="scrolling-statuses" id="scrolling-statuses">
+        {% for post in news %}
+            {% set post_imgs = all_news_imgs | selectattr('news_id', 'equalto', post.id) | list %}
+               <div id="status-item-{{post.id}}" class="status-item"
+                    data-postid="{{ post.id }}"
+                    data-title="{{ post.story_title|e }}"
+                    data-story="{{ post.story|e }}"
+                    data-images='{{ post_imgs|map(attribute="image")|list|tojson }}'
+                    onclick="handleStatusClick(this)">
+                    <img src="static/ad-images/{{ all_news_imgs[post.id].image }}" alt="Status {{ loop.index }}">
+                    <div class="story-caption gen-flex-col">
+                        <span class="story-cap-title">{{ post.story_title|e }}</span>
+                        {%if post.story| length >= 25%}
+                            <span class="story-cap">{{ post.story[:25] }}...</span>
+                        {%else%}
+                            <span class="story-cap">{{ post.story}}</span>
+                        {% endif%}
+                    </div>
+                    {% for company in companies %}
+                        {%if company.id == post.comp_id %}
+                            <div class="comp-logo-cont gen-flex">
+                                <img src="static/uploads/{{company.image}}" style="height:40px" />
+                            </div>
+                            <div class="views-count gen-flex-col">
+                                <img src="static/icons/view-icon.png" style="height:37px;margin-bottom: -10px;" />
+                                <div class="views-no">{{post.views | length}}</div>
+                            </div>
+                        {%endif%}
+                    {%endfor%}
+                </div>
+        {% endfor %}
+    </div>
+    <button class="scroll-btn right" onclick="scrollStatuses(1)">&#8594;</button>
+</div>
+
+<!-- Bottom: Main preview and thumbnails - Active/Default -->
+<div id="min-preview-1" class="min-preview">
+    <div class="image-viewer" id="main-image-viewer">
+        <img onclick="openModal(0)" id="main-image" src="static/ad-images/{% set first_post = news[0] %}{% set first_imgs = all_news_imgs %}{{ first_imgs[0].image if first_imgs else '' }}" alt="Main Preview">
+        <div class="thumbnails gen-flex" id="thumbnails">
+            {% for img_thmb in all_news_imgs %}
+                {% if img_thmb.news_id == news[0].id %}
+                    <img id="clicked-tumb1-{{img_thmb.id}}" class="thumbnail-initial" src="static/ad-images/{{img_thmb.image}}" onclick="viewAsMainImg('{{img_thmb.id}}','{{news[0].id}}')">
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="content-viewer">
+        <div id="cont-title" class="cont-title">{{ news[0].story_title }}</div>
+        <div id="cont-body" class="content-body">{{ news[0].story }}</div>
+        <div class="hashtags gen-flex" style="color:#616161">#CompanyStories #News #Updates #PublicRelations #Insights</div>
+    </div>
+</div>
+
+<!-- Bottom: Main preview and thumbnails - Dynamic -->
+<div style="display: none;" id="min-preview-2" class="min-preview">
+    <div class="image-viewer" id="main-image-viewer">
+        <img id="main-image-2" src="" alt="Main Preview">
+        <div class="thumbnails gen-flex" id="thumbnails-2">
+            <img id="clicked-tumb" class="thumbnail" src="" >
+        </div>
+    </div>
+    <div class="content-viewer">
+        <div id="cont-title-2" class="cont-title"></div>
+        <div id="cont-body-2" class="content-body"></div>
+    </div>
+</div>
+
+
+{%endif%}
+<!-- Modal for viewing images -->
+<div id="image-modal" class="modal">
+    <span class="close" onclick="closeModal()">&times;</span>
+    <button class="modal-scroll left" onclick="modalScroll(-1)">&#8592;</button>
+    <img class="modal-content" id="modal-image">
+    <button class="modal-scroll right" onclick="modalScroll(1)">&#8594;</button>
+</div>
+
+
+<script>
+
+
+{% set img_paths = [] %}
+{% for img in all_news_imgs if img.news_id == news[0].id %}
+    {% set _ = img_paths.append(img.image) %}
+{% endfor %}
+var statusImages = {{ img_paths | tojson }};
+
+
+let currentModalIndex = 0;
+
+function scrollStatuses(direction) {
+    const container = document.getElementById('scrolling-statuses');
+    const scrollAmount = 220; // width of status + gap
+    container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+}
+
+function openModal(index) {
+    // currentModalIndex = index;
+    document.getElementById('image-modal').style.display = 'flex';
+    showModalImage();
+}
+
+function closeModal() {
+    document.getElementById('image-modal').style.display = 'none';
+}
+
+function modalScroll(direction) {
+    currentModalIndex += direction;
+    if (currentModalIndex < 0) currentModalIndex = statusImages.length - 1;
+    if (currentModalIndex >= statusImages.length) currentModalIndex = 0;
+    showModalImage();
+}
+
+function handleStatusClick(elem) {
+    var postid = JSON.parse(elem.getAttribute('data-postid'));
+    var title = elem.getAttribute('data-title');
+    var story = elem.getAttribute('data-story');
+    var images = JSON.parse(elem.getAttribute('data-images'));
+        viewInMinPreview(postid, title, story, images);
+    }
+
+function viewInMinPreview(postid, title, content, imglist) {
+
+    var activePreview = document.getElementById('min-preview-1');
+    var dynamicPreview = document.getElementById('min-preview-2');
+    activePreview.style.display = 'none';
+    dynamicPreview.style.display = 'flex';
+
+    statusImages =imglist;
+
+ 
+    console.log("Thmblist: ", statusImages);
+
+    // Update main image
+    var mainImg = document.getElementById('main-image-2');
+    if (imglist.length > 0) {
+        mainImg.src = "static/ad-images/" + imglist[0];
+        mainImg.onclick = function(postid){
+            openModal(postid);
+        }
+    } else {
+        mainImg.src = '';
+    }
+    // Update thumbnails
+    var thumbnailsDiv = document.getElementById('thumbnails-2');
+    thumbnailsDiv.innerHTML = '';
+    imglist.forEach(function(img, idx) {
+        var thumb = document.createElement('img');
+        thumb.className = 'thumbnail';
+        thumb.src = "static/ad-images/" + img;
+        thumb.onclick = function() {
+            mainImg.src = thumb.src;
+        };
+        thumbnailsDiv.appendChild(thumb);
+    });
+    // Update content
+    document.getElementById('cont-title-2').textContent = title;
+    document.getElementById('cont-body-2').textContent = content;
+
+    // send get request to update views count
+    fetch(`/update_news_views/${postid}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+function viewAsMainImg(thmbid,postid) {
+    var postId = postid.toString();
+    // var thmbId = thmbid.toString();
+    var postViewdImg = document.getElementById("main-image");
+    var clickedThumb = document.getElementById("clicked-tumb1-"+thmbid);
+    console.log("Cliecked Thumbnail @activePreview: ",clickedThumb.src);
+    console.log("Main Preview @activePreview: ",postViewdImg.src);
+    var thumb = "static/ad-images/"+ clickedThumb.src;
+    console.log("thumb: ",thumb);
+    postViewdImg.src = clickedThumb.src;
+}
+
+
+function showModalImage() {
+    console.log("On Modal Show Current Img: ", currentModalIndex);
+    console.log("On Modal Show Current Images: ", statusImages);
+    document.getElementById('modal-image').src ="static/ad-images/" + statusImages[currentModalIndex];
+}
+
+// Optional: update main image on thumbnail click
+document.addEventListener('DOMContentLoaded', function() {
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    thumbnails.forEach((thumb, idx) => {
+        thumb.addEventListener('click', function() {
+            document.getElementById('main-image').src = statusImages[idx];
+        });
+    });
+});
+    </script>
+
+{%endblock%}

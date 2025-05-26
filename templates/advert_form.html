@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    section {
+  display: flex;
+  flex-flow: row wrap;
+}
+section > div {
+  flex: 1;
+  padding: 0.5rem;
+}
+#pay-opt-div input[type="radio"] {
+  display: none;
+  &:not(:disabled) ~ label {
+    cursor: pointer;
+  }
+  &:disabled ~ label {
+    color: hsla(150, 5%, 75%, 1);
+    border-color: hsla(150, 5%, 75%, 1);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+}
+#pay-opt-div label {
+  height: 100%;
+  display: block;
+  background: white;
+  border: 2px solid coral;
+  border-radius: 20px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  box-shadow: 0px 3px 10px -2px hsla(150, 5%, 65%, 0.5);
+  position: relative;
+}
+#pay-opt-div input[type="radio"]:checked + label {
+  background: coral;
+  color: hsla(215, 0%, 100%, 1);
+  &::after {
+    color: coral;
+    font-family: FontAwesome;
+    border: none;
+    content: "OK";
+    font-size: 24px;
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 50px;
+    width: 50px;
+    line-height: 50px;
+    text-align: center;
+    border-radius: 50%;
+    background: white;
+  }
+}
+
+#pay-opt-div input[type="radio"]#control_05:checked + label {
+  background: red;
+  border-color: red;
+}
+
+#pay-opt-div p {
+  font-weight: 700;
+  font-size:14px;
+}
+
+#pay-opt-div small{
+    color:;font-weight:bold;font-size:11px
+}
+
+.ea_radio_cont{
+    width:150px !important;
+    height:auto !important;
+}
+
+
+@media only screen and (max-width: 700px) {
+  section {
+    flex-direction: column;
+  }
+}
+
+</style>
+<div style="" class="form-account-container">
+        <h3><br> <span class="spans"></span></h3>
+            <!-- <div class="flash-messages">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for  category, message in messages %}
+                            <div class="flash-messages alert-{{category}}"> {{ message }} </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div> -->
+
+        <p class="paras-subtopics"></p>
+
+        <div style="width:80%;margin-left:1px" class="card-body py-md-4">
+            <form _lpchecked="1" action="" method="post"  enctype="multipart/form-data" >
+                <!-- <div id="cmpny-acc-prl-cont" style="width:100%;background-color:" class="my-card"> -->
+                <div style=""  class="img-cont">
+                    <img class="prf-image" id="ad-image" src="static/uploads/logo-icon-white.png"/>
+                    <img class="prf-image" id="preview-image" style="display:none;"/>
+                 </div>
+                <!-- </div> -->
+
+                <h3 style="font-size:25px" class="">Upload Advert</h3>
+
+                <hr>
+
+                <div class="group">
+                    {{form.hidden_tag()}}
+                    <div class="acc-labels">{{ form.advert_image.label(class="labels")}}</div>
+                    {{ form.advert_image(class="form-control",placeholder="Upload Advert",id="ImageInput")}}
+                    {% if form.advert_image.errors %}
+                        {% for error in form.advert_image.errors %}
+                            <span class="span-error" >* {{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                <!--<input type="text" class="form-control" id="name" name="nm" placeholder="Name">-->
+                </div>
+
+                <div class="group">
+                    <div class="acc-labels">{{ form.advert_days.label(class="labels")}}</div>
+                    {{ form.advert_days(class="form-control",placeholder="Advert Duration")}}
+                    {% if form.advert_days.errors %}
+                        {% for error in form.advert_days.errors %}
+                            <span class="span-error" >*{{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                    <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+                </div>
+
+                <div class="group">
+                    <!--<input type="password" class="form-control" id="confirm-password" name="confirm_pass" placeholder="confirm-password">-->
+                    <div class="acc-labels">{{ form.start_date.label(class="labels")}}</div>
+                    {{ form.start_date(class="form-control",placeholder="Starting Date")}}
+                    {% if form.start_date.errors %}
+                        {% for error in form.start_date.errors %}
+                            <span class="span-error" >*{{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                <div style="width:40% !important;padding-left:45px;" class="d-flex flex-row align-items-center justify-content-between">
+                    {{ form.submit(class="btns") }}
+                    <!--<input class="btns" type="submit" value="Create Account" />-->
+                </div>
+
+                <br><br>
+
+            </form>
+        </div>
+
+</div>
+
+ <script src="https://unpkg.com/cropperjs"></script>
+    <script>
+         // Add event listener to the image input field
+         document.addEventListener('DOMContentLoaded', function() {
+            var input = document.getElementById('ImageInput');
+            if (input) {
+                console.log("Image Present");
+                input.addEventListener('change', function() {
+                    console.log("Image Changes");
+                    var image = this.files[0];
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                            console.log("Image Changes: ",e.target.result);
+                            var preview = document.getElementById('preview-image');
+                            var defaultImg = document.getElementById('ad-image');
+                            if (preview && defaultImg) {
+                                preview.src = e.target.result;
+                                preview.style.display = "block";
+                                defaultImg.style.display = "none";
+                            }
+                        }
+                    reader.readAsDataURL(image);
+                        // Optionally, initialize Cropper.js if needed
+                        // var img = document.createElement('img');
+                        // img.src = e.target.result;
+                        // img.onload = function() {
+                        //     var cropper = new Cropper(img, {
+                        //         aspectRatio: 1,
+                        //         viewMode: 2,
+                        //     });
+                        // };
+                    });
+                   
+                };
+            });
+        
+    </script>
+{% endblock %}

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" type="text/css" href="static/css/styles.css" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bs_stylesheet.css') }}" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <title>{{title}}</title>
+
+    <div class="topbar">
+        <div class="top-bar-left">
+            <a href="/"><img src="{{ url_for('static', filename='images/logo-white.png') }}" alt="Logo" class="logo"></a>
+        </div>
+        <div class="top-bar-right">
+            <a href="#" class="top-bar-link">Connect with the World</a>
+            <!-- <a href="/client_user_acc" class="top-bar-link">Client User Account</a> -->
+        </div>
+    </div>
+
+<!--    <button class="menu burger">Menu</button>-->
+</head>
+<body>
+    <div id="alert-confirm" class="login-modal-bg gen-flex-col">
+        <div style="justify-content: flex-start;" class="login-modal gen-flex-col">
+            <div>Continue as:</div>
+            <div id="user-name"></div>
+            <a id="login"><div class="btns gen-flex">Go👍</div></a>
+            <a id="go-register" style="display: none;" ><div onclick="window.location.href='/register'" class="btns gen-flex">Register</div></a>
+        </div>
+    </div>
+    <div style="width:100%  !important;gap:0" class="gen-flex">
+        <!-- Main App Navigation Bar  -->
+        <div style="padding-top:60px" class="app-nav-bar-left">
+            <div  onclick="openMenuFunc()" class="menu-icon">
+                <div class="stroke"></div>
+                <div class="stroke"></div>
+                <div class="stroke"></div>
+            </div>
+            <a href="/company_account"><div class="app-nav-icons gen-flex">
+                <img src="{{ url_for('static', filename='icons/profile-icon.png') }}" alt="Logo" class="app-nav-icon"></a>
+                <div class="nav-label">Account</div>
+            </div></a>
+            <a href="/"><div class="app-nav-icons gen-flex">
+                <img src="{{ url_for('static', filename='icons/info-icon.png') }}" alt="Logo" class="app-nav-icon"></a>
+                <div class="nav-label">Info</div>
+            </div></a>
+            <a href="/"><div class="app-nav-icons gen-flex">
+                <img src="{{ url_for('static', filename='icons/subscriptions-icon.png') }}" alt="Logo" class="app-nav-icon"></a>
+                <div class="nav-label">Payment Plans</div>
+            </div></a>
+            <a href="/"><div class="app-nav-icons gen-flex">
+                <img src="{{ url_for('static', filename='icons/download-pwa-icon.png') }}" alt="Logo" class="app-nav-icon"></a>
+                <div class="nav-label">Install</div>
+            </div></a>
+        </div>
+        <!-- Container for Chats Nav & Content Section  -->
+        <div style="gap:0px;" class="left-main gen-flex">
+            <!-- Chats Nav   -->
+            <div class="left-side-section-container">
+                <div class="side-section gen-flex-col">
+                    <!-- <a href="/compose"> -->
+                        <div onclick="window.location.href='/compose'" style="justify-content: flex-start;cursor: pointer;" class="compose-message gen-flex">
+                            <div class="compose-message-icon gen-flex"><img src="{{ url_for('static', filename='icons/compose-icon.png') }}" alt="icon" class="compose-message-icon"></div>
+                            <span class="compose-message-label">Compose</span>
+                        </div>
+                    <!-- </a> -->
+
+                    <div class="side-navbar-nav gen-flex-col">
+                        <!-- Messages Button  -->
+                        <div id="navlink-message" class="side-nav-item active gen-flex-col">
+                            <div class="gen-flex">
+                                <img src="static/icons/qm-messaging-icon.png" />
+                                <div style="align-items: flex-start;" onclick="openClose(event)" class="nav-link-title gen-flex-col">
+                                    <a class="nav-link" href="#">Messages</a>
+                                    <small>Inbox Messages</small>
+                                </div>
+                            </div>
+                            {% for msg in messages %}
+                                    {%set my_msgs = msg.key%}
+                                    {%if current == my_msgs and not msg.sender == current%}
+                                        <div class="messages-count gen-flex"><span>{{loop.index}}</span></div>
+                                    {%endif%}
+                            {%endfor%}
+                            <div class="scorllable-messages gen-flex-col">
+                                <div class="messages-container">
+                                    {% for msg in messages %}
+                                    {%set the_sender = msg.sender%}
+                                    {%set my_msgs = msg.key%}
+                                    {%if current == my_msgs%}
+                                    <div id="messages-inbox-cont"  class="message-item gen-flex-col">
+                                        <!-- Name, Logo, and Time  -->
+                                        <div class="message-item-header gen-flex">
+                                            
+                                                {%if msg.sender == current%}<!--sent messages-->
+                                                {%set rec_usrnm = usrn.query.filter_by(username=msg.receiver).first()%}
+                                                <div onclick="window.location.href='/get_messages?key={{rec_usrnm.username}}'" class="message-item-header-left gen-flex">
+                                                    {% set name = rec_usrnm.user_details[0].name %}
+                                                    <img src="{{ url_for('static', filename='uploads/'+ rec_usrnm.company_details[0].image) }}" alt="Logo" class="message-item-icon">
+                                                    {% if name | length >= 12 %}
+                                                        <span class="message-item-name">{{ name[:12] }}...-</span>
+                                                    {% else %}
+                                                        <span class="message-item-name">{{ name }}-</span>
+                                                    {% endif %}
+                                                    <div id="sent-icon" class="inbox-icon">Sent</div>
+                                                </div>
+                                                {%elif msg.receiver == current%}<!--received messages-->
+                                                {%set send_usrnm = usrn.query.filter_by(username=msg.sender).first()%}
+                                                <div onclick="window.location.href='/get_messages?key={{send_usrnm.username}}'"  class="message-item-header-left gen-flex">
+                                                    
+                                                    {% set name = send_usrnm.user_details[0].name %}
+                                                    <img src="{{ url_for('static', filename='uploads/'+ send_usrnm.company_details[0].image) }}" alt="Logo" class="message-item-icon">
+                                                    {% if name | length >= 12 %}
+                                                        <span class="message-item-name">{{ name[:12] }}...++</span>
+                                                    {% else %}
+                                                        <span class="message-item-name">{{ name }}++</span>
+                                                    {% endif %}
+                                                    <div class="inbox-icon">inbox</div>
+                                                </div>
+                                                {%else%}
+                                                <div class="message-item-header-left gen-flex">
+                                                    <i>No Messages</i>
+                                                </div>
+                                                {%endif%}
+                        
+                                            <div class="filler"></div>
+                                            
+                                        </div>
+                                        <!-- Message Caption  -->
+                                        {%if msg.message | length >= 20 %}
+                                            <div data-encrypted="{{msg.message}}" class="message-text">{{ msg.message[:20] }}...</div>
+                                        {% else %}
+                                            <div data-encrypted="{{msg.message}}" class="message-text">{{ msg.message }}</div>
+                                        {% endif %}
+                                        <span class="message-item-time">{{msg.date.strftime("%d %b %H:%M" )}}</span>
+                                    </div>
+                                    {%endif%}
+                                    {% endfor %}
+
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="link-1"  onclick="window.location.href='/business_community'" class="side-nav-item gen-flex">
+                            <img src="static/icons/business-comm-icon.png" />
+                            <div class="link-title gen-flex-col">
+                                <span class="nav-link" >Business Community</span>
+                                <small>Network Pool - Find New Partners</small>
+                            </div>
+                        </div>
+                        <div id="link-2" onclick="window.location.href='/adverts'" class="side-nav-item gen-flex">
+                            <img src="static/icons/advert-icon.png" />
+                            <div class="link-title gen-flex-col">
+                                <span class="nav-link" href="">Adverts</span>
+                                <small>Advertise & Promote to the World</small>
+                            </div>
+                        </div>
+                        <div id="link-3" onclick="window.location.href='/company_stories'" class="side-nav-item gen-flex">
+                            <img src="static/icons/business-news-icon.png" />
+                            <div class="link-title gen-flex-col">
+                                <span class="nav-link" >Companies News</span>
+                                <small>Share your company’s stories</small>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Content Section  -->
+            <div class="right-side-section-container">
+                <div style="justify-content: flex-start;" class="sub-titles gen-flex">
+                    {%if company.image %}
+                    <img onclick="window.location.href='/company_account'" src="{{ url_for('static', filename='uploads/'+ company.image) }}" alt="Logo" class="sub-title-logo">
+                    {%else%}
+                    <img onclick="window.location.href='/company_account'" src="{{ url_for('static', filename='uploads/default.jpg') }}" alt="Logo" class="sub-title-logo">
+                    {%endif%}
+                    <span onclick="window.location.href='/company_account'" style="" id="company-title" style="font-size:18px;font-weight:500">{{company.company_name}}</span>
+                    <div class="flash-messages">
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                                {% for  category, message in messages %}
+                                    <div class="flash-messages alert-{{category}}"> {{ message }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <div class="filler"></div>
+                    {%if current%}
+                    <div onclick="window.location.href='/user_account'" class="username gen-flex" style="cursor: pointer;">
+                        <div class="username-icon-cont gen-flex">
+                            {%if usr_obj.image %}
+                            <img src="{{ url_for('static', filename='uploads/'+ usr_obj.image) }}" alt="username" class="username-icon">
+                            {%endif%}
+                        </div>
+                        <span id="username-label">{{usr_obj.name}}</span>
+                    </div>
+                    {%else%}
+                    <div onclick="window.location.href='/register'" class="username gen-flex btns">
+                        <span class="">Register</span>
+                    </div>
+                    {%endif%}
+                </div><br>
+                <div style="overflow-y: auto; height: calc(100% - 60px);" class="displaying-section"><br>
+                    <div style="height: max-content; width: 100%;position: relative;" class="be-scrollable">
+                        {% block content %}
+                        {% endblock %}
+                    </div>
+                    <br><br><br> <br><br><br>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <!-- <script src="static/js/tempkeys.js" ></script> -->
+    <script src="static/js/indexedb.js" ></script>
+    <script src="static/js/js_script.js" ></script>
+    <script src="static/js/bus_cht.js" ></script>
+
+<script>
+    // console.log("SaveIs Called: ");
+    var userLabel =document.querySelector("#username-label");
+    var goBtn = document.querySelector("#login");
+
+    if (userLabel){
+        initDB().then((db) =>{
+            console.log("db", db.objectStoreNames.contains("keys"));
+            console.log("User Found");
+        });
+    }else{
+        // initialise DB 
+        initDB().then((db) =>{
+            console.log("db", db.objectStoreNames.contains("keys"));
+            console.log("User Not Found");
+            preRegister();
+        });
+    }
+
+ </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</body>
+</html>

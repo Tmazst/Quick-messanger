@@ -1,0 +1,50 @@
+
+
+{% extends "base.html" %}
+{% block content %}
+<div class="container form-container">
+  <label>Welcome to Tech Xolutions</label><br>
+  <h2 style="color:#EF4036">Register</h2>
+  <form class="form" method="post" action="">
+    <input  class="form-control" id="username" name="username" autocomplete="off" placeholder="username" required />
+    <input class="form-control" id="name" name="name" placeholder="name" required />
+    <input class="form-control" id="email" name="email" placeholder="Your email" required />
+    <input class="form-control" id="company_name" name="company_name" placeholder="Company name" required />
+    <input class="form-control" id="password" name="password" type="password" placeholder="Password" required />
+    <input  class="form-control" id="pKey" name="pKey" placeholder="Public Key" required />
+    
+    <button id="submit-btn" class="btns">Register</button><br><br>
+    <label style="color:#EF4036">Already have an account?</label><br>
+</form>
+</div>
+<script>
+
+
+let db_ind;
+window.addEventListener('load', async function(){
+
+    
+    // console.log("SaveIs Called: ");
+    var userLabel =document.querySelector("#username-label");
+
+
+    if (userLabel){
+        initDB().then((db) =>{
+            console.log("db", db.objectStoreNames.contains("keys"));
+        });
+        // window.location.href = "/";
+    }else{
+        // initialise DB 
+        initDB().then((db) =>{
+            console.log("db", db.objectStoreNames.contains("keys"));
+           register();
+        });
+    }
+    
+
+    
+});
+
+
+</script>
+{% endblock %}
