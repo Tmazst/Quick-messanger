@@ -24,12 +24,21 @@ import pytz
 #Change App
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "sdsd1245jfe832j2rj_32j"
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db.db"
+
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle':280}
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOADED"] = 'static/uploads'
 app.config["ADVERTS_IMAGES"] = 'static/ad-images'
+
+
+# Local
+if os.environ.get('EMAIL_INFO') == 'info@techxolutions.com':
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db.db"
+else:#Online
+    app.config[
+    "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/quick_m_db"
+
 
 db.init_app(app)
 CORS(app)  # Allow cross-origin requests
