@@ -162,6 +162,9 @@ ser = Serializer(app.config['SECRET_KEY'])
 
 @app.context_processor
 def inject_ser():
+     with app.app_context():
+        db.create_all()
+        db.session.commit()
     # global ser
      # Define or retrieve the value for 'ser'
     # count_jobs = count_ads()
@@ -223,6 +226,8 @@ def username(username,id):
 
 @app.route("/", methods=['POST','GET'])
 def home():
+
+
     # all_messages = get_all_messages()
     # latest_entry = Messages.query.filter_by(sender=user.id).order_by(Messages.date.desc()).first()
     # return redirect(url_for('home'))
