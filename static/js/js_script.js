@@ -68,6 +68,12 @@ paragraph.forEach(function(pTag){
 //    console.log('Mouse Over');
 //}
 var container = document.querySelector(".app-dowload-container");
+// var installBtn = document.querySelector("#pwa-install-btn");
+// Check if the browser supports service workers and PWA installation
+if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
+    console.log("PWA installation is supported.");
+}
+
 let deferredPrompt;
 
 window.addEventListener('load', () => {
