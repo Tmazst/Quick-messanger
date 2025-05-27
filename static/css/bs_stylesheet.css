@@ -40,7 +40,7 @@ body, h1, p, div {
 }
 
 body {
-    font-family: 'Oswald', sans-serif !important;
+    font-family: 'Oswald',"Franklin Gothic Medium Cond","Gill Sans MT Condensed","Microsoft Yi Baiti" !important;
     background-color: #a8a8a8;
   }
 
@@ -97,7 +97,7 @@ body {
 #user-name{
     color:var(--theme-color);
     font-weight:600;
-    font-family: "Montserrat";
+    font-family: "Montserrat", "Arial", "Helvetica Neue", Helvetica, sans-serif;
 }
 
 .saving{
@@ -370,7 +370,7 @@ html, body {
 
 .advert-welcome-elab{
     color:#272727;
-    font-family: "Montserrat";
+    font-family: "Montserrat", "Helvetica Neue", "Arial", Helvetica, sans-serif;
     /* max-width: 1224px; */
     margin: 0 auto;
     padding-bottom: 15px;
@@ -435,7 +435,7 @@ html, body {
     font-size: 30px;
     margin:20px auto !important;
     color:var(--theme-color);
-    font-family: "Montserrat";
+    font-family: "Montserrat",  "Helvetica Neue", "Arial", Helvetica, sans-serif;
     /* max-width: 1224px; */
 }
 
@@ -582,7 +582,7 @@ html, body {
     color:#333;
 }
 .cont-title{
-    font-family: "Montserrat";
+    font-family: "Montserrat",  "Helvetica Neue", "Arial", Helvetica, sans-serif;
     min-height:40px;
     border-bottom:1px solid var(--theme-color);
 
@@ -599,7 +599,7 @@ html, body {
 }
 
 .other-cat-info{
-    font-family: "Montserrat";
+    font-family: "Montserrat",  "Helvetica Neue", "Arial", Helvetica, sans-serif;
     font-size: 12px;
     font-weight: 500;
     color:var(--my-blue)
@@ -608,7 +608,7 @@ html, body {
 .category-title{
     font-weight: 600 !important;
     font-size: 25px !important;
-    font-family: "Montserrat";
+    font-family: "Montserrat",  "Helvetica Neue", "Arial", Helvetica, sans-serif;
     color:#333
 }
 
@@ -642,14 +642,14 @@ transition: all 0.3s ease-out;
     position: absolute;
     bottom: 0;
     width:100%;
-    font-family: "Montserrat";
+    font-family: "Montserrat",  "Helvetica Neue", "Arial", Helvetica, sans-serif;
     padding:15px;
     font-size: 14px;
     font-weight: 500;
 }
 
 .content-body{
-    font-family: "Montserrat";
+    font-family: "Montserrat",  "Helvetica Neue", "Arial", Helvetica, sans-serif;
     padding: 10px;
     color: #272727;
 }
@@ -685,7 +685,7 @@ transition: all 0.3s ease-out;
     gap:2px;
     align-items: flex-start;
     padding:6px;
-    font-family: "Montserrat";
+    font-family: "Montserrat",  "Helvetica Neue", "Arial", Helvetica, sans-serif;
     backdrop-filter: blur(3px);
     background: rgba(250, 250, 250,0.2);
     position: absolute;

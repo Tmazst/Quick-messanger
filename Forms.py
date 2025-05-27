@@ -109,7 +109,7 @@ class Company_Register_Form(FlaskForm):
 class Company_UpdateAcc_Form(FlaskForm):
 
     company_name = StringField('Company Name', validators=[DataRequired(), Length(min=2, max=60)])
-    company_email = StringField('Email', validators=[DataRequired(), Email()])
+    company_email = StringField('Email', validators=[DataRequired(), Email(), Length(min=5, max=60)])
     company_logo = FileField('Company Logo', validators=[ FileAllowed(['jpg','png'])])
     company_contacts = StringField('Contact(s)', validators=[Length(min=8, max=64)])
     company_address = StringField('Physical Address', validators=[DataRequired(), Length(min=8, max=100)])

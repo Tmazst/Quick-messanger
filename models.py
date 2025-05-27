@@ -20,7 +20,7 @@ class chat_user(db.Model,UserMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20),unique=True)
-    pkey = db.Column(db.String(500))
+    pkey = db.Column(db.String(1024))
     other = db.Column(db.String(200))
     other1 = db.Column(db.String(200)) 
     db.Column(db.DateTime(), default=datetime.now)
@@ -150,7 +150,7 @@ class company_info(db.Model):
     usr_fKey = db.Column(db.Integer, ForeignKey('chat_user.id'))
     usr_id = db.Column(db.Integer, ForeignKey('user.id'))
     company_name = db.Column(db.String(50))
-    email = db.Column(db.String(120),unique=True)
+    email = db.Column(db.String(120))
     image = db.Column(db.String(120))
     category = db.Column(db.String(120))
     country = db.Column(db.String(50))
@@ -195,7 +195,7 @@ class Messages(db.Model,UserMixin):
     sender_id = db.Column(db.Integer)
     receiver = db.Column(db.String(20))
     subject = db.Column(db.String(50))
-    message = db.Column(db.String(500))
+    message = db.Column(db.String(1024))
     date = db.Column(db.DateTime(), default=datetime.now)
     key = db.Column(db.String(50)) #for public key identification
     company_info_id = db.Column(db.Integer)
