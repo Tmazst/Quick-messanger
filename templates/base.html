@@ -272,7 +272,12 @@
 
     // Function to open the menu
     function openMenuFunc() {
+        var navLabels = document.querySelectorAll(".nav-label");
         document.querySelector(".app-nav-bar-left").classList.toggle("open");
+        navLabels.forEach(function(label) {
+            label.classList.toggle("nav-label-display");
+        });
+        // doucument.querySelector(".left-main").classList.toggle("nav-label-display");
     }
 
     // Function to open/close messages
