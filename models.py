@@ -20,7 +20,7 @@ class chat_user(db.Model,UserMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20),unique=True)
-    pkey = db.Column(db.String(1024))
+    pkey = db.Column(db.String(2048))
     other = db.Column(db.String(200))
     other1 = db.Column(db.String(200)) 
     db.Column(db.DateTime(), default=datetime.now)
