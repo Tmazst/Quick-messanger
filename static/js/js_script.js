@@ -77,6 +77,7 @@ if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
 let deferredPrompt;
 
 window.addEventListener('load', () => {
+    
     function isAppInstalled() {
         return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
     }
