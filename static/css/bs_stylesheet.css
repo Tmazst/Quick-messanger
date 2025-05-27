@@ -538,7 +538,7 @@ html, body {
 }
 
 .display-messages{
-    display: flex;
+    display: block;
 }
 
 .max-content-height{
