@@ -14,17 +14,16 @@
 
 @font-face {
     font-family: 'Oswald';
-    src: url('../oswald/Oswald-Light.eot');
-    src: url('../oswald/Oswald-Light.eot?#iefix') format('embedded-opentype'),
-        url('../oswald/Oswald-Light.woff2') format('woff2'),
-        url('../oswald/Oswald-Light.woff') format('woff'),
-        url('../oswald/Oswald-Light.svg#Oswald-Light') format('svg'),
-        url('../oswald/Oswald-Light.ttf') format('truetype')
-        ;
-    font-weight: 500;
+    src: url('../oswald/Oswald-Light.woff2') format('woff2'),
+         url('../oswald/Oswald-Light.woff') format('woff'),
+         url('../oswald/Oswald-Light.ttf') format('truetype'),
+         url('../oswald/Oswald-Light.svg#Oswald-Light') format('svg'),
+         url('../oswald/Oswald-Light.eot?#iefix') format('embedded-opentype');
+    font-weight: 300;
     font-style: normal;
     font-display: swap;
 }
+
 
 
 /* General Reset */
@@ -45,6 +44,7 @@ body, h1, p, div {
 body {
     font-family: 'Oswald',"Franklin Gothic Medium Cond","Gill Sans MT Condensed","Microsoft Yi Baiti" !important;
     background-color: #a8a8a8;
+    font-weight:500;
   }
 
 /* html{box-sizing:border-box}*;*:before;*:after{//box-sizing:inherit} */
