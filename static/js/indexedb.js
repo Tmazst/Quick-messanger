@@ -418,11 +418,29 @@ async function preRegister(){
                 // goRegister.href = "/register" ;
                 // window.location.href = "/register";
             };
-            
+
+            //create a post fetch request to check if the user exists on the server
+            // const response = await fetch("/checkUser", {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json"
+            //     },
+            //     body: JSON.stringify({ username: myUsrname })
+            // });
+
+            // if (response && response.exists === true) {
+            //     userNameField.innerHTML = response.user;
+            //     console.log("User Found: ", response.user);
+            // }else{
+            //     modal.style.display = "none";
+            //     return;
+            // }
+
+            // userNameField.innerHTML = response.user;
             console.log("Turn ON Alert Box");
             modal.style.display = "flex";
-            userNameField.innerHTML = myUsrname;
             loginId.href = "/login?id=" + myUsrname;
+
 
             return;
 
@@ -521,7 +539,6 @@ async function register() {
     // });
 
     observer.observe(usrName, { attributes: true, childList: true, subtree: true });
-
         
     };
 };

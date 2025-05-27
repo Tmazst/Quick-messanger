@@ -3,20 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Quick Messanger (QM) allows companies and professionals across the globe to connect, exchange messages,and share business information in a both private & public, organized environment.">
+    <meta name="key words" content="Quick Messanger (QM) is a secure, fast and reliable business communication and networking platform.">
     <link rel="stylesheet" type="text/css" href="static/css/styles.css" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bs_stylesheet.css') }}" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <title>{{title}}</title>
+    <meta name="theme-color" content="#EF4036"/>
+    <link rel="icon" href="{{url_for('static', filename='icons/icon_144x144.png')}}" type="image/png">
+    <link rel="icon" href="{{url_for('static', filename='icons/icon_192x192.png')}}" type="image/png">
+    <link rel="icon" href="{{url_for('static', filename='icons/icon_512x512.png')}}" type="image/png">
+    <link rel="apple-touch-icon" href="{{url_for('static', filename='icons/icon_144x144.png')}}" type="image/png">
+    <link rel="apple-touch-icon" href="{{url_for('static', filename='icons/icon_192x192.png')}}" type="image/png">
+    <link rel="apple-touch-icon" href="{{url_for('static', filename='icons/icon_512x512.png')}}" type="image/png">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='icons/512x512.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='icons/512x512.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/512x512.png') }}">
+    <title>Quick Messager - Business Connect</title>
+    <link rel="icon" type="image/png" href="static/icons/rel_link_icon.png">
 
     <div class="topbar">
         <div class="top-bar-left">
             <a href="/"><img src="{{ url_for('static', filename='images/logo-white.png') }}" alt="Logo" class="logo"></a>
+        </div><div style="flex-grow:1"></div>
+        <div class="top-bar-right gen-flex">
+            <!-- <a href="/download_pwa" class=""> -->
+            <div style="display: none;" class="app-dowload-container gen-flex">
+                <div class="app-download-icon gen-flex">
+                    <img src="{{ url_for('static', filename='icons/download-pwa-icon.png') }}" alt="Download App" class="app-download-icon-img">
+                    <span class="top-bar-link"> Install Quick Messanger</span>
+                </div>
+            </div>
+            <!-- </a> -->
+            <!-- <a href="/subscribe" class="top-bar-link ">Subscribe</a> -->
         </div>
-        <div class="top-bar-right">
-            <a href="#" class="top-bar-link">Connect with the World</a>
-            <!-- <a href="/client_user_acc" class="top-bar-link">Client User Account</a> -->
-        </div>
+
     </div>
 
 <!--    <button class="menu burger">Menu</button>-->
@@ -24,9 +47,9 @@
 <body>
     <div id="alert-confirm" class="login-modal-bg gen-flex-col">
         <div style="justify-content: flex-start;" class="login-modal gen-flex-col">
-            <div>Continue as:</div>
+            <div>Welcome:</div>
             <div id="user-name"></div>
-            <a id="login"><div class="btns gen-flex">Go👍</div></a>
+            <a id="login"><div class="btns gen-flex">Continue👍</div></a>
             <a id="go-register" style="display: none;" ><div onclick="window.location.href='/register'" class="btns gen-flex">Register</div></a>
         </div>
     </div>
@@ -234,6 +257,30 @@
             console.log("User Not Found");
             preRegister();
         });
+    }
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register("{{ url_for('static', filename='service-worker.js') }}")
+                .then(function(registration) {
+                    console.log('ServiceWorker registration successful:', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed:', err);
+                });
+        });
+        }
+
+    // Function to open the menu
+    function openMenuFunc() {
+        document.querySelector(".app-nav-bar-left").classList.toggle("open");
+    }
+
+    // Function to open/close messages
+    function openClose(event) {
+        event.stopPropagation();
+        const messagesContainer = document.querySelector(".scorllable-messages");
+        messagesContainer.classList.toggle("open");
     }
 
  </script>

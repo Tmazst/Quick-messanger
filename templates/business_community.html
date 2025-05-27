@@ -159,6 +159,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
     </div>
     <h2> </h2>
     {%for category in categories%}
+    {%if  category%}
     <div class="category-cont gen-flex sticky-category">
         <img src="static/icons/category-icon.png" class="cat-icon" />
          <div class="category-title category-title-animated " >{{category}}</div><div style="flex-grow: 1;"></div>
@@ -257,6 +258,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
         {%endif%}
         {%endfor%}   
     </div><br><br>
+    {%endif%}
     {%endfor%}
 </div>
 <script>

@@ -31,14 +31,13 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOADED"] = 'static/uploads'
 app.config["ADVERTS_IMAGES"] = 'static/ad-images'
 
-app.config[
+# app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db" 
+# Local
+if os.environ.get('EMAIL_INFO') == 'info@techxolutions.com':
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db.db"
+else:#Online
+    app.config[
     "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db"
-# # Local
-# if os.environ.get('EMAIL_INFO') == 'info@techxolutions.com':
-#     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db.db"
-# else:#Online
-#     app.config[
-#     "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db"
 
 
 db.init_app(app)
@@ -163,18 +162,7 @@ ser = Serializer(app.config['SECRET_KEY'])
 
 @app.context_processor
 def inject_ser():
-    with app.app_context():
-        db.create_all()
-        db.session.commit()
-    # global ser
-     # Define or retrieve the value for 'ser'
-    # count_jobs = count_ads()
-    # if session.get('username') and not current_user:
-    #     print("Login In User: ", session.get('username'))
-    #     usrn = session.get('username')
-    #     usrn = chat_user.query.filter_by(username=usrn).first()
-    #     usrn = User.query.filter_by(cht_usr_fKey=usrn.id).first()
-    #     login_user(usrn)
+
     companies = company_info.query.all()
     messages = get_all_messages()
     current = None
@@ -259,6 +247,24 @@ def home():
 users = {}  # {username: public_key}
 messages = {}  # {username: [encrypted_messages]}
 
+
+# @app.route('/check_user', methods=['POST'])
+# def check_user():
+#     data = request.get_json()
+#     if not data or 'username' not in data:
+#         return jsonify({'exists': False}), 200
+
+#     username = data['username']
+#     print("Check User: ", username)
+
+#     # Check if the user exists in the database
+#     user = chat_user.query.filter_by(username=username).first()
+#     name_obj = User.query.filter_by(cht_usr_fKey=user.id).first() if user else None
+#     if user:
+#         return jsonify({'exists': True, 'user': name_obj.name}), 200
+#     else:
+#         return jsonify({'exists': False}), 200
+           
 
 @login_required
 @app.route('/upload_image', methods=['POST',"GET"])
@@ -479,7 +485,8 @@ def register():
                 company_name = form['company_name'],
                 usr_fKey = get_user.id,
                 usr_id=user.id,
-                image = "logo-avator.png"
+                image = "logo-avator.png",
+                country = form['country']
             )
                 
             db.session.add(company_details)
@@ -591,8 +598,12 @@ def company_account():
 
     db.create_all()
     id = current_user.id
-    cmp_usr = company_info.query.get(id)
+    cmp_usr = company_info.query.filter_by(usr_id=id).first()
     company_update = Company_Register_Form(obj=cmp_usr)
+
+    if not cmp_usr:
+        print("company_account==No Company Found for User ID: ", id)
+        return jsonify({"error": "No Company Found, Please Register"}), 404
 
     if request.method == "POST":
 

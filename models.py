@@ -22,7 +22,7 @@ class chat_user(db.Model,UserMixin):
     username = db.Column(db.String(20),unique=True)
     pkey = db.Column(db.String(500))
     other = db.Column(db.String(200))
-    other1 = db.Column(db.String(200)) #Resume
+    other1 = db.Column(db.String(200)) 
     db.Column(db.DateTime(), default=datetime.now)
     company_details = relationship("company_info", backref='chat_user', lazy=True)
     user_details = relationship("User", backref='chat_user', lazy=True)
@@ -41,6 +41,8 @@ class User(db.Model,UserMixin):
     password = db.Column(db.String(120), unique=True)
     confirm_password = db.Column(db.String(120), unique=True)
     verified = db.Column(db.Boolean, default=False)
+    other = db.Column(db.String(200))
+    other1 = db.Column(db.String(200)) 
     db.Column(db.DateTime(), default=datetime.now)
     role = db.Column(db.String(120))
     company_id = relationship("company_info", backref='user', lazy=True)
@@ -151,6 +153,7 @@ class company_info(db.Model):
     email = db.Column(db.String(120),unique=True)
     image = db.Column(db.String(120))
     category = db.Column(db.String(120))
+    country = db.Column(db.String(50))
     company_address = db.Column(db.String(120))
     postal_address = db.Column(db.String(120)) #postal
     company_contacts = db.Column(db.String(120))
@@ -162,7 +165,8 @@ class company_info(db.Model):
     twitter_link = db.Column(db.String(120))
     instragram_link = db.Column(db.String(120))
     youtube = db.Column(db.String(120))
-    other = db.Column(db.String(120)) #image
+    other = db.Column(db.String(120)) 
+    other2 = db.Column(db.String(120)) 
     payment_options = db.Column(db.String(100))
     adverts_id = relationship('Advert',backref="company_info",lazy=True)
     news_id = relationship('News',backref="company_info",lazy=True)
@@ -179,7 +183,8 @@ class company_info(db.Model):
             "tagline," :self.tagline if self.tagline else "",
             "fb_link," :self.fb_link if self.fb_link  else "",
             "twitter_link" :self.twitter_link if self.fb_link  else "",
-            "youtube" :self.youtube if self.youtube  else ""
+            "youtube" :self.youtube if self.youtube  else "",
+            "country" :self.country if self.country  else ""
         }
 
 

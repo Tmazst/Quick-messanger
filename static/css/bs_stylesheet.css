@@ -740,10 +740,34 @@ transition: all 0.3s ease-out;
     /* overflow: hidden; */
 }
 
+.app-download-icon-img{
+    height: 50px;
+}
+
+.app-dowload-container:hover{
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.top-bar-right{
+    align-self: flex-end;
+    margin-right: 20px;
+    /* background-color: violet; */
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    color:white !important;
+    font-weight:600 ;
+    margin-top: auto;
+    margin-bottom: auto;
+    
+}
+.top-bar-link{
+    color:white !important;
+}
 .topbar{
     display:flex;
     justify-content:flex-start;
-    align-items:center;
+    align-items:center !important;
     gap:5%;
     font-weight:500;
     color:rgb(110, 110, 110);
@@ -1003,6 +1027,7 @@ a {
     /* border:1px solid #fa7406; */
     border-radius: 5px;
     transition: all 0.6s ease-in 0.2s;
+    min-height: 300px;
 }
 
 .show-card{

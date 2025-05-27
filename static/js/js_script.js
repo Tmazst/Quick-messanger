@@ -60,6 +60,59 @@ paragraph.forEach(function(pTag){
 //    console.log('Mouse Over');
 //}
 
+var container = document.querySelector(".app-dowload-container");
+let deferredPrompt;
+
+window.addEventListener('load', () => {
+    function isAppInstalled() {
+        return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    }
+
+    if (isAppInstalled()) {
+
+        console.log("PWA is installed!");
+        // document.querySelector("#menu-notification").classList.add('dis-menu-notifi-btn');
+
+    } else {
+
+    console.log("User is using the web version.");
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+
+        console.log('A2HS event fired');
+        e.preventDefault();
+        deferredPrompt = e;
+
+        container.style.display = "flex";
+        // menInstBtn.style.display = "flex";
+
+        container.addEventListener('click', () => {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted A2HS prompt');
+                } else {
+                console.log('User dismissed A2HS prompt');
+                }
+                deferredPrompt = null;
+            });
+        });
+        
+        // menInstBtn.addEventListener('click', () => {
+        //     deferredPrompt.prompt();
+        //     deferredPrompt.userChoice.then((choiceResult) => {
+        //         if (choiceResult.outcome === 'accepted') {
+        //         console.log('User accepted A2HS prompt');
+        //         } else {
+        //         console.log('User dismissed A2HS prompt');
+        //         }
+        //         deferredPrompt = null;
+        //     });
+        // });
+    });
+    }; //else
+});
+
 var sections = document.querySelectorAll(".profile-sections");
 var currentSectionIndex = 0;
 var firstSection = sections[0];

@@ -1,0 +1,26 @@
+{
+  "name": "Business Chat",
+  "short_name": "BizChat",
+  "description": "Secure business messaging and networking platform.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "orientation": "landscape",
+  "display_override": [
+    "window-controls-overlay",
+    "minimal-ui"
+  ],
+  "theme_color": "#EF4036",
+  "icons": [
+    {
+      "src": "static/icons/logo-avator.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "static/icons/logo-avator.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+}

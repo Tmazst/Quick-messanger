@@ -6,12 +6,24 @@
   <label>Welcome to Tech Xolutions</label><br>
   <h2 style="color:#EF4036">Register</h2>
   <form class="form" method="post" action="">
-    <input  class="form-control" id="username" name="username" autocomplete="off" placeholder="username" required />
+    <input type="hidden"  class="form-control" id="username" name="username" autocomplete="off" placeholder="username" required />
     <input class="form-control" id="name" name="name" placeholder="name" required />
     <input class="form-control" id="email" name="email" placeholder="Your email" required />
     <input class="form-control" id="company_name" name="company_name" placeholder="Company name" required />
     <input class="form-control" id="password" name="password" type="password" placeholder="Password" required />
-    <input  class="form-control" id="pKey" name="pKey" placeholder="Public Key" required />
+    <input type="hidden" class="form-control" id="pKey" name="pKey" placeholder="Public Key" required />
+    <select id="countries" name="country" class="form-control" required>
+        <option value="" disabled >Select your country</option>
+        <option value="Eswatini" selected>Eswatini</option>
+        <option value="South Africa">South Africa</option>
+        <option value="Lesotho">Lesotho</option>
+        <option value="Mozambique">Mozambique</option>
+        <option value="Namibia">Namibia</option>
+        <option value="Botswana">Botswana</option>
+        <option value="Zimbabwe">Zimbabwe</option>
+        <option value="Malawi">Malawi</option>
+        <!-- Add more countries as needed -->
+    </select>
     
     <button id="submit-btn" class="btns">Register</button><br><br>
     <label style="color:#EF4036">Already have an account?</label><br>
