@@ -135,7 +135,7 @@ class clientuser(User):
     username = db.Column(db.String(20))
     pkey = db.Column(db.DateTime())
     other = db.Column(db.String(200))
-    other1 = db.Column(db.String(200)) #Resume
+    # other1 = db.Column(db.String(200)) #Resume
     # jobs_applied_for = relationship("Applications", backref='Applications.job_title', lazy=True)
     # hired_user = relationship("hired", backref='Hired Applicant', lazy=True)
 

@@ -155,7 +155,6 @@ def get_all_messages():
     else:
         return []
 
-
 all_msgs = None
 
 ser = Serializer(app.config['SECRET_KEY']) 
@@ -174,6 +173,7 @@ def inject_ser():
         print("inject_ser==Currently in Session: ",check_user_ndb )
         current = chk_user.username 
         company = company_info.query.filter_by(usr_fKey=chk_user.id).first()
+        print("inject_ser==Company To Dict Object: ", company)
         usr_obj = User.query.filter_by(cht_usr_fKey=chk_user.id).first()
         login_user(usr_obj)
         # print("inject_ser==Company Resolved: ")
@@ -838,7 +838,7 @@ def business_community():
 @app.route('/get_messages', methods=['GET'])
 @login_required
 def get_messages():
-
+    
     # user_messages = []
     if request.method == 'GET':
 
@@ -957,10 +957,11 @@ def message_blueprint():
             db.session.commit()
             flash("Message Sent!!","success")
             print("Messages Sent!!")
-            return redirect(url_for('compose'))
+            return redirect(url_for('get_messages', key=receiver))
 
 
     return render_template("message_blueprint.html", users=users,usr=curr_user,company=company)
+
 
 @app.route('/update_field_user', methods=['POST','GET'])
 @login_required

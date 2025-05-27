@@ -47,7 +47,15 @@
 //}
 //window.onscroll = function() {handleScroll()};
 
+function openAndCloseMsgs(){
+    var msgMainCont = document.querySelector("#navlink-message");
+    var msgCont = document.querySelector(".messages-container");
+    // var closeBtn = document.querySelector(".close-msg-btn");
 
+    msgMainCont.classList.toggle('change-height');
+    msgCont.classList.toggle('display-messages');
+
+}
 
 const paragraph = document.querySelectorAll('.sel-tag');
 
@@ -59,7 +67,6 @@ paragraph.forEach(function(pTag){
 //function pop(){
 //    console.log('Mouse Over');
 //}
-
 var container = document.querySelector(".app-dowload-container");
 let deferredPrompt;
 
@@ -69,48 +76,30 @@ window.addEventListener('load', () => {
     }
 
     if (isAppInstalled()) {
-
         console.log("PWA is installed!");
-        // document.querySelector("#menu-notification").classList.add('dis-menu-notifi-btn');
-
     } else {
-
-    console.log("User is using the web version.");
-    
-    window.addEventListener('beforeinstallprompt', (e) => {
-
-        console.log('A2HS event fired');
-        e.preventDefault();
-        deferredPrompt = e;
-
-        container.style.display = "flex";
-        // menInstBtn.style.display = "flex";
-
-        container.addEventListener('click', () => {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                console.log('User accepted A2HS prompt');
-                } else {
-                console.log('User dismissed A2HS prompt');
-                }
-                deferredPrompt = null;
-            });
+        console.log("User is using the web version.");
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('A2HS event fired');
+            e.preventDefault();
+            deferredPrompt = e;
+            container.style.display = "flex";
+            var installBtn = document.getElementById('pwa-install-btn');
+            if (installBtn) {
+                installBtn.addEventListener('click', () => {
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted A2HS prompt');
+                        } else {
+                            console.log('User dismissed A2HS prompt');
+                        }
+                        deferredPrompt = null;
+                    });
+                });
+            }
         });
-        
-        // menInstBtn.addEventListener('click', () => {
-        //     deferredPrompt.prompt();
-        //     deferredPrompt.userChoice.then((choiceResult) => {
-        //         if (choiceResult.outcome === 'accepted') {
-        //         console.log('User accepted A2HS prompt');
-        //         } else {
-        //         console.log('User dismissed A2HS prompt');
-        //         }
-        //         deferredPrompt = null;
-        //     });
-        // });
-    });
-    }; //else
+    }
 });
 
 var sections = document.querySelectorAll(".profile-sections");

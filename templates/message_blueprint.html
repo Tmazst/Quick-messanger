@@ -489,7 +489,7 @@ body{
                 </div>
             </div>
         </div><br><br>
-        <div class="min-max-btn">minimize</div>
+        <!-- <div class="min-max-btn">minimize</div> -->
         <!-- <button type="button" onclick="sendMessage()" class="btns btn-primary">Send</button> -->
         <!-- <button type="button" onclick="checkScriptBlock()">Check</button> -->
     </div>
@@ -703,7 +703,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var header = document.querySelectorAll(".left-header");
     var footer = document.querySelectorAll(".left-footer");
 
-    addEventListener('click', function(){
+    minMaxBtn.addEventListener('click', function(){
         header.forEach((msg)=>{
             msg.classList.toggle('hide-header-footer');
         });
@@ -713,9 +713,9 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         
 
-    })
+    });
 
-     async function updateEmailField(event){
+   async function updateEmailField(event){
         value = event.target.value;
         console.log("Selected Value: ",value)
         var emailField = document.querySelector("#recipient-email");

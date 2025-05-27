@@ -59,13 +59,13 @@
                 {%if chat_with %} <!-- If chat_with is defined, use it to pre-fill the recipient field -->
                     <label for="recipient">Sending To:</label>
                     <div style="justify-content: flex-start;" class="gen-flex">
-                        <input type="hidden" id="recipient" name="recipient" value="{{ chat_with.username }}" class="form-control" /><div >{{ chat_with.user_details[0].name }} - <span style="font-weight:500;color:rgb(173, 30, 30) !important"
+                        <input type="hidden" id="recipient" name="recipient" value="{{ chat_with.username }}" class="form-control" /><div style="font-weight:500;color:rgb(173, 30, 30) !important" >{{ chat_with.user_details[0].name }} - <span 
                             >{{chat_with_company.company_name}}</span></div>
                     </div><br>
                     <input type="hidden" id="recipient-pkey" name="recipient-pkey" class="form-control" value="{{ chat_with.pkey }}" readonly>
                     
                     <div class="form-group">
-                        <label for="recipient">Include email: <span style="font-size:13px;font-weight:400px;color:rgb(165, 96, 5)">(If they are not in the list above they will only receive an email)</span></label>
+                        <label for="recipient">Include email: <span style="font-size:13px;font-weight:400px;color:rgb(165, 96, 5)"></span></label>
                         <!-- <input type="text" id="recipient-email" name="recipient-email" class="form-control" > -->
                         {{form.email(class="form-control",id="recipient-email", value=chat_with.user_details[0].email, readonly=true)}}
                         {% set errors = form.email.errors %}
@@ -89,13 +89,15 @@
                                 {% for user in users %}
                                     {%if not user.username == current%} <!--DO not include the current user in the list-->
                                         {%if chat_with %}
-                                        <option value="{{ chat_with.username }}" selected>{{ chat_with.user_details[0].name }} - <span style="font-weight:500;color:rgb(173, 30, 30) !important"
+                                        <option style="font-weight:500;color:#EF4036 !important" value="{{ chat_with.username }}" selected>{{ chat_with.user_details[0].name }} - <span 
                                                 >{{chat_with_company.company_name}}</span>
                                             </option>
                                         {%else%} 
+                                            {%if user.company_details and user.user_details %}
                                             <option value="{{ user.username }}">{{ user.user_details[0].name }} - 
                                                 <span style="font-weight:500;color:rgb(173, 30, 30) !important">{{user.company_details[0].company_name}}</span>
                                             </option>
+                                            {%endif%}
                                         {%endif%}
                                     {%endif%}
                                 {% endfor %}
@@ -103,7 +105,6 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="recipient">Rec pkey:</label>
                         <input type="hidden" id="recipient-pkey" name="recipient-pkey" class="form-control" value="" readonly>
                     </div>
                     <div class="form-group">
