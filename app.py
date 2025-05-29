@@ -37,7 +37,7 @@ if os.environ.get('EMAIL_INFO') == 'info@techxolutions.com':
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db.db"
 else:#Online
     app.config[
-    "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db"
+    "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db" 
 
 
 db.init_app(app)
