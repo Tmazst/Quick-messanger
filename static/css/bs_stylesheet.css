@@ -439,7 +439,7 @@ html, body {
 .index-footer{
     background-color: #202020;
     width: 100%;
-    
+
 }
 
 .no-bg-btn{
@@ -697,7 +697,7 @@ html, body {
     overflow: hidden;
 }
 
-.side-nav-item::after{
+/* .side-nav-item::after{
     content:"";
     transform: translate(-50%,-50%) scale(0);
     width:110%;
@@ -709,7 +709,7 @@ html, body {
     left:50%;
     transition: all 0.5s ease;
     z-index:0;
-}
+} */
 
 .link-title{
     z-index: 1;
