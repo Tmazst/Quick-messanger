@@ -68,6 +68,8 @@ paragraph.forEach(function(pTag){
 //    console.log('Mouse Over');
 //}
 var container = document.querySelector(".app-dowload-container");
+var container2 = document.querySelector(".app-dowload-container");
+// var noBgBtn = document.querySelector(".no-bg-btn");
 // var installBtn = document.querySelector("#pwa-install-btn");
 // Check if the browser supports service workers and PWA installation
 if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
@@ -94,7 +96,10 @@ window.addEventListener('load', () => {
                     e.preventDefault();
                     deferredPrompt = e;
                     container.style.display = "flex";
+                    container2.style.display = "flex";
                     const installBtn = document.getElementById('pwa-install-btn');
+                    var noBgBtn = document.querySelector(".no-bg-btn");
+                    
                     if (installBtn) {
                         installBtn.addEventListener('click', () => {
                             deferredPrompt.prompt();
@@ -108,6 +113,20 @@ window.addEventListener('load', () => {
                             });
                         });
                     }
+                    if (noBgBtn) {
+                        noBgBtn.addEventListener('click', () => {
+                            deferredPrompt.prompt();
+                            deferredPrompt.userChoice.then((choiceResult) => {
+                                if (choiceResult.outcome === 'accepted') {
+                                    console.log('User accepted A2HS prompt');
+                                } else {
+                                    console.log('User dismissed A2HS prompt');
+                                }
+                                deferredPrompt = null;
+                            });
+                        });
+                    }
+                    
                 });
             } else if (isFirefox) {
                 console.log("Firefox detected, showing manual install tip.");

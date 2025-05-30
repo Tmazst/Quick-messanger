@@ -163,98 +163,189 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
     <div class="category-cont gen-flex sticky-category">
         <img src="static/icons/category-icon.png" class="cat-icon" />
          <div class="category-title category-title-animated " >{{category}}</div><div style="flex-grow: 1;"></div>
-         <div class="other-cat-info gen-flex"><span>(26) This week</span></div>
+         <div class="other-cat-info gen-flex"><span>This week</span></div>
     </div><br>
-    <div style="flex-wrap:wrap;justify-content: flex-start;align-items: stretch;" class="gen-flex">
+    <div style="flex-wrap:wrap;justify-content: flex-start;align-items: stretch;gap:0px" class="gen-flex">
         {%for company in companies%}
         {%if category == company.category%}
-        <div style="background-image: url('{{ url_for('static', filename='uploads/' ~ company.image) }}');opacity:0" class="business-card gen-flex-col"> 
-            <div class="overlay"></div> 
-            <div style="z-index:5" class="sub-layout-1 gen-flex">
-                <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
-                    <div class="company-name">{{company.company_name}}</div>
-                    
-                    {%if company.category %}
-                        <label class="category">{{company.category}}</label>
-                    {%endif%}
-
-                    <div style="align-items: flex-start;" class="company-details gen-flex-col">
-
-                        {%if company.postal_address %}
-                            <div>{{company.postal_address}}</div>
-                        {%endif%}
-
-                        {%if company.company_address%}
-                            <div style="text-align: left;">{{company.company_address[:60]}}</div>
-                        {%endif%}
-
-                        {%if company.company_contacts%}
-                            <a href="tel:{{company.company_contacts}}" target="_blank">
-                                <div class="comm-icons-cont gen-flex">
-                                    <img src="static/icons/tel-blue-outline.png" />
-                                    <span>{{company.company_contacts}}</span>
-                                </div>
-                            </a>
-                        {%endif%}
-
-                        {%if company.email%}
-                            <a href="mailto:{{company.email}}">
-                                <div class="comm-icons-cont gen-flex">
-                                    <img src="static/icons/email-blue-outline.png" />
-                                    <span>{{company.email}}</span>
-                                </div>
-                            </a>
-                        {%endif%}
+            {%if company.company_name == "Quick Messanger"%}
+            <div style="background-image: url('{{ url_for('static', filename='images/qm_community_bg.gif') }}');opacity:0" class="business-card gen-flex-col"> 
+                <!-- <div class="overlay"></div>  -->
+                <div style="z-index:5" class="sub-layout-1 gen-flex">
+                    <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
+                        <div class="company-name">{{company.company_name}}</div>
                         
-                    </div>
+                        {%if company.category %}
+                            <label class="category">{{company.category}}</label>
+                        {%endif%}
 
+                        <div style="align-items: flex-start;" class="company-details gen-flex-col">
+
+                            {%if company.postal_address %}
+                                <div>{{company.postal_address}}</div>
+                            {%endif%}
+
+                            {%if company.company_address%}
+                                <div style="text-align: left;">{{company.company_address[:60]}}</div>
+                            {%endif%}
+
+                            {%if company.company_contacts%}
+                                <a href="tel:{{company.company_contacts}}" target="_blank">
+                                    <div class="comm-icons-cont gen-flex">
+                                        <img src="static/icons/tel-blue-outline.png" />
+                                        <span>{{company.company_contacts}}</span>
+                                    </div>
+                                </a>
+                            {%endif%}
+
+                            {%if company.email%}
+                                <a href="mailto:{{company.email}}">
+                                    <div style="margin-bottom: 7px;" class="comm-icons-cont gen-flex">
+                                        <img src="static/icons/email-blue-outline.png" />
+                                        <span>{{company.email}}</span>
+                                    </div>
+                                </a>
+                            {%endif%}
+                            
+                        </div>
+
+                    </div>
+                    
+                </div>
+                {%if company.image %}
+                    <!-- <div class="community-logo"><img src="static\uploads\{{company.image}}"></div> -->
+                {%endif%}
+                {%if company.tagline %}
+                <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
+                {%endif%}
+                <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
+                    {%if company.website %}
+                    <a href="{{company.website}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/website-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                    {%if company.fb_link %}
+                    <a href="{{company.fb_link}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/facebook-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                    {%if company.instagram_link%}
+                    <a href="{{comapny.instagram_link}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/insta-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                    {%if company.linkedIn_link%}
+                    <a href="{{company.linkedIn_link}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/linkedin-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
                 </div>
                 
-            </div>
-            {%if company.image %}
-                <div class="community-logo"><img src="static\uploads\{{company.image}}"></div>
-            {%endif%}
-             {%if company.tagline %}
-            <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
-            {%endif%}
-            <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
-                {%if company.website %}
-                <a href="{{company.website}}" target="_blank">
-                    <div class="social-media-cont">
-                        <img src="static/icons/website-outline-icon.png" />
-                    </div>
-                </a>
-                {%endif%}
-                {%if company.fb_link %}
-                <a href="{{company.fb_link}}" target="_blank">
-                    <div class="social-media-cont">
-                        <img src="static/icons/facebook-outline-icon.png" />
-                    </div>
-                </a>
-                {%endif%}
-                {%if company.instagram_link%}
-                <a href="{{comapny.instagram_link}}" target="_blank">
-                    <div class="social-media-cont">
-                        <img src="static/icons/insta-outline-icon.png" />
-                    </div>
-                </a>
-                {%endif%}
-                {%if company.linkedIn_link%}
-                <a href="{{company.linkedIn_link}}" target="_blank">
-                    <div class="social-media-cont">
-                        <img src="static/icons/linkedin-outline-icon.png" />
-                    </div>
-                </a>
-                {%endif%}
-            </div>
-            
-            <div class="imbc-icon">
-                <a href="/compose?id={{ser.dumps({'data':company.id})}}" target="_blank">
-                    <img src="static/icons/imbc-icon.png" />
-                </a>
-            </div>
+                <div class="imbc-icon">
+                    <a href="/compose?id={{ser.dumps({'data':company.id})}}" target="_blank">
+                        <img src="static/icons/imbc-icon.png" />
+                    </a>
+                </div>
 
-        </div>
+            </div>
+            {%else%}
+            <!-- Other Compnaies  -->
+            <div style="background-image: url('{{ url_for('static', filename='uploads/' ~ company.image) }}');opacity:0" class="business-card gen-flex-col"> 
+                <div class="overlay"></div> 
+                <div style="z-index:5" class="sub-layout-1 gen-flex">
+                    <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
+                        <div class="company-name">{{company.company_name}}</div>
+                        
+                        {%if company.category %}
+                            <label class="category">{{company.category}}</label>
+                        {%endif%}
+
+                        <div style="align-items: flex-start;" class="company-details gen-flex-col">
+
+                            {%if company.postal_address %}
+                                <div>{{company.postal_address}}</div>
+                            {%endif%}
+
+                            {%if company.company_address%}
+                                <div style="text-align: left;">{{company.company_address[:60]}}</div>
+                            {%endif%}
+
+                            {%if company.company_contacts%}
+                                <a href="tel:{{company.company_contacts}}" target="_blank">
+                                    <div class="comm-icons-cont gen-flex">
+                                        <img src="static/icons/tel-blue-outline.png" />
+                                        <span>{{company.company_contacts}}</span>
+                                    </div>
+                                </a>
+                            {%endif%}
+
+                            {%if company.email%}
+                                <a href="mailto:{{company.email}}">
+                                    <div class="comm-icons-cont gen-flex">
+                                        <img src="static/icons/email-blue-outline.png" />
+                                        <span>{{company.email}}</span>
+                                    </div>
+                                </a>
+                            {%endif%}
+                            
+                        </div>
+
+                    </div>
+                    
+                </div>
+                {%if company.image %}
+                    <div class="community-logo"><img src="static\uploads\{{company.image}}"></div>
+                {%endif%}
+                {%if company.tagline %}
+                <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
+                {%endif%}
+                <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
+                    {%if company.website %}
+                    <a href="{{company.website}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/website-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                    {%if company.fb_link %}
+                    <a href="{{company.fb_link}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/facebook-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                    {%if company.instagram_link%}
+                    <a href="{{comapny.instagram_link}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/insta-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                    {%if company.linkedIn_link%}
+                    <a href="{{company.linkedIn_link}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/linkedin-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                </div>
+                
+                <div class="imbc-icon">
+                    <a href="/compose?id={{ser.dumps({'data':company.id})}}" target="_blank">
+                        <img src="static/icons/imbc-icon.png" />
+                    </a>
+                </div>
+
+            </div>
+            {%endif%}
         {%endif%}
         {%endfor%}   
     </div><br><br>

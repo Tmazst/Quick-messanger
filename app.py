@@ -220,8 +220,10 @@ def home():
     # all_messages = get_all_messages()
     # latest_entry = Messages.query.filter_by(sender=user.id).order_by(Messages.date.desc()).first()
     # return redirect(url_for('home'))
+    qm_bs_obj = company_info.query.filter_by(company_name="Quick Messanger").first()
+    latest_req = company_info.query.order_by(company_info.id.asc()).all()[1]
     messages = get_all_messages()
-    print("Home==Confirm Messages: ", messages)
+    print("Home==Companies Showcasing: ", qm_bs_obj, latest_req)
     del_al_msgs = Messages.query.all()
     for msg in del_al_msgs:
         if msg.sender == "none" or msg.receiver == "none":
@@ -241,7 +243,7 @@ def home():
     #     if not company.category or company.company_contacts or company.company_address:
     #         return redirect(url_for("company_account"))
 
-    return render_template("index.html")
+    return render_template("index.html", qm_bs_obj=qm_bs_obj,latest_req=latest_req )
 
 # In-memory storage for keys and messages
 users = {}  # {username: public_key}

@@ -24,7 +24,56 @@
     font-display: swap;
 }
 
+#qm-feature-card_5{
+    background-image: url("../images/african-business-male-people-shaking-hands.jpg") ;
+    background-position: center ;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
 
+#qm-feature-card_4{
+    background-image: url("../images/corporate_images_a_sales_representative.jpg") ;
+    background-position: center ;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#qm-feature-card_3{
+    background-image: url("../images/store-4156934_1280.png") ;
+    background-position: center ;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#qm-feature-card_2{
+    background-image: url("../images/tallest-3093955_1280.jpg") ;
+    background-position: center ;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#qm-feature-card_1{
+    background-image: url("../images/email-4284157_1280.png") ;
+    background-position: center ;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.qm-feature-card{
+    position: relative;
+    overflow: hidden;
+    /* z-index: 0; */
+}
+
+.feature-overlay{
+    position: absolute;
+    top:0;
+    bottom: 0;
+    right:0;
+    left:0;
+    background: linear-gradient(to bottom, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%);
+    z-index: 0 !important;
+}
 
 /* General Reset */
 body, h1, p, div {
@@ -120,6 +169,7 @@ body {
 .message-text{
     font-family: Montserrat;
     font-size: 13px;
+    width: 100%;
 }
 
 .turn-off-saving{
@@ -155,12 +205,13 @@ body {
 }
 
 .sender-profile-details{
-    background-color:#ebebeb;
+    background-color:#cfcfcf;
     border-top-right-radius: 30px;
     border-bottom-right-radius: 30px;
     padding:15px;
     padding-left: 40px;
     margin-left: -37px;
+    width: 100%;
     /* ba */
 }
 
@@ -189,7 +240,26 @@ body {
     opacity: 0.8;
 }
 
-.left .hide-header-footer{
+.min-max-btn2{
+    padding:6px;
+    border-radius: 15px;
+    border:2px solid #616161;
+    color:#616161;
+    position:absolute;
+    top:10px;
+    right:15px;
+    font-size: 12px;
+    font-weight:500;
+}
+
+
+
+.min-max-btn2:hover{
+    cursor: pointer;
+    opacity: 0.8;
+}
+
+.hide-header-footer{
     display: none !important;
 }
 
@@ -302,6 +372,7 @@ body {
     width:100%;
 }
 
+
 .left-side-section-container{
     width: 300px;
     min-width: 300px;
@@ -338,6 +409,10 @@ body {
     color:#6b6b6b
 }
 
+.feature-icon{
+    height:40px
+}
+
 .btns{
     width:max-content !important;
     min-width:100px;
@@ -348,6 +423,45 @@ body {
 html, body {
     overflow: hidden;
     height: 100%;
+}
+
+.app-install-prmpt{
+    background-color: var(--theme-color);
+    color:white;
+    margin: 0 auto;
+    height:120px;
+}
+
+.no-bg-btn:hover{
+    cursor: pointer;
+}
+
+.index-footer{
+    background-color: #202020;
+    width: 100%;
+    
+}
+
+.no-bg-btn{
+    background: none;
+    border: none;
+}
+
+.app-download-icon2{
+    height: 80px;
+}
+
+.app-install-prmpt span{
+    font-size:25px;
+    color:white;
+}
+
+.features-title{
+    font-size:30px;
+    color:rgb(59, 59, 59);
+    margin: 25px auto;
+    width:max-content
+
 }
 
 .view-container{
@@ -409,8 +523,8 @@ html, body {
 }
 
 .close-btn{
-    top:-20px;
-    right:10px;
+    top:-30px !important;
+    right:-4px !important;
     height:35px;
     transform: rotate(45deg);
     position: absolute;
@@ -430,7 +544,7 @@ html, body {
 }
 
 .footer-sender-profile{
-    height:inherit;
+    height:100%;
     /* width:inherit; */
 }
 
@@ -444,9 +558,19 @@ html, body {
     /* max-width: 1224px; */
 }
 
+.sender-profile-details .editable-field-user{
+    padding-left: 7px;
+    padding-right: 7px ;
+}
+
+.sender-profile-details .comp-details{
+    width:100%;
+    overflow: hidden;
+}
+
 .footer-sender-profile-cont{
-    height: 150px;
-    width:150px;
+    height: 90px;
+    width:90px;
     border-radius: 50%;
     z-index:100;
     position: relative;
@@ -493,7 +617,7 @@ html, body {
     padding:5px;
     padding-bottom: 8px;
     align-items: flex-start;
-    /* height:80px; */
+    min-height:80px;
 }
 
 #messages-inbox-cont{
@@ -569,6 +693,60 @@ html, body {
     position:relative;
     cursor: pointer;
     justify-content: flex-start;
+    position: relative;
+    overflow: hidden;
+}
+
+.side-nav-item::after{
+    content:"";
+    transform: translate(-50%,-50%) scale(0);
+    width:110%;
+    height:90px;
+    background-color:var(--ribbon-color);
+    position:absolute;
+    border-radius: 15px;
+    top:50%;
+    left:50%;
+    transition: all 0.5s ease;
+    z-index:0;
+}
+
+.link-title{
+    z-index: 1;
+}
+
+.link-title:hover{
+    /* color:white !important; */
+    transition: all 0.3s ease;
+}
+
+/* .side-nav-item:hover{
+    transform: scale(0.9);
+} */
+
+.side-nav-item:hover .link-title span {
+    cursor: pointer;
+    border:none;
+    /* color:white !important; */
+    background:none;
+    /* z-index: 1; */
+}
+
+.side-nav-item:hover .link-title small {
+    cursor: pointer;
+    border:none;
+    /* color:white !important; */
+    background:none;
+    /* z-index: 1; */
+}
+
+.side-nav-item small {
+   font-weight: 900 !important;
+    /* z-index: 1; */
+}
+
+.side-nav-item:hover:hover::after{
+    transform: translate(-50%,-50%) scale(1);
 }
 
 
@@ -698,6 +876,8 @@ transition: all 0.3s ease-out;
     height: 50px;
     width:100%;
 }
+
+
 
 .ad-comp-details{
     transition: all 0.3s ease-out;
@@ -1081,7 +1261,9 @@ a {
     border-radius: 5px;
     transition: all 0.6s ease-in 0.2s;
     min-height: 300px;
-    transform: scale(0.8);
+    transform: scale(0.9);
+    max-width: 500px;
+    width:100%;
 }
 
 .show-card{
@@ -1114,7 +1296,7 @@ a {
 
 .letterhead-logo{
     border-radius: 25px;
-    height: 95px;
+    height: 65px;
 }
 
 .prf-image{
@@ -1281,7 +1463,7 @@ a {
 }
 
 .nav-link{
-    color:#333 !important;
+    color:#333 ;
     font-size:22px;
 }
 

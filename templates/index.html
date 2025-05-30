@@ -1,16 +1,534 @@
-{% extends "base.html" %}
-{% block content %}
 
-    <style>
+
+    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="description" content="Quick Messanger (QM) allows companies and professionals across the globe to connect, exchange messages,and share business information in a both private & public, organized environment.">
+    <meta name="key words" content="Quick Messanger (QM) is a secure, fast and reliable business communication and networking platform.">
+    <link rel="stylesheet" type="text/css" href="static/css/styles.css" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bs_stylesheet.css') }}" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <meta name="theme-color" content="#EF4036"/>
+    <link rel="icon" href="{{url_for('static', filename='icons/icon_144x144.png')}}" type="image/png">
+    <link rel="icon" href="{{url_for('static', filename='icons/icon_192x192.png')}}" type="image/png">
+    <link rel="icon" href="{{url_for('static', filename='icons/icon_512x512.png')}}" type="image/png">
+    <link rel="apple-touch-icon" href="{{url_for('static', filename='icons/icon_144x144.png')}}" type="image/png">
+    <link rel="apple-touch-icon" href="{{url_for('static', filename='icons/icon_192x192.png')}}" type="image/png">
+    <link rel="apple-touch-icon" href="{{url_for('static', filename='icons/icon_512x512.png')}}" type="image/png">
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='icons/512x512.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ url_for('static', filename='icons/512x512.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/512x512.png') }}">
+    <title>Quick Messager - Business Connect</title>
+    <link rel="icon" type="image/png" href="static/icons/rel_link_icon.png">
+
+    <div class="topbar">
+        <div class="top-bar-left">
+            <a href="/"><img src="{{ url_for('static', filename='images/logo-white.png') }}" alt="Logo" class="logo"></a>
+        </div><div style="flex-grow:1"></div>
+        <div class="top-bar-right gen-flex">
+            <!-- <a href="/download_pwa" class=""> -->
+            <div style="display: none;" class="app-dowload-container gen-flex">
+                <div class="app-download-icon gen-flex">
+                    <button id="pwa-install-btn" class="top-bar-link pwa-install-btn gen-flex"><img src="{{ url_for('static', filename='icons/download-pwa-icon.png') }}" alt="Download App" class="app-download-icon-img"> <span>Install Quick Messanger</span></button>
+                </div>
+            </div>
+            <!-- </a> -->
+            <!-- <a href="/subscribe" class="top-bar-link ">Subscribe</a> -->
+        </div>
+
+    </div>
+
+<!--    <button class="menu burger">Menu</button>-->
+</head>
+<style>
         .form-fields{
             display:flex;
             flex-direction:column;
         }
         section{ background-image:url(static/images/bg_service.png) }
-    </style>
+        .home-overlay{
+            position: absolute;
+            background: linear-gradient(120deg, rgb(255, 158, 149) 0%, rgba(255, 255, 255,0.1) 100%);
+            top: 0;
+            left:0;
+            bottom:0;
+            right:0;
+            z-index: 1;
+        }
+    .qm-hero {
+        background-image: url("../static/images/the-qm.jpg");
+        background-position: right;
+        background-repeat: no-repeat;
+        background-size: cover;
+        color: #222;
+        padding: 60px 0px 30px 0;
+        text-align: center;
+        /* border-radius: 0 0 40px 40px; */
+        box-shadow: 0 4px 24px rgba(239,64,54,0.08);
+        position: relative;
+    }
+    .qm-hero h1 {
+        font-size: 2.8rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #fdfcfc;
+        letter-spacing: 1px;
+        /* text-shadow: 0 2px 8px #ef4036a0; */
+    }
+    .qm-hero p {
+        font-size: 1.3rem;
+        color: #ffffff;
+        margin-bottom: 30px;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .qm-cta-btn {
+        background: #fff;
+        color: #ef4036;
+        border: none;
+        border-radius: 30px;
+        padding: 14px 38px;
+        font-size: 1.0rem;
+        font-weight: 600;
+        box-shadow: 0 2px 8px #ef403650;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+        margin: 0 10px;
+    }
+    .qm-cta-btn:hover {
+        background: #ef4036;
+        color: #fff;
+    }
+
+    html, body {
+    overflow: auto;
+    box-sizing: border-box;
+    }
+
+    body{
+        background-color: #cacaca ;
+        background-image: url("../static/images/logo-icon-white.png");
+        background-position: right;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    .qm-features {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 32px;
+        margin: 0 auto;
+        max-width: 1224px;
+        padding: 20px auto;
+        background-color: rgba(206, 205, 205, 0.7)  !important;
+        
+    }
+    .qm-feature-card {
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 2px 12px #ef403620;
+        padding: 28px 22px;
+        width: 320px;
+        min-height: 220px;
+        text-align: left;
+        transition: transform 0.2s;
+        position: relative;
+    }
+    .qm-feature-card:hover {
+        transform: translateY(-8px) scale(1.03);
+        box-shadow: 0 8px 32px #ef403640;
+    }
+    .qm-feature-card img {
+        width: 48px;
+        height: 48px;
+        margin-bottom: 12px;
+    }
+    .qm-feature-card h3 {
+        font-size: 1.2rem;
+        color: #ef4036;
+        margin-bottom: 8px;
+        font-weight: 700;
+    }
+    .qm-feature-card p {
+        font-size: 1rem;
+        color: #444;
+    }
+    .qm-adverts-section {
+        /* margin: 60px 0 0 0; */
+        background: #f9f9f9;
+        border-radius: 24px;
+        padding: 32px 0;
+        box-shadow: 0 2px 12px #ef403610;
+    }
+    .qm-adverts-title {
+        text-align: center;
+        font-size: 1.6rem;
+        color: #ef4036;
+        font-weight: 700;
+        margin-bottom: 24px;
+    }
+    .qm-adverts-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 32px;
+    }
+    .qm-advert-card {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 2px 12px #ef403610;
+        width: 300px;
+        padding: 18px 16px;
+        text-align: left;
+        transition: box-shadow 0.2s, transform 0.2s;
+        position: relative;
+    }
+    .qm-advert-card:hover {
+        box-shadow: 0 8px 32px #ef403640;
+        transform: translateY(-6px) scale(1.02);
+    }
+    .qm-advert-card img {
+        width: 100%;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        max-height: 120px;
+        object-fit: cover;
+    }
+    .qm-advert-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #ef4036;
+        margin-bottom: 6px;
+    }
+    .qm-advert-desc {
+        font-size: 0.98rem;
+        color: #444;
+        margin-bottom: 8px;
+    }
+    @media (max-width: 900px) {
+        .qm-features, .qm-adverts-list { flex-direction: column; align-items: center; }
+        .qm-feature-card, .qm-advert-card { width: 95%; }
+    }
+    .welcome-msg{
+        max-width: 500px;
+        align-self: flex-end;
+        background: #EF4036;
+        border-radius: 15px;
+        padding:10px;
+        z-index: 2;
+        margin: 0 auto;
+    }
+
+    .qm_bs_obj-details div{
+        color:#818181
+    }
+
+    .business-card{padding-left:15px;height:320px;box-shadow: 0 2px 8px rgba(0,0,0,0.3);padding: relative;border-radius: 15px;}
+    .company-name{color:#444;font-size:25px}
+
+    .community-logo {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 15px;
+        border-radius: 15px;
+        /* background-color: #0078d7; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-size: 24px;
+        font-weight: bold;
+        position: absolute;
+        top:15px;
+        right:15px;
+    }
+    .explore-comm{
+        width:max-content;
+        padding:5px 7px;
+        margin: 5px auto;
+    }
+</style>
+<body>
+
+
+<div style="justify-content: flex-end;" class="qm-hero gen-flex">
+    <div class="home-overlay"></div>
+    <video autoplay loop muted playsinline>
+        <source src="static/images/logo_animation01.avi" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="welcome-msg gen-flex-col">
+        <h1>Welcome to Quick Messanger</h1>
+        <p>
+            The secure, modern platform for business communication and networking.<br>
+            Connect, collaborate, and grow your business community with encrypted messaging, company profiles, and more.
+        </p>
+        <div class="gen-flex action-btn">
+            <button class="qm-cta-btn" onclick="window.location.href='/register'">Get Started</button>
+            <button class="qm-cta-btn" onclick="window.location.href='/business_community'">Explore Community</button>
+        </div>
+    </div>
+</div>
+
+<div class="gen-flex features-title"><img src="static/icons/104352098.png" class="feature-icon" /> <span class="features-title">QM Features</span></div>
+<div>
+<div class="qm-features">
+    
+    <div id="qm-feature-card_1" class="qm-feature-card">
+        <div class="feature-overlay"></div>
+            <div style="z-index: 1;position:relative">
+            <img src="{{ url_for('static', filename='icons/icon-13.png') }}" alt="Messaging">
+            <h3>Secure Messaging</h3>
+            <p>Send and receive encrypted messages with confidence. Your business conversations stay private and protected.</p>
+        </div>
+    </div>
+    <div id="qm-feature-card_2" class="qm-feature-card">
+        <div class="feature-overlay"></div>
+        <div style="z-index: 1;position:relative">
+            <img src="{{ url_for('static', filename='icons/employee_.png') }}" alt="Company Profiles">
+            <h3>Company Profiles</h3>
+            <p>Showcase your business with a rich profile, including logo, contacts, address, and social media links.</p>
+        </div>
+    </div>
+    <div id="qm-feature-card_3" class="qm-feature-card">
+        <div class="feature-overlay"></div>
+        <div style="z-index: 1;position:relative">
+            <img src="{{ url_for('static', filename='icons/icon-14.png') }}" alt="Directory">
+            <h3>Business Directory</h3>
+            <p>Discover and connect with other companies by category in our searchable business community.</p>
+        </div>
+    </div>
+    <div id="qm-feature-card_4" class="qm-feature-card">
+        <div class="feature-overlay"></div>
+        <div style="z-index: 1;position:relative">
+            <img src="{{ url_for('static', filename='icons/icon-15.png') }}" alt="Adverts">
+            <h3>Adverts & News</h3>
+            <p>Promote your services and share updates with interactive adverts and company news posts.</p>
+        </div>
+    </div>
+    <div id="qm-feature-card_5" class="qm-feature-card">
+        <div class="feature-overlay"></div>
+        <div style="z-index: 1;position:relative">
+            <img src="{{ url_for('static', filename='icons/handshake-icon.png') }}" alt="Networking">
+            <h3>Grow Your Network</h3>
+            <p>Connect with professionals and companies, build relationships, and expand your business reach.</p>
+        </div>
+    </div>
+   
+</div>
+ </div>
+<div style="width:100%;height:30px;background-color: rgba(206, 205, 205, 0.7)  !important;"></div>
+
+<div style="display: none;" class="app-install-prmpt gen-flex">
+    <button  class="no-bg-btn gen-flex">
+        <img src="static/icons/download-pwa-icon.png" class="app-download-icon2" />
+        <span>Install App on PC</span>
+    </button>
+</div>
+
+<div class="qm-adverts-section">
+    <div class="qm-adverts-title">Explore QM's Business Community</div>
+    <div class="qm-adverts-list">
+        <div style="background-image: url('{{ url_for('static', filename='images/qm_community_bg.gif') }}');" class="business-card gen-flex-col"> 
+                <!-- <div class="overlay"></div>  -->
+                <div style="z-index:5" class="sub-layout-1 gen-flex">
+                    <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
+                        <div class="company-name">{{qm_bs_obj.company_name}}</div>
+                        
+                        {%if qm_bs_obj.category %}
+                            <label class="category">{{qm_bs_obj.category}}</label>
+                        {%endif%}
+
+                        <div style="align-items: flex-start;" class="qm_bs_obj-details gen-flex-col">
+
+                            {%if qm_bs_obj.postal_address %}
+                                <div>{{qm_bs_obj.postal_address}}</div>
+                            {%endif%}
+
+                            {%if qm_bs_obj.company_address%}
+                                <div style="text-align: left;">{{qm_bs_obj.company_address[:60]}}</div>
+                            {%endif%}
+
+                            {%if qm_bs_obj.company_contacts%}
+                                <a href="tel:{{qm_bs_obj.company_contacts}}" target="_blank">
+                                    <div class="comm-icons-cont gen-flex">
+                                        <img src="static/icons/tel-blue-outline.png" />
+                                        <span>{{qm_bs_obj.company_contacts}}</span>
+                                    </div>
+                                </a>
+                            {%endif%}
+
+                            {%if qm_bs_obj.email%}
+                                <a href="mailto:{{qm_bs_obj.email}}">
+                                    <div style="margin-bottom: 7px;" class="comm-icons-cont gen-flex">
+                                        <img src="static/icons/email-blue-outline.png" />
+                                        <span>{{qm_bs_obj.email}}</span>
+                                    </div>
+                                </a>
+                            {%endif%}
+                            
+                        </div>
+
+                    </div>
+                    
+                </div>
+                {%if qm_bs_obj.image %}
+                    <!-- <div class="community-logo"><img src="static\uploads\{{qm_bs_obj.image}}"></div> -->
+                {%endif%}
+                {%if qm_bs_obj.tagline %}
+                <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{qm_bs_obj.tagline}}</i></span></div>
+                {%endif%}
+                <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
+                    {%if qm_bs_obj.website %}
+                    <a href="{{qm_bs_obj.website}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/website-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                    {%if qm_bs_obj.fb_link %}
+                    <a href="{{qm_bs_obj.fb_link}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/facebook-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                    {%if qm_bs_obj.instagram_link%}
+                    <a href="{{comapny.instagram_link}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/insta-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                    {%if qm_bs_obj.linkedIn_link%}
+                    <a href="{{qm_bs_obj.linkedIn_link}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/linkedin-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                </div>
+                
+                <div class="imbc-icon">
+                    <a href="/business_community" target="_blank">
+                        <img src="static/icons/imbc-icon.png" />
+                    </a>
+                </div>
+
+        </div>
+        <!-- <div class="advert-1">Customized & Interactive Profile Cards</div> -->
+        <div style="background-image: url('{{ url_for('static', filename='images/'~latest_req.image) }}');" class="business-card gen-flex-col"> 
+                <div class="overlay"></div> 
+                <div style="z-index:20;position: relative;" class="sub-layout-1 gen-flex">
+                    <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
+                        <div class="company-name">{{latest_req.company_name}}</div>
+                        
+                        {%if latest_req.category %}
+                            <label class="category">{{latest_req.category}}</label>
+                        {%endif%}
+
+                        <div style="align-items: flex-start;" class="latest_req-details gen-flex-col">
+
+                            {%if latest_req.postal_address %}
+                                <div>{{latest_req.postal_address}}</div>
+                            {%endif%}
+
+                            {%if latest_req.company_address%}
+                                <div style="text-align: left;">{{latest_req.company_address[:60]}}</div>
+                            {%endif%}
+
+                            {%if latest_req.company_contacts%}
+                                <a href="tel:{{latest_req.company_contacts}}" target="_blank">
+                                    <div class="comm-icons-cont gen-flex">
+                                        <img src="static/icons/tel-blue-outline.png" />
+                                        <span>{{latest_req.company_contacts}}</span>
+                                    </div>
+                                </a>
+                            {%endif%}
+
+                            {%if latest_req.email%}
+                                <a href="mailto:{{latest_req.email}}">
+                                    <div style="margin-bottom: 7px;" class="comm-icons-cont gen-flex">
+                                        <img src="static/icons/email-blue-outline.png" />
+                                        <span>{{latest_req.email}}</span>
+                                    </div>
+                                </a>
+                            {%endif%}
+                            
+                        </div>
+
+                    </div>
+                    
+                </div>
+                {%if latest_req.image %}
+                    <div class="community-logo"><img src="static\uploads\{{latest_req.image}}"></div>
+                {%endif%}
+                {%if latest_req.tagline %}
+                <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{latest_req.tagline}}</i></span></div>
+                {%endif%}
+                <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
+                    {%if latest_req.website %}
+                    <a href="{{latest_req.website}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/website-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                    {%if latest_req.fb_link %}
+                    <a href="{{latest_req.fb_link}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/facebook-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                    {%if latest_req.instagram_link%}
+                    <a href="{{comapny.instagram_link}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/insta-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                    {%if latest_req.linkedIn_link%}
+                    <a href="{{latest_req.linkedIn_link}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/linkedin-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
+                </div>
+                
+                <div class="imbc-icon">
+                    <a href="/business_community"  target="_blank">
+                        <img src="static/icons/imbc-icon.png" />
+                    </a>
+                </div>
+
+        </div>
+        <!-- <div class="advert-1">Recently Registered Partners</div> -->
+    </div><br>
+    <a href="/business_community"> <div class="explore-comm btns gen-flex">Explore Community</div></a>
+</div>
+</body>
+<footer class="index-footer gen-flex">
+    <img src="static/images/logo-icon-white.png" style="height:80px" />
+    <div style="color: white;">- Quick Messanger © 2025 powered by Tech Xolutions (TechX)</div>
+</footer>
 
 <!-- <div onclick="encryptMessage()" class="btns">Click</div> -->
 <script>
-    
+        // Optionally, add a little animation or interactivity
+    // document.querySelectorAll('.qm-feature-card').forEach(card => {
+    //     card.addEventListener('mouseenter', () => card.classList.add('hovered'));
+    //     card.addEventListener('mouseleave', () => card.classList.remove('hovered'));
+    // });
+   
 </script>
-{% endblock %}
+</html>
