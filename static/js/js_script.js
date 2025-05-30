@@ -68,7 +68,7 @@ paragraph.forEach(function(pTag){
 //    console.log('Mouse Over');
 //}
 var container = document.querySelector(".app-dowload-container");
-var container2 = document.querySelector(".app-install-prmpt");
+var containerTwo = document.querySelector(".app-install-prmpt");
 // var noBgBtn = document.querySelector(".no-bg-btn");
 // var installBtn = document.querySelector("#pwa-install-btn");
 // Check if the browser supports service workers and PWA installation
@@ -96,7 +96,7 @@ window.addEventListener('load', () => {
                     e.preventDefault();
                     deferredPrompt = e;
                     container.style.display = "flex";
-                    container2.style.display = "flex";
+                    containerTwo.style.display = "flex";
                     const installBtn = document.getElementById('pwa-install-btn');
                     var noBgBtn = document.querySelector(".no-bg-btn");
                     
