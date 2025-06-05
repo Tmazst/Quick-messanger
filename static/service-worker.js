@@ -1,18 +1,18 @@
-const CACHE_NAME = 'bizchat-cache-v2';
-const urlsToCache = [
-  // '/',
-  '/static/css/styles.css',
-  '/static/css/bs_stylesheet.css',
-  // '/static/icons/logo-avator.png',
-  // Add more assets as needed
-];
+// const CACHE_NAME = 'bizchat-cache-v2';
+// const urlsToCache = [
+//   // '/',
+//   // '/static/css/styles.css',
+//   '/static/css/bs_stylesheet.css',
+//   // '/static/icons/logo-avator.png',
+//   // Add more assets as needed
+// ];
 
 self.addEventListener('install', event => {
   self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
-  );
+  // event.waitUntil(
+  //   caches.open(CACHE_NAME)
+  //     .then(cache => cache.addAll(urlsToCache))
+  // );
 });
 
 self.addEventListener('activate', event => {
