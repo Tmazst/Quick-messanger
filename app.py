@@ -246,6 +246,10 @@ def username(username,id):
 
 @app.route("/", methods=['POST','GET'])
 def home():
+    with app.app_context():
+        db.create_all()
+        db.session.commit()
+        
     print("Hoping for a call")
     visitor_ip = request.remote_addr
 
