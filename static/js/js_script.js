@@ -47,6 +47,204 @@
 //}
 //window.onscroll = function() {handleScroll()};
 
+navigator.serviceWorker.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'OPEN_REPLY_UI') {
+    // Open the mini window
+    openMiniReplyWindow();
+  }
+});
+
+window.addEventListener('DOMContentLoaded', function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('openReply')) {
+    openMiniReplyWindow();
+  }
+});
+
+function openMiniReplyWindow() {
+  const miniWidth = 350;
+  const miniHeight = 600;
+  const screenW = window.screen.availWidth;
+  const screenH = window.screen.availHeight;
+  const left = screenW - miniWidth;
+  const top = screenH - miniHeight;
+  window.open(
+    '/reply_unit',
+    'ReplyUnit',
+    `width=${miniWidth},height=${miniHeight},left=${left},top=${top},resizable=yes,scrollbars=yes`
+  );
+}
+
+document.getElementById('open-reply-unit').addEventListener('click', function() {
+    const miniWidth = 350;
+    const miniHeight = 600;
+    // Get the available screen size
+    const screenW = window.screen.availWidth;
+    const screenH = window.screen.availHeight;
+    // Calculate left and top for bottom right
+    const left = screenW - miniWidth;
+    const top = screenH - miniHeight;
+    // Open the window
+    window.open(
+        '/reply_unit',
+        'ReplyUnit',
+        `width=${miniWidth},height=${miniHeight},left=${left},top=${top},resizable=yes,scrollbars=yes`
+    );
+});
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.getRegistration().then(function(reg) {
+    if (reg) reg.update();
+  });
+}
+
+// Register service worker and subscribe to push
+if ('serviceWorker' in navigator && 'PushManager' in window) {
+    console.log("Notification Subscription in progress...");
+    // if (Notification.permission === "denied") {
+    //         // Optionally, show a message to the user:
+    //         alert("You have blocked notifications for this site. Please enable them in your browser settings if you want to receive notifications.");
+    //     }
+    navigator.serviceWorker.register('service-worker.js')
+    .then(function(registration) {
+        console.log("Notification Subscription in progress...Request Permission");
+        // Request notification permission
+        //  if (confirm("We'd like to notify you about new messages in your Quick Messanger's inbox. Allow?")) {
+        
+            if (Notification.permission !== 'granted') {
+                Notification.requestPermission().then(function(permission) {
+                    if (permission === 'granted') {
+                        subscribeUser(registration);
+                    }
+                });
+            } else {
+                subscribeUser(registration);
+            }
+    // }
+    });
+}
+
+
+function urlBase64ToUint8Array(base64String) {
+    // Helper for VAPID public key
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
+async function subscribeUser(registration) {
+    // Replace with your actual VAPID public key from Flask config
+    const res = await fetch("/vpid");
+    const data = await res.json();
+    const vapidPublicKey = data.vpkey;
+    const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+
+    registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: convertedVapidKey
+    })
+    .then(function(subscription) {
+        // Send subscription to Flask backend
+        fetch('/subscribe', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(subscription)
+        });
+    })
+    .catch(function(err) {
+        console.error('Failed to subscribe the user: ', err);
+    });
+}
+
+navigator.serviceWorker.addEventListener('message', function(event) {
+    console.log("1. We Got message from the service worker js...");
+  if (event.data && event.data.type === 'PUSH_NOTIFICATION') {
+    console.log("2...its a push notification");
+    showNotification({
+      id: Date.now(),
+      title: event.data.data.title,
+      message: event.data.data.body
+    });
+  }
+});
+
+function showNotification({ id, title, message }) {
+    console.log("3...Display the Notification");
+    const container = document.getElementById('notification-container');
+    if (!container) return;
+
+    // Prevent duplicate notifications by id
+    if (document.getElementById('notif-' + id)) return;
+
+    const notif = document.createElement('div');
+    notif.className = 'notification';
+    notif.id = 'notif-' + id;
+
+    notif.innerHTML = `
+        <button class="notif-close" title="Dismiss">&times;</button>
+        <div style="font-weight:600;font-size:1.1em;">${title}</div>
+        <div style="font-size:1em;">${message}</div>
+        <div class="notif-actions">
+            <button class="notif-btn notif-reply">Reply</button>
+            <button class="notif-btn notif-delete">Delete</button>
+        </div>
+    `;
+
+
+    // Close button
+    notif.querySelector('.notif-close').onclick = function() {
+        notif.remove();
+    };
+
+    // Reply button
+    // notif.querySelector('.notif-reply').onclick = function() {
+    //     if (onReply) onReply(id);
+    //     notif.remove();
+    // };
+
+    // // Delete button
+    // notif.querySelector('.notif-delete').onclick = function() {
+    //     if (onDelete) onDelete(id);
+    //     notif.remove();
+    // };
+
+    container.appendChild(notif);
+}
+
+navigator.serviceWorker.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'OPEN_REPLY_UI') {
+    // Show your custom reply modal/sidebar
+    openReplySidebar(event.data.messageId);
+  }
+});
+
+// If the app is opened via URL with ?replyTo=...
+window.addEventListener('DOMContentLoaded', function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('replyTo')) {
+    openReplySidebar(params.get('replyTo'));
+  }
+});
+
+function openReplySidebar(messageId) {
+  // Show a sidebar/modal on the right side of the screen
+  // Pre-fill with the message to reply to, etc.
+  // Example:
+  const sidebar = document.getElementById('reply-sidebar');
+  sidebar.style.display = 'block';
+  // Load message data, focus input, etc.
+}
+
+
 function openAndCloseMsgs(){
     var msgMainCont = document.querySelector("#navlink-message");
     var msgCont = document.querySelector(".messages-container");
@@ -68,7 +266,7 @@ paragraph.forEach(function(pTag){
 //    console.log('Mouse Over');
 //}
 var container = document.querySelector(".app-dowload-container");
-var containerTwo = document.querySelector(".app-install-prmpt");
+// var containerTwo = document.querySelector(".app-install-prmpt");
 // var noBgBtn = document.querySelector(".no-bg-btn");
 // var installBtn = document.querySelector("#pwa-install-btn");
 // Check if the browser supports service workers and PWA installation
@@ -96,7 +294,7 @@ window.addEventListener('load', () => {
                     e.preventDefault();
                     deferredPrompt = e;
                     container.style.display = "flex";
-                    containerTwo.style.display = "flex";
+                    // containerTwo.style.display = "flex";
                     const installBtn = document.getElementById('pwa-install-btn');
                     var noBgBtn = document.querySelector(".no-bg-btn");
                     
@@ -406,3 +604,29 @@ $(window).on('mousemove', function(e) {
     }
 });
 
+
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(function(response) {
+      // Serve from cache if available
+      if (response) return response;
+      // Otherwise, fetch from network
+      return fetch(event.request).then(function(networkResponse) {
+        // Only cache valid, non-redirected responses
+        if (
+          !networkResponse || 
+          networkResponse.status !== 200 || 
+          networkResponse.type !== 'basic'
+        ) {
+          return networkResponse;
+        }
+        // Optionally, cache the response here if you want
+        // let responseToCache = networkResponse.clone();
+        // caches.open(CACHE_NAME).then(function(cache) {
+        //   cache.put(event.request, responseToCache);
+        // });
+        return networkResponse;
+      });
+    })
+  );
+});

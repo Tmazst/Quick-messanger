@@ -98,8 +98,8 @@
                     {% if ad.advert_image %}
                         {% set comp_obj = companies[ad.comp_id] if ad.comp_id in companies else None %}
                         <div onmouseenter="revealDrawer(event,'{{ad.id}}')" class="img-contain" style="position:relative;">
-                            <img src="static/uploads/{{ ad.advert_image }}" alt="Ad Image" class="ad_image">
-                            <div id="ad00{{ad.id}}" style="justify-content: flex-end;" class="ad-comp-details gen-flex-col">
+                            <img src="static/ad-images/{{ ad.advert_image }}" alt="Ad Image" class="ad_image">
+                            <div id="ad00{{ad.id}}" style="justify-content: flex-end;gap:4px" class="ad-comp-details gen-flex-col">
                                 {%if comp_obj.website%}
                                 <a href="{{comp_obj.website}}"><img src="static/icons/ads-web-icon.png" class="ads-icons"/> </a>
                                 {%endif%}
@@ -110,6 +110,11 @@
                                 <a href="{{comp_obj.email}}"><img src="static/icons/ads-email-icon.png" class="ads-icons"/> </a>
                                 {%endif%}
                                 <br>
+                                <div class=" qm-icon-adverts">
+                                    <a href="/compose?id={{ser.dumps({'data':comp_obj.id})}}" target="_blank">
+                                        <img src="static/icons/imbc-icon.png" style="height: 50px;width:50px ;" />
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     {% endif %}

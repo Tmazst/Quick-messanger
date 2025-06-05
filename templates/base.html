@@ -44,7 +44,10 @@
 <!--    <button class="menu burger">Menu</button>-->
 </head>
 <body>
-    <div id="alert-confirm" class="login-modal-bg gen-flex-col">
+    {% block replyunit%}
+    {%endblock%}
+    <div id="notification-container" class="notification-container"></div>
+    <div style="z-index: 2000;" id="alert-confirm" class="login-modal-bg gen-flex-col">
         <div style="justify-content: flex-start;" class="login-modal gen-flex-col">
             <div>Welcome:</div>
             <div id="user-name"></div>
@@ -52,7 +55,7 @@
             <a id="go-register" style="display: none;" ><div onclick="window.location.href='/register'" class="btns gen-flex">Register</div></a>
         </div>
     </div>
-    <div style="width:100%  !important;gap:0" class="gen-flex">
+    <div style="width:100%  !important;gap:0" class="gen-flex navigation-main">
         <!-- Main App Navigation Bar  -->
         <div style="padding-top:60px" class="app-nav-bar-left">
             <div  onclick="openMenuFunc()" class="menu-icon">
@@ -143,7 +146,7 @@
                                                 {%set send_usrnm = usrn.query.filter_by(username=msg.sender).first()%}
                                                 <div onclick="window.location.href='/get_messages?key={{send_usrnm.username}}'" id="messages-inbox-cont"  class="message-item gen-flex-col">
                                                     <!-- Name, Logo, and Time  -->
-                                                    <div class="message-item-header gen-flex">
+                                                    <div class="message-item-header-left gen-flex">
                                                         <div  class="message-item-header-left gen-flex">
                                                             
                                                             {% set name = send_usrnm.user_details[0].name %}
@@ -200,7 +203,7 @@
                         <div id="link-3" onclick="window.location.href='/company_stories'" class="side-nav-item gen-flex">
                             <img src="static/icons/business-news-icon.png" />
                             <div class="link-title gen-flex-col">
-                                <span class="nav-link" >Companies News</span>
+                                <span class="nav-link" >Companies News & Events</span>
                                 <small>Share your company’s stories</small>
                             </div>
                             
@@ -259,6 +262,7 @@
     <script src="static/js/bus_cht.js" ></script>
 
 <script>
+    console.log("Check Notification Permission: ",Notification.permission);
     // console.log("SaveIs Called: ");
     var userLabel =document.querySelector("#username-label");
     var goBtn = document.querySelector("#login");
@@ -280,7 +284,7 @@
     // Register Service Worker
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-            navigator.serviceWorker.register("{{ url_for('static', filename='service-worker.js') }}")
+            navigator.serviceWorker.register("/service-worker.js")
                 .then(function(registration) {
                     console.log('ServiceWorker registration successful:', registration.scope);
                 }, function(err) {

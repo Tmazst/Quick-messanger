@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block replyunit %}
+
+<style>
+    .msg-reply-unit{
+        width:100%;
+        max-width: 350px;
+        height: 80%;
+        /* background-color: rgb(250, 219, 180) !important; */
+        position: fixed;
+        bottom: 15px;
+        right: 0;
+    }
+    h1{
+        color:rgb(17, 17, 17)
+    }
+
+    html,body{
+        width:350px;
+        height: max-content;
+        background-color: rgb(214, 214, 214);
+    }
+
+    .navigation-main{
+        display: none;
+    }
+
+</style>
+
+<div class="msg-reply-unit">
+ <div id="navlink-message" class="side-nav-item-rpu reply-unit gen-flex-col">
+    <!-- <div style="justify-content: flex-start !important; width: 100%;" class=" gen-flex">
+        <img src="static/icons/qm-messaging-icon.png" />
+        <div style="align-items: flex-start;" onload="openAndCloseMsgs(event)" class="link-title gen-flex-col">
+            <span class="nav-link" >Messages</span>
+            <small>Inbox Messages</small>
+        </div>
+    </div> -->
+    {% for msg in messages %}
+            {%set my_msgs = msg.key%}
+            {%if current == my_msgs and not msg.sender == current%}
+                <div class="messages-count gen-flex"><span>{{loop.index}}</span></div>
+            {%endif%}
+    {%endfor%}
+    <div class="scorllable-messages gen-flex-col">
+        <div style="display: block !important;" class="messages-container">
+            {% for msg in messages %}
+            {%set the_sender = msg.sender%}
+            {%set my_msgs = msg.key%}
+            {%if current == my_msgs%}
+                {%if msg.sender == current%}<!--sent messages-->
+                {%set rec_usrnm = usrn.query.filter_by(username=msg.receiver).first()%}
+                <div style="min-height: 120px !important;" onclick="window.location.href='/get_messages?key={{rec_usrnm.username}}'" id="messages-inbox-cont"  class="message-item gen-flex-col">
+                    <!-- Name, Logo, and Time  -->
+                    <div  class="message-item-header-left gen-flex">
+                        <div onclick="window.location.href='/get_messages?key={{rec_usrnm.username}}'" class="message-item-header-left gen-flex">
+                            {% set name = rec_usrnm.user_details[0].name %}
+                            <img src="{{ url_for('static', filename='uploads/'+ rec_usrnm.company_details[0].image) }}" alt="Logo" class="message-item-icon">
+                            {% if name | length >= 12 %}
+                                <span class="message-item-name">{{ name[:12] }}...-</span>
+                            {% else %}
+                                <span class="message-item-name">{{ name }}-</span>
+                            {% endif %}
+                            <div id="sent-icon" class="inbox-icon">Sent</div>
+                        </div>
+                    </div>
+                        <!-- Message Caption  -->
+                        
+                        <div data-encrypted="{{msg.message}}" class="message-text">{{ msg.message }}</div>
+                       
+                        <span class="message-item-time">{{msg.date.strftime("%d %b %H:%M" )}}</span>
+                    
+                </div>
+                        
+                {%elif msg.receiver == current%}<!--received messages-->
+                {%set send_usrnm = usrn.query.filter_by(username=msg.sender).first()%}
+                <div onclick="window.location.href='/get_messages?key={{send_usrnm.username}}'" id="messages-inbox-cont"  class="message-item gen-flex-col">
+                    <!-- Name, Logo, and Time  -->
+                    <div class="message-item-header-left gen-flex">
+                        <div  class="message-item-header-left gen-flex">
+                            
+                            {% set name = send_usrnm.user_details[0].name %}
+                            <img src="{{ url_for('static', filename='uploads/'+ send_usrnm.company_details[0].image) }}" alt="Logo" class="message-item-icon">
+                            {% if name | length >= 12 %}
+                                <span class="message-item-name">{{ name[:12] }}...++</span>
+                            {% else %}
+                                <span class="message-item-name">{{ name }}++</span>
+                            {% endif %}
+                            <div class="inbox-icon">inbox</div>
+                        </div>
+                    </div>
+                        <!-- Message Caption  -->
+                       
+                        <div data-encrypted="{{msg.message}}" class="message-text">{{ msg.message }}</div>
+                        
+                        <span class="message-item-time">{{msg.date.strftime("%d %b %H:%M" )}}</span>
+                    
+                </div>
+                {%else%}
+                <div class="message-item-header-left gen-flex">
+                    <i>No Messages</i>
+                </div>
+                {%endif%}
+
+            <div class="filler"></div>
+                    
+                <!-- </div> -->
+                
+            <!-- </div> -->
+            {%endif%}
+            {% endfor %}
+
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+
+</script>
+
+
+{% endblock %}

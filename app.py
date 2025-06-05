@@ -1,5 +1,5 @@
 
-from flask import Flask,render_template,url_for,redirect,request,flash,jsonify,session
+from flask import Flask,render_template,url_for,redirect,request,flash,jsonify,session, send_from_directory
 from flask_login import login_user, LoginManager,current_user,logout_user, login_required
 from Forms import Register, Login,Contact_Form, Project_Form, Web_Design_Brief,Logo_Options,Poster_Options,Brochure_Options,Flyer_Options
 from models import *
@@ -17,6 +17,8 @@ from sqlalchemy import or_
 from werkzeug.datastructures import FileStorage
 from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
 import pytz
+from pywebpush import webpush, WebPushException
+import json
 
 
 #Did latest commit with the requirement file
@@ -30,6 +32,9 @@ app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["UPLOADED"] = 'static/uploads'
 app.config["ADVERTS_IMAGES"] = 'static/ad-images'
+app.config["NEWS_IMAGES"] = 'static/comp-images'
+app.config["VAPID_PRIVATE_KEY"] = "tACNLzOyTBgxLxmT7A9ZDhdhA-9y3l6DHMrLuMoBvYM"
+app.config["VAPID_PUBLIC_KEY"] = "BF-IKMwncA7cR08RWECfzfmYHFCeXFx97-P2_ZFxd5DDHHryXyjBC6bzKa5oYkmN-DhjNYtyoEP4yYCQ38aIVjI"
 
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db" 
 # Local
@@ -39,6 +44,12 @@ else:#Online
     app.config[
     "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db" 
 
+
+VAPID_PRIVATE_KEY = app.config["VAPID_PRIVATE_KEY"]
+VAPID_PUBLIC_KEY = app.config["VAPID_PUBLIC_KEY"] 
+VAPID_CLAIMS = {
+    "sub": "mailto:pro.dignitron@gmail.com"
+}
 
 db.init_app(app)
 CORS(app)  # Allow cross-origin requests
@@ -80,6 +91,26 @@ def allowed_files(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+
+def process_news(file):
+
+        filename = secure_filename(file.filename)
+
+        _img_name, _ext = os.path.splitext(filename)
+        gen_random = secrets.token_hex(8)
+        new_file_name = gen_random + _ext
+
+        if file.filename == '':
+            return 'No selected file'
+
+        if file.filename:
+            file_saved = file.save(os.path.join(app.config["NEWS_IMAGES"] ,new_file_name))
+            print(f"File Upload Successful!!", "success")
+            return new_file_name
+
+        else:
+            return f"Allowed are [.txt, .xls,.docx, .pdf, .png, .jpg, .jpeg, .gif] only"
+
 def process_file(file):
 
         filename = secure_filename(file.filename)
@@ -92,7 +123,7 @@ def process_file(file):
             return 'No selected file'
 
         if file.filename:
-            file_saved = file.save(os.path.join(app.config["UPLOADED"],new_file_name))
+            file_saved = file.save(os.path.join(app.config["UPLOADED"] ,new_file_name))
             print(f"File Upload Successful!!", "success")
             return new_file_name
 
@@ -215,6 +246,27 @@ def username(username,id):
 
 @app.route("/", methods=['POST','GET'])
 def home():
+    print("Hoping for a call")
+    visitor_ip = request.remote_addr
+
+    chk_if_reg = Visitors.query.filter_by(ip=visitor_ip).first()
+
+    if chk_if_reg:
+        print("Hoping for a redirect")
+        chk_if_reg.last_visit = current_time_wlzone()
+        chk_if_reg.n_visits += 1
+        db.session.commit()
+        return redirect(url_for("news"))
+    else:
+        visit_obj = Visitors(
+            ip = visitor_ip,
+            n_visits = 1,
+            timestamp = current_time_wlzone(),
+            first_visit = current_time_wlzone(),
+        )
+
+        db.session.add(visit_obj)
+        db.session.commit()
 
 
     # all_messages = get_all_messages()
@@ -231,17 +283,6 @@ def home():
             db.session.commit()
             print("Home==Deleted Messages: ", msg)
 
-    # all_msgs = Messages.query.all()
-    # for msg in all_msgs:
-    #     # if msg.sender == "none" or msg.receiver == "none":
-    #         db.session.delete(msg)
-    #         db.session.commit()
-    #         print("Home==Deleted Messages: ", msg)
-
-    # if current_user.is_authenticated:
-    #     company = company_info.query.filter_by(usr_id=current_user.id).first()
-    #     if not company.category or company.company_contacts or company.company_address:
-    #         return redirect(url_for("company_account"))
 
     return render_template("index.html", qm_bs_obj=qm_bs_obj,latest_req=latest_req )
 
@@ -249,6 +290,91 @@ def home():
 users = {}  # {username: public_key}
 messages = {}  # {username: [encrypted_messages]}
 
+@app.route('/service-worker.js')
+def service_worker():
+    return send_from_directory('static', 'service-worker.js')
+
+@app.route('/manifest.js')
+def manifest():
+    return send_from_directory('static', 'manifest.js')
+
+@app.route("/reply_unit", methods=['POST','GET'])
+def reply_unit():
+
+    return render_template("messege_reply_unit.html")
+
+@app.route("/vpid", methods=['POST','GET'])
+def public_key():
+    key = app.config["VAPID_PUBLIC_KEY"]
+    return jsonify({'vpkey':key})
+
+subscriptions = []
+
+@app.route('/subscribe', methods=['POST'])
+@login_required
+def subscribe():
+    # Save subscription info to your DB
+    subscription_info = request.get_json()
+    # Save subscription_info for the user
+    subscriptions.append({
+        "endpoint": subscription_info.get("endpoint"),
+        "keys": {
+            "p256dh": subscription_info["keys"]["p256dh"],
+            "auth": subscription_info["keys"]["auth"]
+        }
+    })
+
+    sub = NotificationsAccess.query.filter_by(p256dh=subscription_info["keys"]["p256dh"]).first()
+    if sub:
+        sub.endpoint = subscription_info.get("endpoint")
+        sub.p256dh = subscription_info["keys"]["p256dh"]
+        sub.auth = subscription_info["keys"]["auth"]
+        sub.ip = request.remote_addr
+        sub.usr_id = current_user.id
+        sub.timestamp = current_time_wlzone()
+
+        db.session.commit()
+        print("Subscription Already Exists!")
+
+        return jsonify({"success": True}), 201 
+    
+
+    save_details = NotificationsAccess(
+        endpoint = subscription_info.get("endpoint"),
+        p256dh = subscription_info["keys"]["p256dh"],
+        auth = subscription_info["keys"]["auth"],
+        ip = request.remote_addr,
+        usr_id = current_user.id,
+        timestamp = current_time_wlzone()
+    )
+
+    db.session.add(save_details)
+    db.session.commit()
+    flash("✔Success!","success")
+
+    return jsonify({"success": True}), 201
+
+
+# @app.route('/send_push', methods=['POST'])
+# def send_push():
+#     # Get subscription info from your DB
+#     subscription_info = request.get_json().get('subscription')
+#     message = request.get_json().get('message', 'You have a new message!')
+#     try:
+#         webpush(
+#             subscription_info,
+#             data=json.dumps({
+#                 "title": "New Message",
+#                 "body": message,
+#                 "url": "/get_messages"
+#             }),
+#             vapid_private_key=VAPID_PRIVATE_KEY,
+#             vapid_claims=VAPID_CLAIMS
+#         )
+#         return jsonify({"success": True}), 200
+#     except WebPushException as ex:
+#         print("Web push failed: {}", repr(ex))
+#         return jsonify({"success": False, "error": str(ex)}), 500
 
 # @app.route('/check_user', methods=['POST'])
 # def check_user():
@@ -362,9 +488,51 @@ def compose():
             )
 
             db.session.add(msg2)
-            db.session.commit()
+            db.session.commit() #TEMPORAL
             flash("Message Sent!!","success")
             print("Messages Sent!!")
+            # After saving the message
+            recipient_user = chat_user.query.filter_by(username=receiver).first()
+            if not recipient_user:
+                return jsonify({'Error':"Invalid Request"})
+            user = User.query.filter_by(cht_usr_fKey=recipient_user.id).first()
+            if not user:
+                return jsonify({'Error':"Invalid Request"})
+
+            recipient_sub = NotificationsAccess.query.filter_by(usr_id=user.id).order_by(NotificationsAccess.timestamp.desc()).first()
+
+            if not recipient_sub:
+                return redirect(url_for('compose'))
+            # for sub in recipient_subs:
+            recipient_sub_info = {
+                "endpoint": recipient_sub .endpoint,
+                "keys": {
+                    "p256dh": recipient_sub .p256dh,
+                    "auth": recipient_sub .auth
+                }
+            }
+            try:
+                print(f"New message from {curr_user.name}")
+                print(f"New message to @webpush {curr_user.name}")
+
+                webpush(
+                    recipient_sub_info,
+                    data=json.dumps({
+                        "title": "New Message",
+                        "body": f"New message from {curr_user.name}",
+                        "url": "/get_messages?key=" + user_name.username,
+                        "url_reply": "/reply_unit",
+                        "username": user_name.username
+                    }),
+                    vapid_private_key=VAPID_PRIVATE_KEY,
+                    vapid_claims=VAPID_CLAIMS,
+                    ttl=200
+                )
+                print("Web Push Activated!")
+            except WebPushException as ex:
+                print("Web push failed: {}", repr(ex))
+                print(recipient_sub_info)
+            # print("Notification Sent!")
             return redirect(url_for('compose'))
 
         print("Users: ", users)
@@ -753,18 +921,14 @@ def adverts():
     return render_template("adverts.html",columns=columns,companies=companies)
 
 @app.route("/company_stories")
+@app.route("/news")
 def news():
 
     news = News.query.all()
     all_news_imgs = NewsImages.query.all()
- 
-    # num_columns = 3
-    # columns = [[] for _ in range(num_columns)]
-    # for idx, story in enumerate(news):
-    #     print("idx % num_columns: ",idx % num_columns)
-    #     columns[idx % num_columns].append(story)
+    companies_n_news = [company.to_dict() for company in company_info.query.all()]
 
-    return render_template("news.html",news=news,all_news_imgs=all_news_imgs)
+    return render_template("news.html",news=news,all_news_imgs=all_news_imgs,companies_n_news=companies_n_news)
 
 
 @app.route('/update_news_views/<int:news_id>', methods=['GET'])
@@ -814,7 +978,7 @@ def news_form():
 
         if form.images.data:
             for image_file in form.images.data:
-                image= process_file(image_file)
+                image= process_news(image_file)
                 news_images_obj = NewsImages(
                     image = image,
                     news_id = story.id

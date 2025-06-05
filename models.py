@@ -26,7 +26,8 @@ class chat_user(db.Model,UserMixin):
     db.Column(db.DateTime(), default=datetime.now)
     company_details = relationship("company_info", backref='chat_user', lazy=True)
     user_details = relationship("User", backref='chat_user', lazy=True)
-
+    visitors_id = relationship("Visitors", backref='chat_user', lazy=True)
+    
 #Users class, The class table name 'h1t_users_cvs'
 class User(db.Model,UserMixin):
 
@@ -46,6 +47,7 @@ class User(db.Model,UserMixin):
     db.Column(db.DateTime(), default=datetime.now)
     role = db.Column(db.String(120))
     company_id = relationship("company_info", backref='user', lazy=True)
+    notification_access = relationship("NotificationsAccess", backref='chat_user', lazy=True)
 
     def to_dict(self):
         return {
@@ -173,6 +175,7 @@ class company_info(db.Model):
 
     def to_dict(self):
         return {
+            "id" : str(self.id),
             "company_name": self.company_name,
             "company_address": self.company_address if self.company_address else "",
             "postal_address": self.postal_address if self.postal_address else "",
@@ -180,8 +183,8 @@ class company_info(db.Model):
             "company_contacts": self.company_contacts if self.company_contacts else "",
             # "timestamp": self.date if self.date else None,
             "website" :self.website if self.website else "",
-            "tagline," :self.tagline if self.tagline else "",
-            "fb_link," :self.fb_link if self.fb_link  else "",
+            "tagline" :self.tagline if self.tagline else "",
+            "fb_link" :self.fb_link if self.fb_link  else "",
             "twitter_link" :self.twitter_link if self.fb_link  else "",
             "youtube" :self.youtube if self.youtube  else "",
             "country" :self.country if self.country  else ""
@@ -238,4 +241,23 @@ class Curr_Projects(db.Model,UserMixin):
     comments = db.Column(db.String(120))
     submitted = db.Column(db.Date())
 
+class Visitors(db.Model):
 
+    id = db.Column(db.Integer, primary_key=True)
+    cht_usr_id = db.Column(db.Integer, ForeignKey('chat_user.id'),nullable=True)
+    ip = db.Column(db.String(500))
+    timestamp = db.Column(db.DateTime())
+    first_visit = db.Column(db.DateTime())
+    last_visit = db.Column(db.DateTime())
+    n_visits = db.Column(db.Integer)
+    country = db.Column(db.String(50))
+
+class NotificationsAccess(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    usr_id = db.Column(db.Integer, ForeignKey('user.id'),nullable=False)
+    endpoint = db.Column(db.String(255))
+    p256dh = db.Column(db.String(255))
+    auth = db.Column(db.String(255))
+    ip = db.Column(db.String(100))
+    timestamp = db.Column(db.DateTime)
