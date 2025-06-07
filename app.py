@@ -1082,7 +1082,7 @@ def adverts_form():
         )
 
         if form.advert_image.data:
-            advert_img = process_file(form.advert_image.data)
+            advert_img = process_ads(form.advert_image.data)
             advert.advert_image = advert_img
 
         db.session.add(advert)
