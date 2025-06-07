@@ -77,11 +77,16 @@
     position: relative;
 }
 
+.main-image {
+    width:100%;
+}
+
 #main-image {
     /* max-width: 100%;
     max-height: 100%; */
     height:inherit;
     border-radius: 10px;
+    width: 100%;
 }
 
 .content-viewer {
@@ -253,7 +258,7 @@
 <!-- Bottom: Main preview and thumbnails - Active/Default -->
 <div id="min-preview-1" class="min-preview">
     <div class="image-viewer" id="main-image-viewer">
-        <img onclick="openModal(0)" id="main-image" src="static/comp-images/{% set first_post = news[0] %}{% set first_imgs = all_news_imgs %}{{ first_imgs[0].image if first_imgs else '' }}" alt="Main Preview">
+        <img onclick="openModal(0)" id="main-image" src="static/comp-images/{% set first_post = news[0] %}{% set first_imgs = all_news_imgs %}{{ first_imgs[0].image if first_imgs else '' }}" class="main-image" alt="Main Preview">
         <div class="thumbnails gen-flex" id="thumbnails">
             {% for img_thmb in all_news_imgs %}
                 {% if img_thmb.news_id == news[0].id %}
@@ -316,7 +321,7 @@
 <!-- Bottom: Main preview and thumbnails - Dynamic -->
 <div style="display: none;" id="min-preview-2" class="min-preview">
     <div class="image-viewer" id="main-image-viewer">
-        <img id="main-image-2" src="" alt="Main Preview">
+        <img id="main-image-2" src="" alt="Main Preview" class="main-image">
         <div class="thumbnails gen-flex" id="thumbnails-2">
             <img id="clicked-tumb" class="thumbnail" src="" >
         </div>
