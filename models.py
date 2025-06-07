@@ -105,7 +105,6 @@ class Views(db.Model):
             "view_date": self.view_date.strftime("%H:%M - %d %b %y") if self.view_date else None
         }
 
-
 class Comments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     news_id = db.Column(db.Integer, ForeignKey('news.id'))
@@ -130,7 +129,6 @@ class NewsImages(db.Model):
     main = db.Column(db.String(50))
     caption = db.Column(db.String(50))
 
-
 class clientuser(User):
 
     id = db.Column(db.Integer, ForeignKey('user.id'), primary_key=True)
@@ -145,7 +143,6 @@ class clientuser(User):
             "polymorphic_identity":'clientuser'
         }
 
-
 class company_info(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -153,7 +150,7 @@ class company_info(db.Model):
     usr_id = db.Column(db.Integer, ForeignKey('user.id'))
     company_name = db.Column(db.String(50))
     email = db.Column(db.String(120))
-    image = db.Column(db.String(120))
+    image = db.Column(db.String(120),default="default.jpg")
     category = db.Column(db.String(120))
     country = db.Column(db.String(50))
     company_address = db.Column(db.String(120))
@@ -191,6 +188,17 @@ class company_info(db.Model):
         }
 
 
+class recovery_check(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    cht_usr_id = db.Column(db.Integer)
+    comp_id = db.Column(db.Integer)
+    name =  db.Column(db.String(20))
+    username =  db.Column(db.String(20))
+    status = db.Column(db.String(20),default="False")
+    timestamp = db.Column(db.DateTime)
+    reg_timestamp = db.Column(db.DateTime)
+
+
 class Messages(db.Model,UserMixin):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -218,7 +226,6 @@ class Messages(db.Model,UserMixin):
             "company_info_name" :self.company_info_name
         }
 
-
 class Project_Brief(db.Model,UserMixin):
 
     id = db.Column(db.Integer, primary_key=True)
@@ -226,7 +233,6 @@ class Project_Brief(db.Model,UserMixin):
     name = db.Column(db.String(120))
     brief_date = db.Column(db.String(120))
     token = db.Column(db.String(120))
-
 
 class Curr_Projects(db.Model,UserMixin):
 

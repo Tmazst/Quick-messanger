@@ -124,6 +124,12 @@ if ('serviceWorker' in navigator && 'PushManager' in window) {
     });
 }
 
+function closeRefresh(){
+    document.getElementById('recovery-modal').style.display='none';
+    window.location.reload();
+} 
+
+
 
 function urlBase64ToUint8Array(base64String) {
     // Helper for VAPID public key

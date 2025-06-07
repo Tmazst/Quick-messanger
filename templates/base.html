@@ -47,6 +47,7 @@
     {% block replyunit%}
     {%endblock%}
     <div id="notification-container" class="notification-container"></div>
+    <!-- Login Modal (hidden by default) -->
     <div style="z-index: 2000;" id="alert-confirm" class="login-modal-bg gen-flex-col">
         <div style="justify-content: flex-start;" class="login-modal gen-flex-col">
             <div>Welcome:</div>
@@ -54,6 +55,23 @@
             <a id="login"><div class="btns gen-flex">Continue👍</div></a>
             <a id="go-register" style="display: none;" ><div onclick="window.location.href='/register'" class="btns gen-flex">Register</div></a>
         </div>
+    </div>
+
+    <!-- Recovery Modal (hidden by default) -->
+    <div id="recovery-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; padding:2em; border-radius:10px; max-width:400px; margin:auto;">
+        <h2 style="color:#EF4036">Backup Your Account</h2>
+        <p>Save your recovery file and key below. You will need them to restore your account if you lose access.</p>
+        <div><br>
+        <b>Recovery Key:</b>
+        <div id="recovery-key" style="font-family:monospace; font-size:1.2em; margin:0.5em 0;"></div>
+            <button class="btns"  id="copy-recovery-key">Copy Key</button>
+        </div><br><br>
+        <b>Save Recovery File:</b><br>
+        <button class="btns" id="download-recovery-file">Download Recovery File</button>
+        <br><br>
+        <button style="padding:7px;border-radius: 15px;background: none;"  onclick="closeRefresh()">Close</button>
+    </div>
     </div>
     <div style="width:100%  !important;gap:0" class="gen-flex navigation-main">
         <!-- Main App Navigation Bar  -->
@@ -216,9 +234,7 @@
                 <div style="justify-content: flex-start;" class="sub-titles gen-flex">
                     {%if company.image %}
                     <img onclick="window.location.href='/company_account'" src="{{ url_for('static', filename='uploads/'+ company.image) }}" alt="Logo" class="sub-title-logo">
-                    {%else%}
-                    <img onclick="window.location.href='/company_account'" src="{{ url_for('static', filename='uploads/default.jpg') }}" alt="Logo" class="sub-title-logo">
-                    {%endif%}
+                   {%endif%}
                     <span onclick="window.location.href='/company_account'" style="" id="company-title" style="font-size:18px;font-weight:500">{{company.company_name}}</span>
                     <div class="flash-messages">
                         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -229,7 +245,7 @@
                             {% endif %}
                         {% endwith %}
                     </div>
-                    <div class="filler"></div>
+                    <div class="filler gen-flex"> <img id="open-reply-unit"  style="height:40px" src="static/icons/mini-window.png" /></div>
                     {%if current%}
                     <div onclick="window.location.href='/user_account'" class="username gen-flex" style="cursor: pointer;">
                         <div class="username-icon-cont gen-flex">
@@ -260,6 +276,7 @@
     <script src="static/js/indexedb.js" ></script>
     <script src="static/js/js_script.js" ></script>
     <script src="static/js/bus_cht.js" ></script>
+    <script src="static/js/tempkeys.js" ></script>
 
 <script>
     console.log("Check Notification Permission: ",Notification.permission);
@@ -269,15 +286,18 @@
 
     if (userLabel){
         initDB().then((db) =>{
+            // preRegister();
             console.log("db", db.objectStoreNames.contains("keys"));
             console.log("User Found");
-        });
+        });  
+        
     }else{
         // initialise DB 
         initDB().then((db) =>{
             console.log("db", db.objectStoreNames.contains("keys"));
             console.log("User Not Found");
             preRegister();
+            // sessionStorage.setItem("recCredInfo", "NA");
         });
     }
 

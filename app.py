@@ -294,6 +294,82 @@ def home():
 users = {}  # {username: public_key}
 messages = {}  # {username: [encrypted_messages]}
 
+@app.route("/recovery_status_reg", methods=['POST','GET'])
+def recovery_register():
+
+    data = request.get_json()
+    usrname = data.get("username")
+    chat_user_ = chat_user.query.filter_by(username=usrname).first()
+    user_ = User.query.filter_by(cht_usr_fKey=chat_user_.id).first()
+    
+    if request.method == "POST":
+        if(user_):
+            save_rec_status = recovery_check(
+                cht_usr_id = usrname,
+                username = chat_user_.username,
+                name = user_.name,
+                timestamp = current_time_wlzone()
+            )
+
+            db.session.add(save_rec_status)
+            db.session.commit()
+
+    return jsonify({"res":"success"}),201
+
+
+@app.route("/recovery_status_check", methods=['POST','GET'])
+def recovery_check_func():
+
+    data = request.get_json()
+    usrname = data.get("username")
+
+    chat_user_ = chat_user.query.filter_by(username=usrname).first()
+    user_ = User.query.filter_by(cht_usr_fKey=chat_user_.id).first()
+
+    if request.method == "POST" and user_ :
+        rec_status = recovery_check.query.filter_by(username=usrname).first()
+
+        if rec_status:
+            return jsonify({"res":rec_status.status}),200
+        else:
+            save_rec_status = recovery_check(
+                cht_usr_id = usrname,
+                username = chat_user_.username,
+                name = user_.name,
+                timestamp = current_time_wlzone()
+            )
+
+            db.session.add(save_rec_status)
+            db.session.commit()
+
+        if not current_user.is_authenticated:
+            login_user(user_)
+            print("Recovery, User is loged In")
+
+    return jsonify({"res":"checking status"}),200
+
+
+@app.route("/recovery_status_update", methods=['POST','GET'])
+def recovery_update():
+
+    data = request.get_json()
+    usrname = data.get("username")
+
+    chat_user_ = chat_user.query.filter_by(username=usrname).first()
+    user_ = User.query.filter_by(cht_usr_fKey=chat_user_.id).first()
+
+    if request.method == "POST":
+        if(user_):
+            rec_status = recovery_check.query.filter_by(username = usrname).first()
+           
+            rec_status.reg_timestamp = current_time_wlzone()
+            rec_status.status = "True"
+
+            db.session.commit()
+
+    return jsonify({"res":"success"}),201
+
+
 @app.route('/service-worker.js')
 def service_worker():
     return send_from_directory('static', 'service-worker.js')
@@ -302,10 +378,106 @@ def service_worker():
 def manifest():
     return send_from_directory('static', 'manifest.js')
 
+def send_chat_message(message_form,receiver_,recipientMsg_):
+    users = chat_user.query.all()
+    user_name = chat_user.query.get(current_user.cht_usr_fKey)
+    print("DEBUG: ", current_user.id)
+    company = company_info.query.filter_by(usr_id=current_user.id).first()
+
+    curr_user = User.query.filter_by(cht_usr_fKey=current_user.id).first()
+    subject = message_form.get("subject")
+    message = message_form.get("reply-message")
+    print("Debug Reply MEssage: ", message)	
+    # Receiver's Details'
+    receiver =receiver_
+    recipientMsg = recipientMsg_
+    
+    rec_email = message_form.get("recipient_email")
+
+    if request.method=="POST":
+        msg = Messages(
+            sender = user_name.username,
+            receiver = receiver,
+            subject = subject,
+            message = recipientMsg,
+            date = current_time_wlzone(), #timestamp
+            key = receiver,
+            company_info_name = company.company_name
+        )
+
+        db.session.add(msg)
+        
+        # assign my username to key so  i will be able to open the msg with my pKey 
+        msg2 = Messages(
+            sender = user_name.username,
+            receiver = receiver,
+            subject = subject,
+            message =  message,
+            date = current_time_wlzone(), #timestamp
+            key = user_name.username,
+            company_info_name = company.company_name
+        )
+
+        db.session.add(msg2)
+        db.session.commit()
+        flash("Message Sent!!","success")
+        print("Messages Sent!!")
+
+
 @app.route("/reply_unit", methods=['POST','GET'])
+@login_required
 def reply_unit():
 
+    if request.method == "POST":
+        curr_user = None
+        users = chat_user.query.all()
+        cht_id = session.get("_no")
+
+        company = company_info.query.get(cht_id)
+
+        if cht_id:
+            curr_user = User.query.filter_by(cht_usr_fKey=cht_id).first()
+        else:
+            print("Current User not Found in compose: ",cht_id)
+
+        print("Users: ", users)
+
+        message_form = request.form
+        receiver_ = message_form.get("recipient_username")
+        recipientMsg_ =  message_form.get("rec_encrypted-msg")
+        if current_user.is_authenticated:
+            send_msg =send_chat_message(message_form,receiver_,recipientMsg_)
+            return redirect(url_for('reply_unit'))
+        
     return render_template("messege_reply_unit.html")
+
+
+@app.route('/message_blueprint', methods=['GET', 'POST'])
+@login_required
+def message_blueprint():
+
+    curr_user = None
+    users = chat_user.query.all()
+    cht_id = session.get("_no")
+
+    company = company_info.query.get(cht_id)
+
+    if cht_id:
+        curr_user = User.query.filter_by(cht_usr_fKey=cht_id).first()
+    else:
+        print("Current User not Found in compose: ",cht_id)
+
+    print("Users: ", users)
+
+    message_form = request.form
+    receiver_ = message_form.get("recipient_username")
+    recipientMsg_ =  message_form.get("rec_encrypted-msg")
+
+    if request.method == "POST":
+            send_msg =send_chat_message(message_form,receiver_,recipientMsg_)
+            return redirect(url_for('get_messages', key=receiver_))
+
+    return render_template("message_blueprint.html", users=users,usr=curr_user,company=company)
 
 @app.route("/vpid", methods=['POST','GET'])
 def public_key():
@@ -599,6 +771,14 @@ def login(id=None):
                 # return redirect(url_for("home"))
 
     return jsonify({"message":"User Logged in"}),200
+
+@app.route('/logout')
+@login_required
+def logout():
+    
+    logout_user()
+    
+    return redirect(url_for('home'))
 
 @app.route('/register', methods=['POST','GET'])
 def register():
@@ -1063,74 +1243,6 @@ def get_messages():
 
         return render_template("message_blueprint.html", chat_messages=messages_wcurrent_ukey, chat_user = chat_user, other_usrname =other_usrname,
                                other_usr_company_info=other_usr_company_dict, my_company_info=my_company_dict)
-
-
-@app.route('/message_blueprint', methods=['GET', 'POST'])
-@login_required
-def message_blueprint():
-
-    curr_user = None
-    users = chat_user.query.all()
-    cht_id = session.get("_no")
-
-    company = company_info.query.get(cht_id)
-
-    if cht_id:
-        curr_user = User.query.filter_by(cht_usr_fKey=cht_id).first()
-    else:
-        print("Current User not Found in compose: ",cht_id)
-
-    print("Users: ", users)
-
-    message_form = request.form
-    if current_user.is_authenticated:
-        users = chat_user.query.all()
-        user_name = chat_user.query.get(current_user.cht_usr_fKey)
-        print("DEBUG: ", current_user.id)
-        company = company_info.query.filter_by(usr_id=current_user.id).first()
-
-        curr_user = User.query.filter_by(cht_usr_fKey=current_user.id).first()
-        subject = message_form.get("subject")
-        message = message_form.get("reply-message")
-        print("Debug Reply MEssage: ", message)	
-        # Receiver's Details'
-        receiver = message_form.get("recipient_username")
-        recipientMsg = message_form.get("rec_encrypted-msg")
-        
-        rec_email = message_form.get("recipient_email")
-
-        if request.method=="POST":
-            msg = Messages(
-                sender = user_name.username,
-                receiver = receiver,
-                subject = subject,
-                message = recipientMsg,
-                date = current_time_wlzone(), #timestamp
-                key = receiver,
-                company_info_name = company.company_name
-            )
-
-            db.session.add(msg)
-            
-            # assign my username to key so  i will be able to open the msg with my pKey 
-            msg2 = Messages(
-                sender = user_name.username,
-                receiver = receiver,
-                subject = subject,
-                message =  message,
-                date = current_time_wlzone(), #timestamp
-                key = user_name.username,
-                company_info_name = company.company_name
-            )
-
-            db.session.add(msg2)
-            db.session.commit()
-            flash("Message Sent!!","success")
-            print("Messages Sent!!")
-            return redirect(url_for('get_messages', key=receiver))
-
-
-    return render_template("message_blueprint.html", users=users,usr=curr_user,company=company)
 
 
 @app.route('/update_field_user', methods=['POST','GET'])

@@ -21,7 +21,7 @@ function initDB() {
       console.log("IndexedDB opened");
       resolve(db);
       // This script for messages waits for db to open first 
-       async function preStartReadingMsgs() {
+    async function preStartReadingMsgs() {
         // const myUsrname = await myUserName();
         console.log("Script 3 pre-test ");
         const tx = db.transaction("keys", "readonly");
@@ -253,13 +253,6 @@ async function register() {
       return;
     }
 
-    // if (await usernameExists(myUsername)) {
-    //   const confirmed = confirm(
-    //     "This username is already registered. Registering again will reset your encryption keys, and you will not be able to read old messages. Do you want to continue?"
-    //   );
-    //   if (!confirmed) return;
-    // }
-
     // Open the IndexedDB database
     const request = indexedDB.open("BusinessChatDB", 2);
 
@@ -295,12 +288,12 @@ async function register() {
         Keys.privateKey = keyPair.privateKey;
 
         // Step 2: Export the public key as JWK
-        const jwk = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey);
+        const exportedPublicKey = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey);
         const exportedPrivateKey = await crypto.subtle.exportKey("jwk", keyPair.privateKey);
         console.log("Exported public key JWK:", jwk);
 
         // Step 3: Save it
-        savePublicKey(myUsername, jwk, exportedPrivateKey);
+        savePublicKey(myUsername, exportedPublicKey, exportedPrivateKey);
         let name = document.querySelector('#name').value;
         let email = document.querySelector('#email').value;
         let password = document.querySelector('#password').value;

@@ -26,9 +26,30 @@
     </select>
     
     <button id="submit-btn" class="btns">Register</button><br><br>
-    <label style="color:#EF4036">Already have an account?</label><br>
+    <label style="color:#3667ef">Already have an account?</label><br>
+    <div onclick="viewRecoryModal()" style="background-color:#3667ef" class="btns">Recover Account</div><br>
+    
 </form>
 </div>
+
+
+
+<!-- Restore Modal (hidden by default) -->
+<div id="restore-modal" style="display:none; position:fixed; top:0;backdrop-filter: blur(5px); left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#fff; padding:2em; border-radius:10px; max-width:400px; margin:auto;">
+    <h2>Restore Your Account</h2>
+    <input type="file" id="recovery-file-input" accept=".json" /><br><br>
+    <input type="text" id="restore-key-input" placeholder="Enter your recovery key" style="width:100%;" /><br><br>
+    <button id="restore-account-btn">Restore</button>
+    <div id="restore-status" style="color:red; margin-top:1em;"></div>
+    <br>
+    <button onclick="closeRecModal()" class="btns">Close</button>
+    <!-- <button onclick="document.getElementById('restore-modal').style.display='none'">Close</button> -->
+  </div>
+</div>
+
+
+
 <script>
 
 

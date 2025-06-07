@@ -96,6 +96,16 @@ body {
     font-weight:400;
   }
 
+  #open-reply-unit:hover{
+    cursor: pointer;
+    background-color: #fcf4ed;
+    transform: scale(0.9);
+  }
+   #open-reply-unit{
+    background-color: #edfcfb;
+    border-radius: 15px;
+  }
+
 /* html{box-sizing:border-box}*;*:before;*:after{//box-sizing:inherit} */
 
 .login-modal-bg{
@@ -713,7 +723,7 @@ html, body {
     background-color: var(--el-background-color);
     border-radius: 10px;
     min-height:80px;
-    height:80px;
+    height:100%;
     max-height:60vh;
     width:100%;
     position:relative;
@@ -724,7 +734,7 @@ html, body {
 
 .reply-unit{
     min-height: 150px;
-    height: max-content !important;
+    height: 100% !important;
     max-height:100vh;
 }
 
@@ -787,10 +797,19 @@ html, body {
     transform: translate(-50%,-50%) scale(1);
 }
 
+.img-contain{
+    height:max-content;
+}
+
+.border-deco{
+    border: 1px solid #b92d1f !important;
+}
 
 .img-contain:hover{
     box-shadow:  0px 1px 7px rgba(26, 15, 10, 1);
 }
+
+
 
 .side-nav-item img{
     height:50px;
@@ -1022,15 +1041,15 @@ transition: all 0.3s ease-out;
     right: 0;
     bottom: 0;
     top:0;
+    background-color: #3667ef !important;
     backdrop-filter: blur(5px);
     border-left: 1px solid #e6e6e6;
-    /* background-color: #00A79D; */
+    height:100%;
 }
 
 .ads-icons{
     height:40px;
     transition: all 0.3s ease;
-    /* background: rgba(255, 255, 255,0.8); */
     border-radius: 13px;
     filter: invert(1);
 }
@@ -1251,6 +1270,28 @@ a {
     border: 1px solid #e9e9e9;
     border-radius: 15px;
     position: fixed;
+    bottom: 0;
+    /* transform: translateY(-50%); */
+    /* left: 0; */
+    /* background-color: var(--ribbon-color); */
+    z-index: 2000; 
+}
+
+.reply-form .submit-reply{
+    height:45px !important;
+
+}
+
+.reply-form{
+    width:100%;
+    margin: 0 auto;
+    /* max-width: 900px; */
+    padding: 10px;
+    background-color: rgba(241, 241, 241,0.3);
+    backdrop-filter: blur(5px);
+    border: 1px solid #e9e9e9;
+    border-radius: 15px;
+    /* position: fixed; */
     bottom: 0;
     /* transform: translateY(-50%); */
     /* left: 0; */

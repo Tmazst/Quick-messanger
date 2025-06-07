@@ -20,7 +20,7 @@
     }
     .column .img-contain {
         width: 100%; 
-        /*height: 100%;  Set the maximum height for the image */
+        /* height: 100%;  Set the maximum height for the image */
         /* object-fit: cover; Ensures the image fits within the container without distortion */
         display: block; /* Prevent inline spacing issues */
         box-shadow:  0px 1px 3px rgba(0, 0, 0, 0.46);
@@ -64,8 +64,6 @@
     </div>
 
     <br>
-
-
     <!-- <div class="masonry-cont gen-flex">
         Static Image Ad
         <div class="column gen-flex-col">
@@ -99,17 +97,16 @@
                         {% set comp_obj = companies[ad.comp_id] if ad.comp_id in companies else None %}
                         <div onmouseenter="revealDrawer(event,'{{ad.id}}')" class="img-contain" style="position:relative;">
                             <img src="static/ad-images/{{ ad.advert_image }}" alt="Ad Image" class="ad_image">
-                            <div id="ad00{{ad.id}}" style="justify-content: flex-end;gap:4px" class="ad-comp-details gen-flex-col">
+                            <div id="ad00{{ad.id}}" style="justify-content: flex-end;gap:2px" class="ad-comp-details gen-flex-col">
                                 {%if comp_obj.website%}
-                                <a href="{{comp_obj.website}}"><img src="static/icons/ads-web-icon.png" class="ads-icons"/> </a>
+                                    <a href="{{comp_obj.website}}"><img src="static/icons/ads-web-icon.png" class="ads-icons"/> </a>
                                 {%endif%}
                                 {%if comp_obj.company_contacts%}
-                                <a href="{{comp_obj.company_contacts}}"><img src="static/icons/ads-tel-icon.png" class="ads-icons"/> </a>
+                                    <a href="{{comp_obj.company_contacts}}"><img src="static/icons/ads-tel-icon.png" class="ads-icons"/> </a>
                                 {%endif%}
                                 {%if comp_obj.email%}
-                                <a href="{{comp_obj.email}}"><img src="static/icons/ads-email-icon.png" class="ads-icons"/> </a>
+                                    <a href="{{comp_obj.email}}"><img src="static/icons/ads-email-icon.png" class="ads-icons"/> </a>
                                 {%endif%}
-                                <br>
                                 <div class=" qm-icon-adverts">
                                     <a href="/compose?id={{ser.dumps({'data':comp_obj.id})}}" target="_blank">
                                         <img src="static/icons/imbc-icon.png" style="height: 50px;width:50px ;" />

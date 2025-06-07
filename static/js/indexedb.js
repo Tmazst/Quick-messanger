@@ -126,11 +126,12 @@ async function encryptMessage() {
 
 async function encryptMessageChat(event) {
     if (event) event.preventDefault();
-    var messageField = document.querySelector("#reply-message");
-    var replyForm = document.getElementById('reply-form');
+    var form = event.target;
+    var messageField =  form.elements['reply-message']; //document.querySelector("#reply-message");
+    var replyForm = form //document.getElementById('reply-form');
     var submitBtn = document.getElementById('chat_submit');
-    var recPKey = document.querySelector("#recipient_pkey");
-    var recDuplicatedMsg = document.querySelector("#rec-duplicated-msg");
+    var receiverPKey =  form.elements['recipient_pkey'];//document.querySelector("#recipient_pkey");
+    var recDuplicatedMsg = form.elements['rec_encrypted-msg'];  //document.querySelector("#rec-duplicated-msg");
     var message = messageField.value;
     console.log("@encryptMessage Chat");
     const tx = db.transaction("keys","readwrite");
@@ -185,7 +186,7 @@ async function encryptMessageChat(event) {
             //..I am using the receiver public key to encrypt the message
             //..so that the receiver can decrypt it using their private key
             //..I am sending 2 versions of the messageField 1 for the sender and 1 for the receiver to be able to decrypt it with thier own private key
-            var recPKey = document.querySelector("#recipient_pkey");
+            var recPKey = receiverPKey;
             console.log("Recipient Public Key Chat: ", recPKey.value);
             console.log("Recipient Public Key Chat: ", recPKey.value);
             // Convert the recipient's public key from base64 to JWK object
@@ -310,11 +311,9 @@ async function decryptMessage(encryptedBase64,elmsgDiv) {
             // elmsgDiv.innerHTML = decryptedMessage; // Display the decrypted message in the element
 
             msgLength = decryptedMessage.length;
-            if (msgLength >= 15) {
-                elmsgDiv.innerHTML = decryptedMessage.substring(0, 15) + "...";
-            }else{
-                elmsgDiv.innerHTML = decryptedMessage;
-            }
+            
+            elmsgDiv.innerHTML = decryptedMessage;
+            
 
             console.log("Decrypted Message: ",decryptedMessage);
 
@@ -404,13 +403,15 @@ async function preRegister(){
     request.onsuccess = async function() {
         if (request.result && request.result.length > 0) {
             const myUsrname = request.result[0].Usernames;// Get the username from the first record
-            const key = request.result[0].publicKey;
+            const Pkey = request.result[0].publicKey;
+            const Prkey = request.result[0].privateKey;
             // userName = myUsrname;
 
             // If usernamenot found in DB 
             if(!myUsrname){
                 console.log("Username Not Found");
                 goRegister.style.display = 'block';
+                window.location.href = '/register';
                 // modal.style.display = "none";
                 
                 return;
@@ -435,20 +436,48 @@ async function preRegister(){
             //     modal.style.display = "none";
             //     return;
             // }
+            // console.log("Turn ON Alert Box");
+            // modal.style.display = "flex";
+            // loginId.href = "/login?id=" + myUsrname;
+            // return;
 
-            // userNameField.innerHTML = response.user;
-            console.log("Turn ON Alert Box");
-            modal.style.display = "flex";
-            loginId.href = "/login?id=" + myUsrname;
+            var response = await fetch("/recovery_status_check",{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username: myUsrname })
+                });
+
+            var data = await response.json();
+            console.log("Rec_Status_Check: ",data.res);
+
+            // check creds saved 
+            // var recCredInfo = sessionStorage.getItem("recCredInfo");
+            // console.log("recCredInfo: ",recCredInfo );
+            if (data.res === "False"){
+                var userObj = {myUsrname,Pkey,Prkey};
+                showRecoveryModal(userObj);
+            }else{
+                // userNameField.innerHTML = response.user;
+                console.log("Turn ON Alert Box");
+                modal.style.display = "flex";
+                loginId.href = "/login?id=" + myUsrname;
+                return;
+            };
 
 
-            return;
 
         };
     };
     // console.log("preRegister Called");
 };
 
+
+function closeRecModal(){
+    document.getElementById('restore-modal').style.display='none';
+    window.location.href = "/";
+}
 
 // Register 
 async function register() {
@@ -528,6 +557,18 @@ async function register() {
             console.log("Username set to-:", usrName.value);
         }, 500);
 
+        var username = myUsername;
+
+        var response = await fetch("/recovery_status_reg",{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ username: username })
+        });
+        var data = await response.json();
+        console.log("Rec_Status_Rec: ",data.res);
+
         // Optional: Use MutationObserver to monitor changes and override them
         // const observer = new MutationObserver(() => {
         // if (usrName.value !== myUsername) {
@@ -538,8 +579,7 @@ async function register() {
         // }
     // });
 
-    observer.observe(usrName, { attributes: true, childList: true, subtree: true });
-        
+    observer.observe(usrName, { attributes: true, childList: true, subtree: true });  
     };
 };
 

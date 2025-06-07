@@ -25,6 +25,33 @@
     .navigation-main{
         display: none;
     }
+    .reply-message-item{
+        background-color: rgb(255, 255, 255);
+        min-height: max-content;
+        border: none;
+        border-radius: 10px;
+        width:95%;
+        margin: 0px auto;
+        box-shadow:  0px 1px 7px rgba(26, 15, 10, 1);
+        padding: 5px !important;
+    }
+
+    .message-item:hover{
+        opacity: 1;
+        cursor:auto;
+    }
+
+    .submit-reply{
+    height:35px !important;
+
+    }
+    .message-item-time{
+        position: relative;
+    }
+    .message-item-time{
+        margin-left:5px;
+        font-size: 12px;
+    }
 
 </style>
 
@@ -44,17 +71,17 @@
             {%endif%}
     {%endfor%}
     <div class="scorllable-messages gen-flex-col">
-        <div style="display: block !important;" class="messages-container">
+        <!-- <div style="display: block !important;" class="messages-container"> -->
             {% for msg in messages %}
             {%set the_sender = msg.sender%}
             {%set my_msgs = msg.key%}
             {%if current == my_msgs%}
                 {%if msg.sender == current%}<!--sent messages-->
                 {%set rec_usrnm = usrn.query.filter_by(username=msg.receiver).first()%}
-                <div style="min-height: 120px !important;" onclick="window.location.href='/get_messages?key={{rec_usrnm.username}}'" id="messages-inbox-cont"  class="message-item gen-flex-col">
+                <div style="min-height: 120px !important;"  id="messages-inbox-cont" onclick="minMaxMsgBox('{{rec_usrnm.id}}')"  class="reply-message-item message-item gen-flex-col">
                     <!-- Name, Logo, and Time  -->
                     <div  class="message-item-header-left gen-flex">
-                        <div onclick="window.location.href='/get_messages?key={{rec_usrnm.username}}'" class="message-item-header-left gen-flex">
+                        <div class="message-item-header-left gen-flex">
                             {% set name = rec_usrnm.user_details[0].name %}
                             <img src="{{ url_for('static', filename='uploads/'+ rec_usrnm.company_details[0].image) }}" alt="Logo" class="message-item-icon">
                             {% if name | length >= 12 %}
@@ -65,17 +92,30 @@
                             <div id="sent-icon" class="inbox-icon">Sent</div>
                         </div>
                     </div>
-                        <!-- Message Caption  -->
-                        
-                        <div data-encrypted="{{msg.message}}" class="message-text">{{ msg.message }}</div>
-                       
-                        <span class="message-item-time">{{msg.date.strftime("%d %b %H:%M" )}}</span>
+
+                    <!-- Message Caption  -->
+                    <div id="message-box-{{rec_usrnm.id}}" data-encrypted="{{msg.message}}" class="message-text">{{ msg.message }}</div>
+                    <div class="message-item-time">{{msg.date.strftime("%d %b %H:%M" )}}</div>
+
+                    <form  id="reply-form-{{rec_usrnm.id}}" class="reply-form" action="/reply_unit" method="POST" onsubmit="return encryptMessageChat(event);">
+                        <div style="position: relative;" class="message-input-container gen-flex-col">
+                            <input type="hidden" style="align-self: flex-start;width: max-content;margin-bottom: 0;" id="subject-field" class="form-control" name="subject" placeholder="Subject" class="subject-input" >
+                            <textarea name="reply-message" id="reply-message" class="form-control"  placeholder="Type your message here..." class="message-textarea"></textarea>
+                            <input type="hidden" id="rec-duplicated-msg" name="rec_encrypted-msg" value="">
+                            <input type="hidden" name="recipient_username" value="{{ rec_usrnm.username }}">
+                            <input type="hidden" id="recipient_pkey" name="recipient_pkey" value="{{ rec_usrnm.pkey }}">
+                            <input type="hidden" class="form-control" name="recipient_email" id="recipient-email" value="{{ rec_usrnm.email }}">
+                            <div onclick="" id="reply-icon">
+                                <button type="submit" id="chat_submit"  class="btns btn-primary gen-flex"><img style="height:40px" class="submit-reply" src="static/icons/sendmessage-icon-bg.png"  /></button>
+                            </div>
+                        </div>
+                    </form>
                     
                 </div>
                         
                 {%elif msg.receiver == current%}<!--received messages-->
                 {%set send_usrnm = usrn.query.filter_by(username=msg.sender).first()%}
-                <div onclick="window.location.href='/get_messages?key={{send_usrnm.username}}'" id="messages-inbox-cont"  class="message-item gen-flex-col">
+                <div id="messages-inbox-cont" onclick="minMaxMsgBox('{{send_usrnm.id}}')"  class="reply-message-item message-item gen-flex-col">
                     <!-- Name, Logo, and Time  -->
                     <div class="message-item-header-left gen-flex">
                         <div  class="message-item-header-left gen-flex">
@@ -92,9 +132,23 @@
                     </div>
                         <!-- Message Caption  -->
                        
-                        <div data-encrypted="{{msg.message}}" class="message-text">{{ msg.message }}</div>
+                        <div id="message-box-{{send_usrnm.id}}" data-encrypted="{{msg.message}}" class="message-text">{{ msg.message }}</div>
                         
-                        <span class="message-item-time">{{msg.date.strftime("%d %b %H:%M" )}}</span>
+                        <div class="message-item-time">{{msg.date.strftime("%d %b %H:%M" )}}</div>
+
+                        <form  id="reply-form-{{send_usrnm.id}}" class="reply-form" action="/reply_unit" method="POST"  onsubmit="return encryptMessageChat(event);">
+                        <div style="position: relative;" class="message-input-container gen-flex-col">
+                            <input type="hidden" style="align-self: flex-start;width: max-content;margin-bottom: 0;" id="subject-field" class="form-control" name="subject" placeholder="Subject" class="subject-input" >
+                            <textarea name="reply-message" id="reply-message" class="form-control"  placeholder="Type your message here..." class="message-textarea"></textarea>
+                            <input type="hidden" id="rec-duplicated-msg" name="rec_encrypted-msg" value="">
+                            <input type="hidden" name="recipient_username" value="{{ send_usrnm.username }}">
+                            <input type="hidden" id="recipient_pkey" name="recipient_pkey" value="{{ send_usrnm.pkey }}">
+                            <input type="hidden" class="form-control" name="recipient_email" id="recipient-email" value="{{ send_usrnm.email }}">
+                            <div onclick="" id="reply-icon">
+                                <button type="submit" id="chat_submit"  class="btns btn-primary gen-flex"><img class="submit-reply" src="static/icons/sendmessage-icon-bg.png"  /></button>
+                            </div>
+                        </div>
+                    </form>
                     
                 </div>
                 {%else%}
@@ -111,12 +165,68 @@
             {%endif%}
             {% endfor %}
 
-        </div>
+        <!-- </div> -->
     </div>
 </div>
 </div>
 
 <script>
+var allReplyForms = document.querySelectorAll(".reply-form");
+var allMsgBox = document.querySelectorAll(".message-text");
+var allMsConts = document.querySelectorAll(".reply-message-item");
+
+function minMaxMsgBox(id){
+    console.log("minMaxMsgBox Called");
+    allReplyForms.forEach(element => {
+        element.style.display = "none";
+    });
+    allMsgBox.forEach(element => {
+        var len = element.textContent.length;
+        if(len >= 20){
+            element.textContent = element.textContent.substring(0,20) + "...";
+        }
+    });
+    //  allMsConts.forEach(element => {
+    //     element.classList.remove("border-deco");
+    // });
+
+    var currMsgBox = document.querySelector("#message-box-"+id);
+    var replyForm = document.querySelector("#reply-form-"+id);
+    // event.target.classList.add("border-deco");
+    //Display Full Message
+    if (currMsgBox) {
+        // Get the encrypted message
+        var encrypted = currMsgBox.getAttribute("data-encrypted");
+        // Decrypt and display the full message
+        if (encrypted) {
+            decryptMessage(encrypted, currMsgBox);
+        }
+    }
+    if (replyForm) replyForm.style.display = "block";
+
+    // Save last focused chat
+    localStorage.setItem('lastFocusedChatId', id);
+}
+
+// Restore last focused chat on page load
+window.addEventListener('DOMContentLoaded', function() {
+    var lastId = localStorage.getItem('lastFocusedChatId');
+    if (lastId) {
+        minMaxMsgBox(lastId);
+    }else if (allMsgBox.length > 0) {
+        // Get the id from the first message box
+        var firstMsgBox = allMsgBox[0];
+        if (firstMsgBox && firstMsgBox.id) {
+            // Extract the id part from "message-box-<id>"
+            var match = firstMsgBox.id.match(/^message-box-(.+)$/);
+            if (match && match[1]) {
+                minMaxMsgBox(match[1]);
+            }
+        }
+    }
+});
+
+
 
 </script>
 

@@ -1,183 +1,168 @@
 
 
-let Keys = {};
-let db;
 
-async function keyGen(){
-   
-    const keyPair = await window.crypto.subtle.generateKey(
-            {
-            name: "RSA-OAEP",
-            modulusLength: 2048,
-            publicExponent: new Uint8Array([1, 0, 1]), // 65537
-            hash: "SHA-256",
-            },
-            true, // extractable: true (allows export)
-            ["encrypt", "decrypt"]
-        );
+// --- Crypto Helper Functions ---
 
-    let pKey = document.querySelector('#pKey');
+// Encrypts a JSON object with a password using AES-GCM
+async function encryptData(dataObj, password) {
+    const enc = new TextEncoder();
+    const iv = window.crypto.getRandomValues(new Uint8Array(12)); // 96-bit IV
+    const keyMaterial = await window.crypto.subtle.importKey(
+        "raw", enc.encode(password), {name: "PBKDF2"}, false, ["deriveKey"]
+    );
+    const key = await window.crypto.subtle.deriveKey(
+        {
+            name: "PBKDF2",
+            salt: iv,
+            iterations: 100000,
+            hash: "SHA-256"
+        },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+    );
+    const encoded = enc.encode(JSON.stringify(dataObj));
+    const ciphertext = await window.crypto.subtle.encrypt(
+        { name: "AES-GCM", iv: iv },
+        key,
+        encoded
+    );
+    // Return base64-encoded IV + ciphertext
+    return {
+        iv: btoa(String.fromCharCode(...iv)),
+        data: btoa(String.fromCharCode(...new Uint8Array(ciphertext)))
+    };
+}
 
-    // Step 2: Export the public key as JWK
-    const exportedPublicKey = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey);
-    const exportedPrivateKey = await crypto.subtle.exportKey("jwk", keyPair.privateKey);
+// Decrypts the encrypted recovery file with the password
+async function decryptData(encryptedObj, password) {
+    const enc = new TextEncoder();
+    const dec = new TextDecoder();
+    const iv = Uint8Array.from(atob(encryptedObj.iv), c => c.charCodeAt(0));
+    const ciphertext = Uint8Array.from(atob(encryptedObj.data), c => c.charCodeAt(0));
+    const keyMaterial = await window.crypto.subtle.importKey(
+        "raw", enc.encode(password), {name: "PBKDF2"}, false, ["deriveKey"]
+    );
+    const key = await window.crypto.subtle.deriveKey(
+        {
+            name: "PBKDF2",
+            salt: iv,
+            iterations: 100000,
+            hash: "SHA-256"
+        },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+    );
+    const decrypted = await window.crypto.subtle.decrypt(
+        { name: "AES-GCM", iv: iv },
+        key,
+        ciphertext
+    );
+    return JSON.parse(dec.decode(decrypted));
+}
 
-    Keys.publicKey = exportedPublicKey;
-    Keys.privateKey = exportedPrivateKey;
+// --- Registration: Show Recovery Modal and Download File ---
 
-    let tempDataSave = { exportedPublicKey, exportedPrivateKey };
+// Call this function after successful registration
+async function showRecoveryModal(userObj) {
+    // userObj = {username, publicKey, privateKey}
+    // Generate a random recovery key
+    const recoveryKey = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+        .map(b => b.toString(16).padStart(2, '0')).join('');
+    // Encrypt user data
+    const encrypted = await encryptData(userObj, recoveryKey);
+    // Show modal
+    document.getElementById('recovery-modal').style.display = 'flex';
+    document.getElementById('recovery-key').textContent = recoveryKey;
 
-    localStorage.setItem('tempData', JSON.stringify(tempDataSave));
-    
+    // Download file handler
+    document.getElementById('download-recovery-file').onclick = function() {
+        const blob = new Blob([JSON.stringify(encrypted)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'qm-businessconnect-recovery.json';
+        a.click();
+        URL.revokeObjectURL(url);
 
-    function toBase64(str) {
-          const bytes = new TextEncoder().encode(str);
-          let binary = '';
-          for (let b of bytes) {
-            binary += String.fromCharCode(b);
-          }
-          return btoa(binary);
-        }
+        //Call the updateRecoveryStatus function
+        updateRecoveryStatus(userObj.myUsrname);
+    };
 
-    const pubJson = JSON.stringify(exportedPublicKey);
-    const pubBase64 = toBase64(pubJson); // Convert the public key to a base64 string for transmission
+    // Copy key handler
+    document.getElementById('copy-recovery-key').onclick = function() {
+        navigator.clipboard.writeText(recoveryKey);
+        alert('Recovery key copied!');
+    };
+}
 
-    console.log("Base64 Public Key:", pubBase64);
-    pKey.value = pubBase64;
-
-    return new Promise((resolve, reject) => {
-        if(Keys){
-            resolve(Keys);
-        }else{
-            reject();
-        };
-      });
-
-};
-
-var submitBtn = document.querySelector("#submit-btn");
-submitBtn.addEventListener('click', function(){
-    initTempDB();
-    console.log("Saved to TempFiles✔")
-});
-
-
-function initTempDB() {
-  return new Promise((resolve, reject) => {
-    if (db) return resolve(db); // Already initialized
-
-    const request = indexedDB.open("TempFiles", 4);
-
-    request.onupgradeneeded = (event) => {
-        db = event.target.result;
-        if(!db.objectStoreNames.contains("temp")){
-            const store = db.createObjectStore("temp",{
-                keyPath: "Usernames",
-                autoIncrement:true
+async function updateRecoveryStatus(usrname){
+    console.log("1. Recovery Status Username", usrname);
+    var response = await fetch("/recovery_status_update",{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: usrname })
             });
-            console.log("DB Created for Temp Keys");
-        };
-
-    };//onupgraneeded
-
-    request.onsuccess = (event) =>{
-        var username = document.querySelector('#username').value;
-        console.log("Got username Value: ", username);
-        db = event.target.result;
-        console.log("IndexedDB opened @initTempDB");
-        resolve(db);
-
-        const tempData = JSON.parse(localStorage.getItem('tempData'));
-        console.log("Check Keys Before Saveing: ",tempData.exportedPrivateKey);
-        saveTempKeys(db,username, tempData.exportedPublicKey, tempData.exportedPrivateKey);
-    };//onsuccess
-
-    request.onerror = (event) => {
-        console.error("IndexedDB error:", event.target.error);
-        reject(event.target.error);
+    var data = await response.json();
+    console.log("2. Recovery Status", data.res);
     };
 
-});//promise
-}//db
+  
+// Example usage after registration:
+// showRecoveryModal({username: 'alice', publicKey: '...', privateKey: '...'});
 
+function viewRecoryModal(){
+    var restoreModal = document.querySelector("#restore-modal");
+    restoreModal.style.display = "flex";
+}
 
-//Save Function
-function saveTempKeys(db, username, publicJwk, privateJwk) {
+// --- Restore Flow ---
+var recBtn = document.getElementById('restore-account-btn');
 
-
-    const tx = db.transaction("keys","readwrite");
-    const store = tx.objectStore("keys");
-
-    // Iterate through all entries and delete them
-    const getAllRequest = store.getAll();
-
-    getAllRequest.onsuccess = async () =>{
-        console.log("DB Output: @savePublicKey", getAllRequest.result);
-
-        // Extract and log the IDs of the keys
-        const keyIds = getAllRequest.result.map(entry => entry.Usernames);
-        console.log("Key IDs:", keyIds);   
-
-        const keys = getAllRequest.result;
-        // Delete all keys if the user confirms
-        const deleteTx = db.transaction("keys", "readwrite");
-        const deleteStore = deleteTx.objectStore("keys");
-        if (keys.length >= 1) {
-        console.log("Keys to delete: ", keys)
-        keys.forEach((key) => {
-            console.log("Almost Deleted");
-            deleteStore.delete(key);
-        });
-        };
-    };
-
-    // Add the new entry after deleting all old ones
-    store.put({ 
-      "Usernames":username,
-      publicKey: publicJwk,
-      privateKey: privateJwk
-    });
-
-    tx.oncomplete = () => console.log("JWK saved for", username);
-    tx.onerror = (e) => console.error("Save failed:", e.target.error);
-};
-
-async function loadTempKeysFromIndexedDB(username) {
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction("keys", "readonly");
-    const store = tx.objectStore("keys");
-    const request = store.get(username);
-
-    request.onsuccess = async () => {
-      const record = request.result;
-      if (!record || !record.privateKey) {
-        reject("Private key not found in IndexedDB.");
-        return;
+if(recBtn){
+  recBtn.onclick = async function() {
+      const fileInput = document.getElementById('recovery-file-input');
+      const keyInput = document.getElementById('restore-key-input');
+      const statusDiv = document.getElementById('restore-status');
+      statusDiv.textContent = '';
+      if (!fileInput.files.length || !keyInput.value) {
+          statusDiv.textContent = 'Please select a file and enter your recovery key.';
+          return;
       }
-
+      const file = fileInput.files[0];
+      const key = keyInput.value.trim();
       try {
-        const privateKey = await window.crypto.subtle.importKey(
-          "jwk",
-          record.privateKey,
-          { name: "RSA-OAEP", hash: "SHA-256" },
-          true,
-          ["decrypt"]
-        );
-        const publicKey = await window.crypto.subtle.importKey(
-          "jwk",
-          record.publicKey,
-          { name: "RSA-OAEP", hash: "SHA-256" },
-          true,
-          ["encrypt"] // Corrected usage for public key
-        );
-        resolve({ privateKey, publicKey }); // Wrap keys in an object
-      } catch (err) {
-        reject("Failed to import private key: " + err);
+          const fileText = await file.text();
+          const encryptedObj = JSON.parse(fileText);
+          const userObj = await decryptData(encryptedObj, key);
+          // Save to IndexedDB (replace with your own logic)
+          await saveCredentialsToIndexedDB(userObj);
+          statusDiv.style.color = 'green';
+          statusDiv.textContent = 'Account restored! You can now log in.';
+          // Optionally, auto-login or reload
+      } catch (e) {
+          statusDiv.style.color = 'red';
+          statusDiv.textContent = 'Failed to restore account. Check your key and file.'+ e;
       }
-    };
+  };
+}
 
-    request.onerror = (e) => {
-      reject("Failed to retrieve key: " + e.target.error);
-    };
-  });
+// Example IndexedDB save function (replace with your own logic)
+async function saveCredentialsToIndexedDB(userObj) {
+    console.log("Parse Obj: ",userObj);
+    var myUsername = userObj.myUsrname;
+    var exportedPublicKey = userObj.Pkey;
+    var exportedPrivateKey = userObj.Prkey;
+    savePublicKey(myUsername, exportedPublicKey, exportedPrivateKey);
+    // Use your existing IndexedDB logic here
+    // Example with idb-keyval (https://github.com/jakearchibald/idb-keyval)
+    // await idbKeyval.set('user', userObj);
+    // For custom logic, use indexedDB API to store userObj
+    // ...
+    console.log('Saving to IndexedDB:', userObj);
 }
