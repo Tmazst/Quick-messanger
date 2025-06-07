@@ -36,9 +36,24 @@
         padding: 5px !important;
     }
 
+    .top-bar-right{
+        display: none;
+    }
+
+    .top-bar-left .logo{
+        height:50px;
+    }
+
     .message-item:hover{
         opacity: 1;
         cursor:auto;
+    }
+
+    .scorllable-messages{
+        width:100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+        height:auto
     }
 
     .submit-reply{
@@ -51,6 +66,9 @@
     .message-item-time{
         margin-left:5px;
         font-size: 12px;
+    }
+    .side-nav-item-rpu{
+        background: none;
     }
 
 </style>
@@ -70,6 +88,7 @@
                 <div class="messages-count gen-flex"><span>{{loop.index}}</span></div>
             {%endif%}
     {%endfor%}
+
     <div class="scorllable-messages gen-flex-col">
         <!-- <div style="display: block !important;" class="messages-container"> -->
             {% for msg in messages %}
