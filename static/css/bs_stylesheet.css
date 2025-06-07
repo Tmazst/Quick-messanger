@@ -806,9 +806,7 @@ html, body {
     border: 1px solid #b92d1f !important;
 }
 
-.img-contain:hover{
-    box-shadow:  0px 1px 7px rgba(26, 15, 10, 1);
-}
+
 
 
 
@@ -1427,7 +1425,7 @@ a {
     background-size: cover;
     overflow: hidden;
     /* border:1px solid #fa7406; */
-    border-radius: 5px;
+    border-radius: 7px;
     transition: all 0.6s ease-in 0.2s;
     min-height: 300px;
     transform: scale(0.9);
