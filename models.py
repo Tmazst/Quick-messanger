@@ -82,7 +82,7 @@ class News(db.Model):
     usr_id = db.Column(db.Integer)
     comp_id = db.Column(db.Integer,ForeignKey('company_info.id'))
     story_title = db.Column(db.String(50))
-    story = db.Column(db.String(50))
+    story = db.Column(db.String(300))
     other = db.Column(db.String(50))
     other1 = db.Column(db.String(50))
     timestamp = db.Column(db.DateTime())
