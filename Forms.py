@@ -116,7 +116,7 @@ choices = [
     ("Mining and Metals", "Mining and Metals"),
     ("Marine and Shipping", "Marine and Shipping"),
     ("Other", "Other"),
-]
+],
     validators=[DataRequired(), Length(min=2, max=100)]
 )
     tagline=StringField('Business Model')
