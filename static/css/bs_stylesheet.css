@@ -1594,6 +1594,7 @@ a {
     border-top: 1px solid #a3a3a3;
     padding: 22px;
     position: relative;
+    max-width: 65% !important;
 }
 
 .subject-field{
