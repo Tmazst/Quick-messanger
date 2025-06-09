@@ -271,7 +271,7 @@ paragraph.forEach(function(pTag){
 //    console.log('Mouse Over');
 //}
 var container = document.querySelector(".app-dowload-container");
-var containerTwo = document.querySelector(".app-dowload-container2");
+var containerTwo = document.querySelector("#download-icon-2");
 // var noBgBtn = document.querySelector(".no-bg-btn");
 // var installBtn = document.querySelector("#pwa-install-btn");
 // Check if the browser supports service workers and PWA installation
