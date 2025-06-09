@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content="Quick Messanger (QM) allows companies and professionals across the globe to connect, exchange messages,and share business information in a both private & public, organized environment.">
     <meta name="key words" content="Quick Messanger (QM) is a secure, fast and reliable business communication and networking platform.">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/places.js@1.19.0/dist/cdn/places.min.css">
     <link rel="stylesheet" type="text/css" href="static/css/styles.css" />
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bs_stylesheet.css') }}" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -38,10 +39,8 @@
             <!-- </a> -->
             <!-- <a href="/subscribe" class="top-bar-link ">Subscribe</a> -->
         </div>
-
     </div>
-
-<!--    <button class="menu burger">Menu</button>-->
+<!-- <button class="menu burger">Menu</button> -->
 </head>
 <body>
     {% block replyunit%}
@@ -95,10 +94,12 @@
                 <img src="{{ url_for('static', filename='icons/subscriptions-icon.png') }}" alt="Logo" class="app-nav-icon">
                 <div class="nav-label">Payment Plans</div>
             </div></a>
-            <a href="/"><div class="app-nav-icons gen-flex">
-                <img src="{{ url_for('static', filename='icons/download-pwa-icon.png') }}" alt="Logo" class="app-nav-icon">
-                <div class="nav-label">Install</div>
-            </div></a>
+            <div style="display: none;" class="app-dowload-container gen-flex">
+                <div id="download-icon-2" class="app-nav-icons gen-flex">
+                    <img src="{{ url_for('static', filename='icons/download-pwa-icon.png') }}" alt="Logo" class="app-nav-icon">
+                    <div class="nav-label">Install</div>
+                </div>
+            </div>
         </div>
         <!-- Container for Chats Nav & Content Section  -->
         <div style="gap:0px;" class="left-main gen-flex">
@@ -279,6 +280,7 @@
     <script src="static/js/js_script.js" ></script>
     <script src="static/js/bus_cht.js" ></script>
     <script src="static/js/tempkeys.js" ></script>
+    
 
 <script>
     console.log("Check Notification Permission: ",Notification.permission);
@@ -338,6 +340,6 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/places.js@1.19.0"></script>
 </body>
 </html>

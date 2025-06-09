@@ -250,7 +250,6 @@ function openReplySidebar(messageId) {
   // Load message data, focus input, etc.
 }
 
-
 function openAndCloseMsgs(){
     var msgMainCont = document.querySelector("#navlink-message");
     var msgCont = document.querySelector(".messages-container");
@@ -302,7 +301,7 @@ window.addEventListener('load', () => {
                     container.style.display = "flex";
                     // containerTwo.style.display = "flex";
                     const installBtn = document.getElementById('pwa-install-btn');
-                    var noBgBtn = document.querySelector(".no-bg-btn");
+                    var sidenavBgBtn = document.getElementById("download-icon-2");
                     
                     if (installBtn) {
                         installBtn.addEventListener('click', () => {
@@ -317,7 +316,7 @@ window.addEventListener('load', () => {
                             });
                         });
                     };
-                    if (noBgBtn) {
+                    if (sidenavBgBtn) {
                         noBgBtn.addEventListener('click', () => {
                             deferredPrompt.prompt();
                             deferredPrompt.userChoice.then((choiceResult) => {

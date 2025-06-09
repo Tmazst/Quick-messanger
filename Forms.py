@@ -96,10 +96,10 @@ class Company_Register_Form(FlaskForm):
 )
     tagline=StringField('Business Model')
     company_logo = FileField('Company Logo', validators=[FileAllowed(['jpg', 'png'])])
-    website_link = StringField('Company Website Link')
-    facebook_link = StringField('Facebook Link')
-    twitter_link = StringField('X Link (former Twitter)')
-    youtube_link = StringField('Youtube Link')
+    website_link = URLField('Company Website Link')
+    facebook_link = URLField('Facebook Link')
+    twitter_link = URLField('X Link (former Twitter)')
+    youtube_link = URLField('Youtube Link')
     payment_options = RadioField("Choose Payment Plan",
                                  choices=[("pay_plan_1", "Pay Monthly"), ("pay_plan_4", "Pay Annually"),
                                           ("pay_plan_2", "Pay Per Advert"), ("pay_plan_3", "Free For Now")])
@@ -113,10 +113,10 @@ class Company_UpdateAcc_Form(FlaskForm):
     company_logo = FileField('Company Logo', validators=[ FileAllowed(['jpg','png'])])
     company_contacts = StringField('Contact(s)', validators=[Length(min=8, max=64)])
     company_address = StringField('Physical Address', validators=[DataRequired(), Length(min=8, max=100)])
-    website_link = StringField('Company Website Link')
-    facebook_link = StringField('Facebook Link')
-    twitter_link = StringField('Twitter Link')
-    youtube_link = StringField('Youtube Link')
+    website_link = URLField('Company Website Link')
+    facebook_link = URLField('Facebook Link')
+    twitter_link = URLField('Twitter Link')
+    youtube_link = URLField('Youtube Link')
     payment_options = RadioField("Choose Payment Plan", choices=[("pay_plan_1", "Pay Monthly"),("pay_plan_4", "Pay Annually"),
                                                                  ("pay_plan_2", "Pay Per Advert"),("pay_plan_3", "Free For Now")])
 
