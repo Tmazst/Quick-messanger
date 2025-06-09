@@ -46,6 +46,8 @@
 <body>
     {% block replyunit%}
     {%endblock%}
+    {% block about%}
+    {%endblock%}
     <div id="notification-container" class="notification-container"></div>
     <!-- Login Modal (hidden by default) -->
     <div style="z-index: 2000;" id="alert-confirm" class="login-modal-bg gen-flex-col">
@@ -85,11 +87,11 @@
                 <img src="{{ url_for('static', filename='icons/profile-icon.png') }}" alt="Logo" class="app-nav-icon">
                 <div class="nav-label">Account</div>
             </div></a>
-            <a href="/"><div class="app-nav-icons gen-flex">
+            <a href="/about"><div class="app-nav-icons gen-flex">
                 <img src="{{ url_for('static', filename='icons/info-icon.png') }}" alt="Logo" class="app-nav-icon">
                 <div class="nav-label">Info</div>
             </div></a>
-            <a href="/"><div class="app-nav-icons gen-flex">
+            <a href="/pricing"><div class="app-nav-icons gen-flex">
                 <img src="{{ url_for('static', filename='icons/subscriptions-icon.png') }}" alt="Logo" class="app-nav-icon">
                 <div class="nav-label">Payment Plans</div>
             </div></a>

@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block about %}
+<style>
+html, body {
+    overflow: auto;
+    box-sizing: border-box;
+}
+.about-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
+    padding: 32px 24px 32px 24px;
+    font-family: 'Montserrat', 'Oswald', Arial, sans-serif;
+}
+.about-title {
+    font-size: 2.2em;
+    color: var(--theme-color, #EF4036);
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+.about-subtitle {
+    font-size: 1.3em;
+    color: #333;
+    margin-bottom: 18px;
+    font-weight: 500;
+}
+.about-section {
+    margin-bottom: 32px;
+}
+.about-list {
+    margin: 0 0 0 18px;
+    padding: 0;
+    color: #272727;
+    font-size: 1.08em;
+}
+.about-list li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+.about-links {
+    margin-top: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+.about-link {
+    background: var(--theme-color, #EF4036);
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+.about-link:hover {
+    background: #b92d1f;
+}
+.how-it-works {
+    background: #f7f7f7;
+    border-radius: 10px;
+    padding: 24px 18px;
+    margin-bottom: 32px;
+}
+.how-step {
+    margin-bottom: 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+.how-step-number {
+    background: var(--theme-color, #EF4036);
+    color: #fff;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1em;
+    margin-right: 8px;
+}
+.how-step-content {
+    flex: 1;
+}
+@media (max-width: 600px) {
+    .about-container { padding: 12px 4vw; }
+    .about-title { font-size: 1.3em; }
+    .about-subtitle { font-size: 1em; }
+}
+.navigation-main{
+    display: none;
+}
+</style>
+
+<div class="about-container">
+    <div class="about-section">
+        <div class="about-title">About Quick Messanger</div>
+        <div class="about-subtitle">
+            Secure, smart business communication and networking for modern companies and professionals.
+        </div>
+        <p>
+            Quick Messanger is a platform designed to help businesses and professionals connect, communicate, and grow their network securely. With a focus on privacy, usability, and business needs, Quick Messanger streamlines networking, messaging, and company promotion in one organized environment.
+        </p>
+    </div>
+
+    <div class="about-section">
+        <h2 style="color: var(--theme-color, #EF4036); font-size: 1.3em; margin-bottom: 10px;">Key Features</h2>
+        <ul class="about-list">
+            <li><b>Secure Messaging:</b> End-to-end encrypted messages for privacy and data protection.</li>
+            <li><b>Company Profiles:</b> Create and manage detailed business profiles with logos, contact info, and social links.</li>
+            <li><b>Business Directory:</b> Discover and connect with other companies by category in a searchable directory.</li>
+            <li><b>Adverts & News:</b> Post advertisements and company news to promote your services and share updates.</li>
+            <li><b>User Accounts:</b> Each user has a personal profile; companies manage their own branding and information.</li>
+            <li><b>Modern UI:</b> Clean, responsive interface with animated category titles and easy navigation.</li>
+        </ul>
+    </div>
+
+    <div class="about-section how-it-works">
+        <h2 style="color: #3667ef; font-size: 1.2em; margin-bottom: 12px;">How It Works</h2>
+        <div class="how-step">
+            <div class="how-step-number">1</div>
+            <div class="how-step-content">
+                <b>Register & Create Your Profile:</b> Sign up as a user or company. Set up your business profile with logo, contact details, and social media links.
+            </div>
+        </div>
+        <div class="how-step">
+            <div class="how-step-number">2</div>
+            <div class="how-step-content">
+                <b>Connect & Discover:</b> Browse the business directory, find companies by category, and connect with professionals and organizations.
+            </div>
+        </div>
+        <div class="how-step">
+            <div class="how-step-number">3</div>
+            <div class="how-step-content">
+                <b>Send Secure Messages:</b> Start private, encrypted conversations with other users and companies. All messages are protected for your privacy.
+            </div>
+        </div>
+        <div class="how-step">
+            <div class="how-step-number">4</div>
+            <div class="how-step-content">
+                <b>Promote & Share:</b> Post adverts and company news to reach a wider audience and keep your network updated.
+            </div>
+        </div>
+        <div class="how-step">
+            <div class="how-step-number">5</div>
+            <div class="how-step-content">
+                <b>Grow Your Network:</b> Use Quick Messanger’s tools to build relationships, collaborate, and expand your business reach securely.
+            </div>
+        </div>
+    </div>
+
+    <div class="about-section">
+        <h2 style="color: var(--theme-color, #EF4036); font-size: 1.2em; margin-bottom: 10px;">Explore More</h2>
+        <div class="about-links">
+            <a class="about-link" href="/register">Register</a>
+            <a class="about-link" href="/business_community">Business Directory</a>
+            <a class="about-link" href="/adverts">Adverts</a>
+            <a class="about-link" href="/news">Company News</a>
+            <a class="about-link" href="/">Home</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

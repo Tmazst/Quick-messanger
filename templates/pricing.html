@@ -1,0 +1,399 @@
+{% extends "base.html" %}
+
+{% block about %}
+<style>
+.navigation-main{
+    display: none;
+}
+html, body {
+    overflow: auto;
+    box-sizing: border-box;
+}
+.pricing-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 4px 24px 0 rgba(0,0,0,0.10);
+    padding: 32px 24px 32px 24px;
+    font-family: 'Montserrat', 'Oswald', Arial, sans-serif;
+}
+.sub-title{
+    font-size: 16px;
+    font-weight: 700;
+}
+.pricing-title {
+    font-size: 2.2em;
+    color: var(--theme-color, #EF4036);
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+.pricing-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 32px 0 24px 0;
+}
+.pricing-table th, .pricing-table td {
+    border: 1px solid #e0e0e0;
+    padding: 16px 10px;
+    text-align: center;
+    font-size: 1.08em;
+}
+.pricing-table th {
+    background: #f7f7f7;
+    color: #333;
+    font-size: 1.15em;
+}
+.pricing-table td.price {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: var(--theme-color, #EF4036);
+}
+.pricing-highlight {
+    background: #c4c4c4 !important;
+    border: 2px solid var(--theme-color, #EF4036);
+    color: white;
+}
+.pricing-note {
+    font-size: 0.98em;
+    color: #666;
+    margin-top: 10px;
+    margin-bottom: 18px;
+}
+.pricing-btn {
+    background: var(--theme-color, #EF4036);
+    color: #fff;
+    padding: 10px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+    margin: 0 8px;
+    display: inline-block;
+}
+.pricing-btn:hover {
+    background: #b92d1f;
+}
+@media (max-width: 700px) {
+    .pricing-container { padding: 12px 2vw; }
+    .pricing-table th, .pricing-table td { padding: 8px 2px; font-size: 0.98em; }
+    .pricing-title { font-size: 1.3em; }
+}
+</style>
+
+<div class="pricing-container">
+    <div class="pricing-title">Pricing & Packages</div>
+    <div class="pricing-note">
+        Choose the plan that fits your business needs. All plans include secure messaging, access to the business directory, and company news features.
+    </div>
+    <div style="margin-bottom:18px;">
+        <label for="country-select" style="font-weight:600;">Select your country: </label>
+        <select id="country-select" style="padding:6px 12px; border-radius:6px; border:1px solid #ccc; font-size:1em;">
+                <option value="auto">Auto Detect</option>
+                <option value="US">United States</option>
+                <option value="GB">United Kingdom</option>
+                <option value="NG">Nigeria</option>
+                <option value="KE">Kenya</option>
+                <option value="IN">India</option>
+                <option value="ZA">South Africa</option>
+                <option value="GH">Ghana</option>
+                <option value="CA">Canada</option>
+                <option value="EU">Europe (Euro)</option>
+                <option value="BR">Brazil</option>
+                <option value="AU">Australia</option>
+                <option value="DE">Germany</option>
+                <option value="FR">France</option>
+                <option value="IT">Italy</option>
+                <option value="ES">Spain</option>
+                <option value="JP">Japan</option>
+                <option value="CN">China</option>
+                <option value="RU">Russia</option>
+                <option value="MX">Mexico</option>
+                <option value="AR">Argentina</option>
+                <option value="EG">Egypt</option>
+                <option value="SZ" selected>Eswatini</option>
+                <option value="TZ">Tanzania</option>
+                <option value="UG">Uganda</option>
+                <option value="ZM">Zambia</option>
+                <option value="BW">Botswana</option>
+                <option value="MW">Malawi</option>
+                <option value="ZW">Zimbabwe</option>
+                <option value="NA">Namibia</option>
+                <option value="SN">Senegal</option>
+                <option value="CI">Côte d'Ivoire</option>
+                <option value="ET">Ethiopia</option>
+                <option value="PK">Pakistan</option>
+                <option value="BD">Bangladesh</option>
+                <option value="PH">Philippines</option>
+                <option value="KR">South Korea</option>
+                <option value="TH">Thailand</option>
+                <option value="VN">Vietnam</option>
+                <option value="MY">Malaysia</option>
+                <option value="SG">Singapore</option>
+                <option value="AE">United Arab Emirates</option>
+                <option value="SA">Saudi Arabia</option>
+                <option value="TR">Turkey</option>
+                <option value="NL">Netherlands</option>
+                <option value="SE">Sweden</option>
+                <option value="NO">Norway</option>
+                <option value="CH">Switzerland</option>
+                <option value="BE">Belgium</option>
+                <option value="PL">Poland</option>
+                <option value="AT">Austria</option>
+                <option value="DK">Denmark</option>
+                <option value="FI">Finland</option>
+                <option value="NZ">New Zealand</option>
+                <option value="LS">Lesotho</option>
+                    <option value="GT">Guatemala</option>
+                    <option value="RE">Réunion</option>
+                    <option value="MZ">Mozambique</option>
+        </select>
+    </div>
+    <table class="pricing-table">
+        <tr>
+            <th>Features</th>
+            <th>Starter<br><span style="font-weight:400; font-size:0.95em;">Free</span></th>
+            <th class="pricing-highlight">Pro<br><span style="font-weight:400; font-size:0.95em;">$90/mo</span></th>
+            <th>Premium<br><span style="font-weight:400; font-size:0.95em;">$150/mo</span></th>
+        </tr>
+        <tr>
+            <td class="price">Monthly Price</td>
+            <td class="price" data-usd="0">$0</td>
+            <td class="price pricing-highlight" data-usd="45">$45</td>
+            <td class="price" data-usd="90">$90</td>
+        </tr>
+        <tr>
+            <td class="sub-title">Messaging</td>
+            <td style="font-weight: 600;color:rgb(2, 165, 64)">✔ Free</td>
+            <td style="font-weight: 600;color:rgb(2, 165, 64)" class="pricing-highlight">✔ Free</td>
+            <td style="font-weight: 600;color:rgb(2, 165, 64)">✔ Free</td>
+        </tr>
+        <tr>
+            <td class="sub-title">Adverts</td>
+            <td data-usd="4.5">Pay-as-you-go: $9/ad/day</td>
+            <td class="pricing-highlight" data-usd="3">$4.5/day</td>
+            <td data-usd="1.5">3 free ads per month, then $3/day</td>
+        </tr>
+        <tr>
+            <td class="sub-title">News Story Duration</td>
+            <td>24 hours</td>
+            <td class="pricing-highlight">Up to 7 days</td>
+            <td>Up to 4 weeks, can pin stories</td>
+        </tr>
+        <tr>
+            <td class="sub-title">Business Community Directory</td>
+            <td>Basic listing</td>
+            <td class="pricing-highlight">Full access</td>
+            <td>Full access</td>
+        </tr>
+        <tr>
+            <td class="sub-title">Custom Electronic Card/Profile</td>
+            <td>Not available</td>
+            <td class="pricing-highlight">Custom card (static or animated GIF)</td>
+            <td>Custom card (static, animated GIF, or video)</td>
+        </tr>
+        <tr>
+            <td class="sub-title">CRM Analytics</td>
+            <td>Basic</td>
+            <td class="pricing-highlight">Advanced</td>
+            <td>Advanced + Export</td>
+        </tr>
+        <!-- <tr>
+            <td>Support</td>
+            <td>Community</td>
+            <td class="pricing-highlight">Priority</td>
+            <td>Priority + Phone</td>
+        </tr> -->
+        <tr>
+            <td class="sub-title">Company Members</td>
+            <td>20</td>
+            <td class="pricing-highlight">150</td>
+            <td>Unlimited</td>
+        </tr>
+        <tr>
+            <td class="sub-title">Branding</td>
+            <td>"Powered by Quick Messanger"</td>
+            <td class="pricing-highlight">No branding</td>
+            <td>No branding</td>
+        </tr>
+    </table>
+    <div class="pricing-note">
+        <b>Annual billing available:</b> Get 2 months free when you pay yearly.<br>
+        All prices in USD. Taxes may apply.
+    </div>
+    <div style="margin-top: 24px;">
+        <a class="pricing-btn" href="/register">Get Started</a>
+        <a class="pricing-btn" href="/contact">Contact Sales</a>
+        <a class="pricing-btn" href="/about">Learn More</a>
+    </div>
+    <!-- window.userCountry = "{{ current_user.country_code|default('') }}"; -->
+    <script>
+    // --- Currency Localization Script with Country Selector ---
+    const countryToCurrency = {
+    'US': 'USD',
+    'GB': 'GBP',
+    'NG': 'NGN',
+    'KE': 'KES',
+    'IN': 'INR',
+    'ZA': 'ZAR',
+    'GH': 'GHS',
+    'CA': 'CAD',
+    'EU': 'EUR',
+    'DE': 'EUR',
+    'FR': 'EUR',
+    'IT': 'EUR',
+    'ES': 'EUR',
+    'BR': 'BRL',
+    'AU': 'AUD',
+    'JP': 'JPY',
+    'CN': 'CNY',
+    'RU': 'RUB',
+    'MX': 'MXN',
+    'AR': 'ARS',
+    'EG': 'EGP',
+    'TZ': 'TZS',
+    'UG': 'UGX',
+    'ZM': 'ZMW',
+    'BW': 'BWP',
+    'MW': 'MWK',
+    'ZW': 'ZWL',
+    'NA': 'NAD',
+    'SN': 'XOF',
+    'CI': 'XOF',
+    'ET': 'ETB',
+    'PK': 'PKR',
+    'BD': 'BDT',
+    'PH': 'PHP',
+    'KR': 'KRW',
+    'TH': 'THB',
+    'VN': 'VND',
+    'MY': 'MYR',
+    'SG': 'SGD',
+    'AE': 'AED',
+    'SA': 'SAR',
+    'TR': 'TRY',
+    'NL': 'EUR',
+    'SE': 'SEK',
+    'NO': 'NOK',
+    'CH': 'CHF',
+    'BE': 'EUR',
+    'PL': 'PLN',
+    'AT': 'EUR',
+    'DK': 'DKK',
+    'FI': 'EUR',
+    'NZ': 'NZD',
+    'LS': 'LSL',
+    'GT': 'GTQ',
+    'RE': 'EUR',
+    'MZ': 'MZN',
+    'SZ': 'SZL'
+};
+    const usdToCurrency = {
+    'USD': 1,
+    'GBP': 0.78,
+    'NGN': 1500,
+    'KES': 130,
+    'INR': 83,
+    'ZAR': 18,
+    'GHS': 15,
+    'CAD': 1.36,
+    'EUR': 0.92,
+    'BRL': 5.2,
+    'AUD': 1.5,
+    'JPY': 156,
+    'CNY': 7.25,
+    'RUB': 90,
+    'MXN': 17,
+    'ARS': 900,
+    'EGP': 47,
+    'TZS': 2550,
+    'UGX': 3800,
+    'ZMW': 25,
+    'BWP': 13.5,
+    'MWK': 1750,
+    'ZWL': 6000, // Hyperinflated
+    'NAD': 18,
+    'XOF': 605,
+    'ETB': 56,
+    'PKR': 278,
+    'BDT': 117,
+    'PHP': 58,
+    'KRW': 1380,
+    'THB': 36,
+    'VND': 25500,
+    'MYR': 4.7,
+    'SGD': 1.36,
+    'AED': 3.67,
+    'SAR': 3.75,
+    'TRY': 33,
+    'SEK': 10.7,
+    'NOK': 11,
+    'CHF': 0.9,
+    'PLN': 4,
+    'DKK': 6.9,
+    'NZD': 1.62,
+    'LSL': 18,
+    'GTQ': 7.8,
+    'MZN': 64,
+    'SZL': 18 // Eswatini Lilangeni (pegged 1:1 to ZAR)
+};
+    function formatCurrency(amount, currency) {
+        return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(amount);
+    }
+    async function getUserCountry(autoOnly=false) {
+        if (!autoOnly && window.selectedCountry && window.selectedCountry !== 'auto') return window.selectedCountry;
+        if (window.userCountry) return window.userCountry;
+        try {
+            const res = await fetch('https://ipapi.co/json/');
+            const data = await res.json();
+            return data.country_code || 'US';
+        } catch { return 'US'; }
+    }
+    async function localizePrices(forceCountry) {
+        let country = forceCountry || window.selectedCountry;
+        if (!country || country === 'auto') country = await getUserCountry(true);
+        const currency = countryToCurrency[country] || 'USD';
+        const rate = usdToCurrency[currency] || 1;
+        document.querySelectorAll('[data-usd]').forEach(cell => {
+            const usd = parseFloat(cell.getAttribute('data-usd'));
+            let local = usd * rate;
+            // For $0, keep as Free
+            if (usd === 0) {
+                cell.textContent = currency === 'USD' ? '$0' : formatCurrency(0, currency);
+            } else {
+                // If cell contains "/ad/day" or "/mo", preserve that
+                let suffix = '';
+                if (cell.textContent.includes('/ad/day')) suffix = '/ad/day';
+                if (cell.textContent.includes('/mo')) suffix = '/mo';
+                if (cell.textContent.includes('free ads')) suffix = ' free ads per month, then ' + formatCurrency(local, currency) + '/ad/day';
+                else if (!suffix) suffix = '';
+                if (cell.textContent.includes('free ads')) {
+                    // Special case for "3 free ads per month, then $3/ad/day"
+                    cell.textContent = '3 free ads per month, then ' + formatCurrency(local, currency) + '/ad/day';
+                } else {
+                    cell.textContent = formatCurrency(local, currency) + suffix;
+                }
+            }
+        });
+    }
+    // Handle dropdown change
+    document.addEventListener('DOMContentLoaded', async function() {
+        const select = document.getElementById('country-select');
+        // Set initial value based on auto-detect
+        let initialCountry = await getUserCountry();
+        if (select && initialCountry && select.value === 'auto') {
+            select.value = initialCountry;
+            window.selectedCountry = initialCountry;
+        }
+        localizePrices(select ? select.value : undefined);
+        if (select) {
+            select.addEventListener('change', function() {
+                window.selectedCountry = select.value;
+                localizePrices(select.value);
+            });
+        }
+    });
+    </script>
+</div>
+{% endblock %}
