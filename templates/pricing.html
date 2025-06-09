@@ -176,14 +176,14 @@ html, body {
         <tr>
             <td class="sub-title">Adverts</td>
             <td data-usd="4.5">Pay-as-you-go: $9/day</td>
-            <td class="pricing-highlight" data-usd="3">$4.5/day</td>
+            <td class="pricing-highlight" data-usd="2">1 free ad per month, then $4.5/day</td>
             <td data-usd="1.5">5 free ads per month</td>
         </tr>
         <tr>
             <td class="sub-title">News Story Duration</td>
             <td>24 hours</td>
             <td class="pricing-highlight">Up to 7 days</td>
-            <td>Up to 4 weeks, can pin stories</td>
+            <td>Up to 4 weeks, can pin stories (product campaign) on ads</td>
         </tr>
         <tr>
             <td class="sub-title">Business Community Directory</td>
@@ -213,6 +213,12 @@ html, body {
             <td class="sub-title">Company News - Promotions</td>
             <td>Price Varies</td>
             <td style="font-weight: 600;color:rgb(2, 165, 64)" class="pricing-highlight">✔ Free</td>
+            <td style="font-weight: 600;color:rgb(2, 165, 64)">✔ Free</td>
+        </tr>
+        <tr>
+            <td class="sub-title">Pin Product Campaigns on Ads</td>
+            <td>Price Varies</td>
+            <td  class="pricing-highlight" data-usd="0.8">$10/day</td>
             <td style="font-weight: 600;color:rgb(2, 165, 64)">✔ Free</td>
         </tr>
         <!-- <tr>
@@ -382,11 +388,14 @@ html, body {
                 let suffix = '';
                 if (cell.textContent.includes('/day')) suffix = '/day';
                 if (cell.textContent.includes('/mo')) suffix = '/mo';
-                if (cell.textContent.includes('free ads')) suffix = ' free ads per month, then ' + formatCurrency(local, currency) + '/ad/day';
+                if (cell.textContent.includes('free ads')) suffix = 'free ad per month, then ' + formatCurrency(local, currency) + '/day';
                 else if (!suffix) suffix = '';
-                if (cell.textContent.includes('free ads')) {
+                if (cell.textContent.includes('5 free ads')) {
                     // Special case for "3 free ads per month, then $3/ad/day"
-                    cell.textContent = '3 free ads per month, then ' + formatCurrency(local, currency) + '/day';
+                    cell.textContent = '5 free ads per month';
+                } else if(cell.textContent.includes('free ad per month, then')) {
+                    // Special case for "3 free ads per month, then $3/ad/day"
+                    cell.textContent = '1 free ad per month, then ' + formatCurrency(local, currency) + '/day';
                 } else {
                     cell.textContent = formatCurrency(local, currency) + suffix;
                 }
