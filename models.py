@@ -174,6 +174,7 @@ class company_info(db.Model):
         return {
             "id" : str(self.id),
             "company_name": self.company_name,
+            "email": self.email,
             "company_address": self.company_address if self.company_address else "",
             "postal_address": self.postal_address if self.postal_address else "",
             "logo":self.image if self.image else "",
@@ -182,7 +183,7 @@ class company_info(db.Model):
             "website" :self.website if self.website else "",
             "tagline" :self.tagline if self.tagline else "",
             "fb_link" :self.fb_link if self.fb_link  else "",
-            "twitter_link" :self.twitter_link if self.fb_link  else "",
+            "twitter_link" :self.twitter_link if self.twitter_link  else "",
             "youtube" :self.youtube if self.youtube  else "",
             "country" :self.country if self.country  else ""
         }

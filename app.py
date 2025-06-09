@@ -960,6 +960,7 @@ def company_account():
     db.create_all()
     id = current_user.id
     cmp_usr = company_info.query.filter_by(usr_id=id).first()
+    cmp_obj = company_info.query.filter_by(usr_id=id).first().to_dict()
     company_update = Company_Register_Form(obj=cmp_usr)
 
     if not cmp_usr:
@@ -993,7 +994,7 @@ def company_account():
         db.session.commit()
 
     # from myproject.models import user
-    return render_template("company_account.html", company_update=company_update,cmp_usr=cmp_usr)
+    return render_template("company_account.html", company_update=company_update,cmp_usr=cmp_usr,cmp_obj=cmp_obj)
 
 @app.route('/public_key/<usrname>', methods=['GET'])
 def get_public_key(usrname):

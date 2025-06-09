@@ -121,7 +121,7 @@ choices = [
 )
     tagline=StringField('Business Model')
     company_logo = FileField('Company Logo', validators=[FileAllowed(['jpg', 'png'])])
-    website_link = URLField('Company Website Link')
+    website_link = URLField('Company Website Link',)
     facebook_link = URLField('Facebook Link')
     twitter_link = URLField('X Link (former Twitter)')
     youtube_link = URLField('Youtube Link')
@@ -130,6 +130,7 @@ choices = [
                                           ("pay_plan_2", "Pay Per Advert"), ("pay_plan_3", "Free For Now")])
 
     submit = SubmitField('Submit')
+
 
 class Company_UpdateAcc_Form(FlaskForm):
 
