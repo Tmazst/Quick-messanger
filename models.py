@@ -188,7 +188,6 @@ class company_info(db.Model):
             "country" :self.country if self.country  else ""
         }
 
-
 class recovery_check(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cht_usr_id = db.Column(db.Integer)
@@ -198,7 +197,6 @@ class recovery_check(db.Model):
     status = db.Column(db.String(20),default="False")
     timestamp = db.Column(db.DateTime)
     reg_timestamp = db.Column(db.DateTime)
-
 
 class Messages(db.Model,UserMixin):
 
