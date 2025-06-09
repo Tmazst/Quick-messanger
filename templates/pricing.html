@@ -20,7 +20,7 @@ html, body {
 }
 .sub-title{
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 800 !important;
 }
 .pricing-title {
     font-size: 2.2em;
@@ -46,9 +46,13 @@ html, body {
     font-size: 1.15em;
 }
 .pricing-table td.price {
-    font-size: 1.3em;
+    font-size: 1.1em !important;
     font-weight: 700;
     color: var(--theme-color, #EF4036);
+}
+.pricing-table td {
+    font-size: 0.8em !important;
+    font-weight: 700;
 }
 .pricing-highlight {
     background: #c4c4c4 !important;
@@ -160,8 +164,8 @@ html, body {
         <tr>
             <td class="price">Monthly Price</td>
             <td class="price" data-usd="0">$0</td>
-            <td class="price pricing-highlight" data-usd="45">$45</td>
-            <td class="price" data-usd="90">$90</td>
+            <td class="price pricing-highlight" data-usd="42">$45</td>
+            <td class="price" data-usd="85">$90</td>
         </tr>
         <tr>
             <td class="sub-title">Messaging</td>
@@ -171,9 +175,9 @@ html, body {
         </tr>
         <tr>
             <td class="sub-title">Adverts</td>
-            <td data-usd="4.5">Pay-as-you-go: $9/ad/day</td>
+            <td data-usd="4.5">Pay-as-you-go: $9/day</td>
             <td class="pricing-highlight" data-usd="3">$4.5/day</td>
-            <td data-usd="1.5">3 free ads per month, then $3/day</td>
+            <td data-usd="1.5">5 free ads per month</td>
         </tr>
         <tr>
             <td class="sub-title">News Story Duration</td>
@@ -204,6 +208,12 @@ html, body {
             <td>General News, Public Relations, Events</td>
             <td class="pricing-highlight">(+) Product Compaign, Promotional, Brand Awareness</td>
             <td>(+) Product Compaigns, Promotional, Brand Awareness, more</td>
+        </tr>
+        <tr>
+            <td class="sub-title">Company News - Promotions</td>
+            <td>Price Varies</td>
+            <td style="font-weight: 600;color:rgb(2, 165, 64)" class="pricing-highlight">✔ Free</td>
+            <td style="font-weight: 600;color:rgb(2, 165, 64)">✔ Free</td>
         </tr>
         <!-- <tr>
             <td>Support</td>
@@ -370,13 +380,13 @@ html, body {
             } else {
                 // If cell contains "/ad/day" or "/mo", preserve that
                 let suffix = '';
-                if (cell.textContent.includes('/ad/day')) suffix = '/ad/day';
+                if (cell.textContent.includes('/day')) suffix = '/day';
                 if (cell.textContent.includes('/mo')) suffix = '/mo';
                 if (cell.textContent.includes('free ads')) suffix = ' free ads per month, then ' + formatCurrency(local, currency) + '/ad/day';
                 else if (!suffix) suffix = '';
                 if (cell.textContent.includes('free ads')) {
                     // Special case for "3 free ads per month, then $3/ad/day"
-                    cell.textContent = '3 free ads per month, then ' + formatCurrency(local, currency) + '/ad/day';
+                    cell.textContent = '3 free ads per month, then ' + formatCurrency(local, currency) + '/day';
                 } else {
                     cell.textContent = formatCurrency(local, currency) + suffix;
                 }
