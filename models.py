@@ -149,7 +149,7 @@ class company_info(db.Model):
     usr_fKey = db.Column(db.Integer, ForeignKey('chat_user.id'))
     usr_id = db.Column(db.Integer, ForeignKey('user.id'))
     company_name = db.Column(db.String(50))
-    email = db.Column(db.String(120),nullable=True)
+    email = db.Column(db.String(120),nullable=True,unique=False)
     image = db.Column(db.String(120),default="default.jpg")
     category = db.Column(db.String(120))
     country = db.Column(db.String(50))
