@@ -94,8 +94,9 @@
                 <div class="messages-count gen-flex"><span>{{loop.index}}</span></div>
             {%endif%}
     {%endfor%}
-
+    
     <div class="scorllable-messages gen-flex-col">
+        <div style="height:200px;width:0.5px"></div>
         <!-- <div style="display: block !important;" class="messages-container"> -->
             {% for msg in messages %}
             {%set the_sender = msg.sender%}
