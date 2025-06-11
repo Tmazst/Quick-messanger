@@ -170,24 +170,26 @@ class company_info(db.Model):
     adverts_id = relationship('Advert',backref="company_info",lazy=True)
     news_id = relationship('News',backref="company_info",lazy=True)
 
-    def to_dict(self):
-        return {
-            "id" : str(self.id),
-            "company_name": self.company_name,
-            "abbreviation":self.other2 if self.other2 else "",
-            "email": self.email if self.email else "",
-            "company_address": self.company_address if self.company_address else "",
-            "postal_address": self.postal_address if self.postal_address else "",
-            "logo":self.image if self.image else "",
-            "company_contacts": self.company_contacts if self.company_contacts else "",
-            # "timestamp": self.date if self.date else None,
-            "website" :self.website if self.website else "",
-            "tagline" :self.tagline if self.tagline else "",
-            "fb_link" :self.fb_link if self.fb_link  else "",
-            "twitter_link" :self.twitter_link if self.twitter_link else "",
-            "youtube" :self.youtube if self.youtube  else "",
-            "country" :self.country if self.country  else ""
-        }
+def to_dict(self):
+    def clean(val):
+        return "" if val is None or val == "None" else val
+
+    return {
+        "id": str(self.id),
+        "company_name": clean(self.company_name),
+        "abbreviation": clean(self.other2),
+        "email": clean(self.email),
+        "company_address": clean(self.company_address),
+        "postal_address": clean(self.postal_address),
+        "logo": clean(self.image),
+        "company_contacts": clean(self.company_contacts),
+        "website": clean(self.website),
+        "tagline": clean(self.tagline),
+        "fb_link": clean(self.fb_link),
+        "twitter_link": clean(self.twitter_link),
+        "youtube": clean(self.youtube),
+        "country": clean(self.country),
+    }
 
 class recovery_check(db.Model):
     id = db.Column(db.Integer, primary_key=True)
