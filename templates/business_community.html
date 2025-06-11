@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                 <div style="z-index:5" class="sub-layout-1 gen-flex">
                     <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
                         {%if company.company_name | length >= 34 %}
-                            <div class="company-name">{{company.company_name}}[:34]..</div>
+                            <div class="company-name">{{company.company_name[:34]}}..</div>
                         {%else%}
                             <div class="company-name">{{company.company_name}}</div>
                         {%endif%}
