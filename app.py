@@ -978,7 +978,7 @@ def company_account():
 
     if request.method == "POST":
 
-        if len(company_update.email.data) <= 6:
+        if len(company_update.company_email.data) <= 6:
             flash("Please Enter a Valid Email Adress", "warning")
             return redirect(url_for("company_account"))
 
