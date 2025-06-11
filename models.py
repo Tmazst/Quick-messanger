@@ -170,26 +170,25 @@ class company_info(db.Model):
     adverts_id = relationship('Advert',backref="company_info",lazy=True)
     news_id = relationship('News',backref="company_info",lazy=True)
 
-def to_dict(self):
-    def clean(val):
-        return "" if val is None or val == "None" else val
-
-    return {
-        "id": str(self.id),
-        "company_name": clean(self.company_name),
-        "abbreviation": clean(self.other2),
-        "email": clean(self.email),
-        "company_address": clean(self.company_address),
-        "postal_address": clean(self.postal_address),
-        "logo": clean(self.image),
-        "company_contacts": clean(self.company_contacts),
-        "website": clean(self.website),
-        "tagline": clean(self.tagline),
-        "fb_link": clean(self.fb_link),
-        "twitter_link": clean(self.twitter_link),
-        "youtube": clean(self.youtube),
-        "country": clean(self.country),
-    }
+    def to_dict(self):
+        def clean(val):
+            return "" if val is None or val == "None" else val
+        return {
+            "id": str(self.id),
+            "company_name": clean(self.company_name),
+            "abbreviation": clean(self.other2),
+            "email": clean(self.email),
+            "company_address": clean(self.company_address),
+            "postal_address": clean(self.postal_address),
+            "logo": clean(self.image),
+            "company_contacts": clean(self.company_contacts),
+            "website": clean(self.website),
+            "tagline": clean(self.tagline),
+            "fb_link": clean(self.fb_link),
+            "twitter_link": clean(self.twitter_link),
+            "youtube": clean(self.youtube),
+            "country": clean(self.country),
+        }
 
 class recovery_check(db.Model):
     id = db.Column(db.Integer, primary_key=True)
