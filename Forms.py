@@ -127,9 +127,9 @@ choices = [
 )
     tagline=StringField('Selling Tagline (Briefly describe your product or service offering)', validators=[Optional(), Length(min=4, max=100)])
     company_logo = FileField('Company Logo', validators=[FileAllowed(['jpg', 'png'])])
-    website_link = URLField('Company Website Link',)
+    website_link = URLField('Company Website Link')
     facebook_link = URLField('Facebook Link')
-    twitter_link = URLField('X Link (former Twitter)')
+    twitter_link = StringField('X Link (former Twitter)')
     youtube_link = URLField('Youtube Link')
     payment_options = RadioField("Choose Payment Plan",
                                  choices=[("pay_plan_1", "Pay Monthly"), ("pay_plan_4", "Pay Annually"),
