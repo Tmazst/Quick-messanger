@@ -1001,7 +1001,15 @@ def company_account():
         cmp_usr.youtube = company_update.youtube_link.data
         cmp_usr.payment_options = request.form.get('payment_options')
 
-        db.session.commit()
+        try:
+            db.session.commit()
+            flash("Account updated!", "success")
+        except IntegrityError as e:
+            db.session.rollback()
+            flash("Email address must be unique and not empty.", "danger")
+            # Optionally, log the error or handle further
+
+        return redirect(url_for('company_account'))
 
     # from myproject.models import user
     return render_template("company_account.html", company_update=company_update,cmp_usr=cmp_usr,cmp_obj=cmp_obj)
