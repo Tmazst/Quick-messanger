@@ -978,6 +978,10 @@ def company_account():
 
     if request.method == "POST":
 
+        if len(company_update.email.data) <= 6:
+            flash("Please Enter a Valid Email Adress", "warning")
+            return redirect(url_for("company_account"))
+
         if isinstance(company_update.company_logo.data, FileStorage):
             print("Check company_logo Update: ", company_update.company_logo.data)
             pfl_pic = process_file(company_update.company_logo.data)
