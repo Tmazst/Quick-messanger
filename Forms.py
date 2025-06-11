@@ -58,7 +58,7 @@ class Update_account_form(FlaskForm):
 class Company_Register_Form(FlaskForm):
 
     company_name = StringField('Company Name', validators=[DataRequired(), Length(min=2, max=120)])
-    company_email = StringField('Email', validators=[DataRequired(), Email()])
+    company_email = StringField('Email', validators=[DataRequired(), Email(), Length(min=6, max=100)])
     company_contacts = TelField('Contact(s)', validators=[Length(min=8, max=64)])
     company_address = StringField('Physical Address', validators=[DataRequired(), Length(min=8, max=100)])
     abbreviation = StringField("Abbreviation",validators=[Optional(), Length(min=1, max=20)])
