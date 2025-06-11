@@ -1,7 +1,7 @@
 const CACHE_NAME = 'bizchat-cache-v2';
 const urlsToCache = [
   '/static/css/styles.css',
-  '/static/css/bs_stylesheet.css',
+  // '/static/css/bs_stylesheet.css',
   // Add more assets as needed
 ];
 

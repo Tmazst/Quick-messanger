@@ -52,7 +52,7 @@
                     {%else%}
                         <label for="message" class="subject-field">Message</label>
                     {%endif%}
-                    <div contenteditable="false" class="form-control message message-body" data-message="{{msg.message}}" id="message" style="min-height: 100px;">{{msg.message}}</div>
+                    <div contenteditable="false" class="form-control message message-body" data-message="{{msg.message}}" id="message" style="min-height: max-content;">{{msg.message}}</div>
                     <div class="msg-timestamp">{{msg.date.strftime("%d %b, %H:%M")}}</div>
                 </div>
             </div>
@@ -162,7 +162,7 @@
         <div style="justify-content: flex-start;" class="letterhead-header gen-flex ">
             <img src="{{ url_for('static', filename='uploads/'~other_usr_company_info.logo) }}" alt="Logo" class="letterhead-logo">
             <div class="details-cont">
-                <h1 class="company_name">{{other_usr_company_info.company_name}}</h1>
+                <h1 class="company_name">{{other_usr_company_info.company_name}} {%if other_usr_company_info.other2%}({{other_usr_company_info.other2}}){%endif%}</h1>
                 <div class="comp-details">
                     <div class="sender-company-details">
                         <div id="comp-details-header" class="comp-details gen-flex">
@@ -194,7 +194,7 @@
                     {%else%}
                     <label for="message" class="subject-field">Message</label>
                     {%endif%}
-                    <div contenteditable="false" class="form-control message message-body" data-message="{{msg.message}}" id="message" style="min-height: 100px;">{{msg.message}}</div>
+                    <div contenteditable="false" class="form-control message message-body" data-message="{{msg.message}}" id="message" style="min-height: max-content;">{{msg.message}}</div>
                     <div class="msg-timestamp">{{msg.date.strftime("%d %b, %H:%M")}}</div>
                 </div>
             </div>

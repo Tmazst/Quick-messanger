@@ -27,7 +27,7 @@
 
     <div class="topbar">
         <div class="top-bar-left">
-            <a href="/"><img src="{{ url_for('static', filename='images/logo-white.png') }}" alt="Logo" class="logo"></a>
+            <img id="main-logo" src="{{ url_for('static', filename='images/logo-white.png') }}" alt="Logo" class="logo">
         </div><div style="flex-grow:1"></div>
         <div class="top-bar-right gen-flex">
             <!-- <a href="/download_pwa" class=""> -->
@@ -82,6 +82,10 @@
                 <div class="stroke"></div>
                 <div class="stroke"></div>
             </div>
+            <a href="/"><div class="app-nav-icons gen-flex">
+                <img src="{{ url_for('static', filename='icons/home-icon.png') }}" alt="Logo" class="app-nav-icon">
+                <div class="nav-label">Home</div>
+            </div></a>
             <a href="/company_account"><div class="app-nav-icons gen-flex">
                 <img src="{{ url_for('static', filename='icons/profile-icon.png') }}" alt="Logo" class="app-nav-icon">
                 <div class="nav-label">Account</div>
@@ -154,9 +158,9 @@
                                                     </div>
                                                         <!-- Message Caption  -->
                                                         {%if msg.message | length >= 20 %}
-                                                            <div data-encrypted="{{msg.message}}" class="message-text">{{ msg.message[:20] }}...</div>
+                                                            <div data-encrypted="{{msg.message}}" class="nav-message-text">{{ msg.message[:20] }}...</div>
                                                         {% else %}
-                                                            <div data-encrypted="{{msg.message}}" class="message-text">{{ msg.message }}</div>
+                                                            <div data-encrypted="{{msg.message}}" class="nav-message-text">{{ msg.message }}</div>
                                                         {% endif %}
                                                         <span class="message-item-time">{{msg.date.strftime("%d %b %H:%M" )}}</span>
                                                     
@@ -181,9 +185,9 @@
                                                     </div>
                                                         <!-- Message Caption  -->
                                                         {%if msg.message | length >= 20 %}
-                                                            <div data-encrypted="{{msg.message}}" class="message-text">{{ msg.message[:20] }}...</div>
+                                                            <div data-encrypted="{{msg.message}}" class="nav-message-text">{{ msg.message[:20] }}...</div>
                                                         {% else %}
-                                                            <div data-encrypted="{{msg.message}}" class="message-text">{{ msg.message }}</div>
+                                                            <div data-encrypted="{{msg.message}}" class="nav-message-text">{{ msg.message }}</div>
                                                         {% endif %}
                                                         <span class="message-item-time">{{msg.date.strftime("%d %b %H:%M" )}}</span>
                                                     

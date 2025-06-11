@@ -239,6 +239,23 @@ sendForm = async () => {
 
 
 document.addEventListener("DOMContentLoaded", function () {
+    // Navigation Messages Buttons
+    document.querySelectorAll(".nav-message-text").forEach(function(elmsgDiv){
+        var encryptedBase64 = elmsgDiv.getAttribute("data-encrypted");
+        if (encryptedBase64) {
+            console.log("Encrypted Base64: ", encryptedBase64);
+            decryptNavMessage(encryptedBase64, elmsgDiv).then(() => {
+                console.log("Decryption completed");
+            }).catch((error) => {
+                console.error("Decryption failed:", error);
+            });
+        } else {
+            console.log("No encrypted message found.");
+        }
+
+    })
+
+    // Mini Window Messages 
     document.querySelectorAll(".message-text").forEach(function(elmsgDiv){
         var encryptedBase64 = elmsgDiv.getAttribute("data-encrypted");
         if (encryptedBase64) {
@@ -254,6 +271,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     })
 
+    // Main Chat Messages 
      document.querySelectorAll(".message-body").forEach(function(msgBdyDiv){
         var encryptedBase64 = msgBdyDiv.getAttribute("data-message");
         if (encryptedBase64) {
@@ -270,7 +288,65 @@ document.addEventListener("DOMContentLoaded", function () {
     })
 });
 
-// Decrypt the message using the recipient's private key
+// Decrypt the message using the recipient's private key - Navigation Messages
+async function decryptNavMessage(encryptedBase64,elmsgDiv) {
+     if (!db) {
+        // If db is not initialized, wait for it
+        console.log("DB not initialized, calling initDB");
+        db = await initDB();
+    }
+    console.log("@decryptMessage");
+    const tx = db.transaction("keys","readwrite");
+    const store = tx.objectStore("keys");
+    const request = store.getAll();
+
+    request.onsuccess = async function() {
+        if (request.result && request.result.length > 0) {
+            const myUsrname = request.result[0].Usernames;// Get the username from the first record
+            const pKey = request.result[0].publicKey;
+            const prKey = request.result[0].privateKey;
+            console.log("Username: ",myUsrname);
+            console.log("Private Key: ",pKey );
+
+            const privKey = await window.crypto.subtle.importKey("jwk",prKey,{ name: "RSA-OAEP", hash: "SHA-256" },
+                        true,
+                        ["decrypt"]
+                    );
+
+            console.log("IMported prKey: ",privKey);
+
+            // Convert the base64 string back to an ArrayBuffer
+            const encryptedBuffer = new Uint8Array(atob(encryptedBase64).split("").map(c => c.charCodeAt(0)));
+
+            // Decrypt the message using the recipient's private key
+            const decrypted = await window.crypto.subtle.decrypt(
+                { name: "RSA-OAEP" }, privKey, encryptedBuffer
+            );
+
+            // Convert the decrypted message back to a string
+            const decryptedMessage = new TextDecoder().decode(decrypted);
+            elmsgDiv.innerHTML = ""; // Clear the existing content
+            // elmsgDiv.innerHTML = decryptedMessage; // Display the decrypted message in the element
+
+            msgLength = decryptedMessage.length;
+            if (msgLength >= 20){
+                elmsgDiv.innerHTML = decryptedMessage.substring(0,20) + "...";
+            }else{
+                elmsgDiv.innerHTML = decryptedMessage;
+            };
+            
+            
+
+            console.log("Decrypted Message: ",decryptedMessage);
+
+        }else{
+            console.log("Error @decryptMessage");
+        }
+    }
+    
+}
+
+// Decrypt the message using the recipient's private key - Mini Window Messages
 async function decryptMessage(encryptedBase64,elmsgDiv) {
      if (!db) {
         // If db is not initialized, wait for it
@@ -325,7 +401,7 @@ async function decryptMessage(encryptedBase64,elmsgDiv) {
 }
 
 
-// Decrypt the message using the recipient's private key
+// Decrypt the message using the recipient's private key - Main Chat Window
 async function decryptMessageBody(encryptedBase64,elmsgDiv) {
      if (!db) {
         // If db is not initialized, wait for it

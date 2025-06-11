@@ -59,6 +59,11 @@ window.addEventListener('DOMContentLoaded', function() {
   if (params.has('openReply')) {
     openMiniReplyWindow();
   }
+
+});
+
+document.querySelector("#main-logo").addEventListener("click",function(){
+    window.location.reload();
 });
 
 function openMiniReplyWindow() {

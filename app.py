@@ -255,6 +255,12 @@ def home():
 
     chk_if_reg = Visitors.query.filter_by(ip=visitor_ip).first()
 
+    if current_user and current_user.is_authenticated:
+        company = company_info.query.filter_by(usr_id=current_user.id).first()
+        if company and company.image == "logo-avator.png" or not company.email:
+            flash("Please Finish Company Regstration","warning")
+            return redirect(url_for("company_account"))
+
     if chk_if_reg:
         print("Hoping for a redirect")
         chk_if_reg.last_visit = current_time_wlzone()
@@ -919,7 +925,7 @@ def fetch_user_data():
 
     return 
 
-# ------------------------------COMPANIES DATA------------------------------- #
+# ------------------------------user DATA------------------------------- #
 @app.route("/user_account", methods=["POST", "GET"])
 @login_required
 def user_account_form():
@@ -985,6 +991,7 @@ def company_account():
         cmp_usr.tagline = company_update.tagline.data
         cmp_usr.website = company_update.website_link.data
         cmp_usr.fb_link = company_update.facebook_link.data
+        cmp_usr.other2 = company_update.abbreviation.data
         cmp_usr.company_address = company_update.company_address.data
         cmp_usr.twitter_link = company_update.twitter_link.data
         # cmp_usr.instagram_link = company_update.instagram_link.data
@@ -995,6 +1002,7 @@ def company_account():
 
     # from myproject.models import user
     return render_template("company_account.html", company_update=company_update,cmp_usr=cmp_usr,cmp_obj=cmp_obj)
+
 
 @app.route('/public_key/<usrname>', methods=['GET'])
 def get_public_key(usrname):

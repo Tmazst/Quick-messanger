@@ -61,6 +61,7 @@ class Company_Register_Form(FlaskForm):
     company_email = StringField('Email', validators=[DataRequired(), Email()])
     company_contacts = TelField('Contact(s)', validators=[Length(min=8, max=64)])
     company_address = StringField('Physical Address', validators=[DataRequired(), Length(min=8, max=100)])
+    abbreviation = StringField("Abbreviation",validators=[Optional(), Length(min=1, max=20)])
     category_other = StringField("Please Specify")
     category = SelectField(
     "Select Category",
@@ -81,6 +82,7 @@ choices = [
     ("Education", "Education"),
     ("Hospitality", "Hospitality"),
     ("Food and Beverage", "Food and Beverage"),
+    ("Cooperative Society", "Cooperative Society"),
     ("Construction", "Construction"),
     ("Agriculture", "Agriculture"),
     ("Web Development", "Web Development"),
@@ -123,7 +125,7 @@ choices = [
 ],
     validators=[DataRequired(), Length(min=2, max=100)]
 )
-    tagline=StringField('Business Model')
+    tagline=StringField('Selling Tagline (Briefly describe your product or service offering)', validators=[Optional(), Length(min=4, max=100)])
     company_logo = FileField('Company Logo', validators=[FileAllowed(['jpg', 'png'])])
     website_link = URLField('Company Website Link',)
     facebook_link = URLField('Facebook Link')

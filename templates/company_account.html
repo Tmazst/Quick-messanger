@@ -109,11 +109,21 @@ form{
                 {% endif %}
               </div>
 
-                <h3 style="font-size:25px;">{{company.company_name.title()}}<br> <span class="spans" style="font-size:16px">{{company.email}}</span></h3>
+                <h3 style="font-size:25px;">{{company.company_name.title()}} {%if company.other2%}({{company.other2}}){%endif%}<br> <span class="spans" style="font-size:16px">{{company.email}}</span></h3>
             
             <h3 style="font-size:32px;" class="">Corporate Details</h3>
 
             <hr>
+            <!-- Abbreviation  -->
+            <div class="group">
+                  <div class="acc-labels">{{ company_update.abbreviation.label(class="labels")}}</div>
+                  {{ company_update.abbreviation(class="form-control",placeholder="Also Known As (AKA)",value=company["abbreviation"])}}
+                  {% if company_update.abbreviation.errors %}
+                    {% for error in company_update.abbreviation.errors %}
+                        <span class="span-error" >*{{error}}</span>
+                    {% endfor %}
+                 {% endif %}
+            </div>
             
             <!-- Email  -->
             <div class="group">
@@ -125,23 +135,25 @@ form{
                     {% endfor %}
                  {% endif %}
             </div>
+
             <!-- Category  -->
             <div class="group">
                   <div class="acc-labels">{{ company_update.category.label(class="labels")}}</div>
                   {{ company_update.category(class="form-control",placeholder="Category",id="category-select" ,value=company["category"])}}
                   {% if company_update.category.errors %}
                     {% for error in company_update.category.errors %}
-                        <span class="span-error" >*Company Email{{error}}</span>
+                        <span class="span-error" >*{{error}}</span>
                     {% endfor %}
                  {% endif %}
             </div>
+            
             <!-- Other Category  -->
             <div id="category-other-cont" class="group">
                   <div class="acc-labels">{{ company_update.category_other.label(class="labels")}}</div>
                   {{ company_update.category_other(class="form-control",placeholder="Please Specify", id="category-other-group")}}
                   {% if company_update.category_other.errors %}
                     {% for error in company_update.category_other.errors %}
-                        <span class="span-error" >*Company Email{{error}}</span>
+                        <span class="span-error" >*{{error}}</span>
                     {% endfor %}
                  {% endif %}
             </div>
@@ -163,7 +175,18 @@ form{
                  {{ company_update.company_address(style="font-weight:500", class="form-control", id="company_address",placeholder="Physical Address",value=company["company_address"])}}
                  {% if company_update.company_address.errors %}
                     {% for error in company_update.company_address.errors %}
-                        <span class="span-error" >*[Physical Address] {{error}}</span>
+                        <span class="span-error" >*{{error}}</span>
+                    {% endfor %}
+                 {% endif %}
+            </div>
+
+            <!-- tagline  -->
+            <div class="group">
+                 <div class="acc-labels">{{ company_update.tagline.label(class="labels")}}</div>
+                 {{ company_update.tagline(style="font-weight:500", class="form-control", id="tagline",placeholder="Tagline",value=company["tagline"])}}
+                 {% if company_update.tagline.errors %}
+                    {% for error in company_update.tagline.errors %}
+                        <span class="span-error" >*{{error}}</span>
                     {% endfor %}
                  {% endif %}
             </div>
@@ -174,7 +197,7 @@ form{
                  {{ company_update.website_link(class="form-control",placeholder="Website Link",value=company["website_link"])}}
                  {% if company_update.website_link.errors %}
                     {% for error in company_update.facebook_link.errors %}
-                        <span class="span-error" >*[Website Link] {{error}}</span>
+                        <span class="span-error" >*{{error}}</span>
                     {% endfor %}
                  {% endif %}
             </div>
@@ -185,7 +208,7 @@ form{
                  {{ company_update.facebook_link(class="form-control",placeholder="Facebook Link",value=company["facebook_link"])}}
                  {% if company_update.facebook_link.errors %}
                     {% for error in company_update.facebook_link.errors %}
-                        <span class="span-error" >*[Facebook Link] {{error}}</span>
+                        <span class="span-error" >*{{error}}</span>
                     {% endfor %}
                  {% endif %}
              </div>
@@ -195,7 +218,7 @@ form{
                  {{ company_update.twitter_link(class="form-control",placeholder="Twitter Link",value=company["twitter_link"])}}
                  {% if company_update.twitter_link.errors %}
                     {% for error in company_update.twitter_link.errors %}
-                        <span class="span-error" >*[Twitter Link] {{error}}</span>
+                        <span class="span-error" >*{{error}}</span>
                     {% endfor %}
                  {% endif %}
             </div>
@@ -205,12 +228,12 @@ form{
                  {{ company_update.youtube_link(class="form-control",placeholder="YouTube Link",value=company["youtube_link"])}}
                  {% if company_update.youtube_link.errors %}
                     {% for error in company_update.youtube_link.errors %}
-                        <span class="span-error" >*[Youtube Link] {{error}}</span>
+                        <span class="span-error" >*{{error}}</span>
                     {% endfor %}
                  {% endif %}
             </div>
 
-                <br><br>
+            <br><br>
 
             <div style="padding-left:50px;width:80%;min-width:350px" class="form-group">
                  <h3> Update Company Logo</h3>
