@@ -962,6 +962,9 @@ def user_account_form():
 @app.route("/company_account", methods=["POST", "GET"])
 @login_required
 def company_account():
+    if not current_user.is_authenticated:
+        flash("Please Register Account First","warning")
+        return redirect(url_for("register"))
 
     db.create_all()
     id = current_user.id
