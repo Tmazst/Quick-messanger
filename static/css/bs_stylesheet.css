@@ -90,6 +90,13 @@ body, h1, p, div {
     --my-blue:#3667ef;
 }
 
+#active-tab-desc{
+    font-family: Montserrat,'Times New Roman', Times, serif;
+    color:var(--theme-color);
+    font-weight: 700;
+    font-size: 25px;
+}
+
 body {
     font-family: 'Oswald',"Franklin Gothic Medium Cond","Gill Sans MT Condensed","Microsoft Yi Baiti" !important;
     background-color: #a8a8a8;
@@ -98,11 +105,11 @@ body {
 
   #open-reply-unit:hover{
     cursor: pointer;
-    background-color: #fcf4ed;
-    transform: scale(0.9);
+    /* background-color: #fcf4ed; */
+    transform: scale(0.95);
   }
    #open-reply-unit{
-    background-color: #edfcfb;
+    /* background-color: #edfcfb; */
     /* border-radius: 15px; */
   }
 
@@ -562,12 +569,14 @@ html, body {
 }
 
 .side-nav-item{
-    transition: all 0.3s ease;
+    transition: all 0.2s ease !important;
+    background-color: #f6fcff !important;
 }
 
 .side-nav-item:hover{
     cursor: pointer;
-    box-shadow: 0 2px 10px 0 rgba(250, 96, 7, 0.6), 0 1.5px 6px 0 rgba(54, 171, 239, 0.6);
+    border-left: 2px solid var(--my-blue) ;
+    /* box-shadow: 0 2px 10px 0 rgba(250, 96, 7, 0.6), 0 1.5px 6px 0 rgba(54, 171, 239, 0.6); */
 }
 
 #company-title{
@@ -715,7 +724,7 @@ html, body {
 }
 
 .side-nav-item{
-    background-color: var(--el-background-color);
+    
     border-radius: 10px;
     min-height:80px;
     height:80px;

@@ -48,6 +48,14 @@
             font-size: 13px !important;
             width: 100%;
         }
+        .active-tab{
+            margin-right:-20px;
+            border-left: 3px solid #EF4036 !important;
+            border-bottom-right-radius: 0;
+            border-top-right-radius: 0;
+            background-color: #f1f1f1 !important;
+
+        }
     </style>
 <!-- <button class="menu burger">Menu</button> -->
 </head>
@@ -111,6 +119,12 @@
                 <img src="{{ url_for('static', filename='icons/download-pwa-icon.png') }}" alt="Logo" class="app-nav-icon">
                 <div class="nav-label">Install App</div>
             </div>
+            {%if current_user.is_authenticated%}
+            <div style="" id="open-reply-unit"  class="app-nav-icons gen-flex">
+                <img  style="height:32px" src="static/icons/mini-window.png" class="app-nav-icon" />
+                <div class="nav-label">Open mini-window</div>
+            </div>
+            {%endif%}
             
         </div>
         <!-- Container for Chats Nav & Content Section  -->
@@ -237,7 +251,7 @@
                             <img src="static/icons/business-news-icon.png" />
                             <div class="link-title gen-flex-col">
                                 <span class="nav-link" >Companies News & Events</span>
-                                <small>Share your company’s stories</small>
+                                <small>Share your company’s status</small>
                             </div>
                             
                         </div>
@@ -260,7 +274,8 @@
                             {% endif %}
                         {% endwith %}
                     </div>
-                    <div class="filler gen-flex"> <img id="open-reply-unit"  style="height:40px" src="static/icons/mini-window.png" /></div>
+                    <!-- <div class="active-tab-desc">Business Community</div> -->
+                    <div id="active-tab-desc" class="filler gen-flex">  </div>
                     {%if current%}
                     <div onclick="window.location.href='/user_account'" class="username gen-flex" style="cursor: pointer;">
                         <div class="username-icon-cont gen-flex">
@@ -296,6 +311,36 @@
     
 
 <script>
+ document.addEventListener('DOMContentLoaded', function() {
+        var navItems = document.querySelectorAll('.side-navbar-nav .side-nav-item, .side-navbar-nav .app-nav-icons');
+        var currentPath = window.location.pathname;
+        navItems.forEach(function(item) {
+            // Try to get the path from the onclick attribute
+            var onclick = item.getAttribute('onclick');
+            var path = null;
+            if (onclick) {
+                // Extract the path from: window.location.href='/some_path'
+                var match = onclick.match(/window\.location\.href=['"]([^'"]+)['"]/);
+                if (match) {
+                    path = match[1];
+                }
+            }
+            // If item is an <a> or contains an <a>, use its href
+            var link = item.querySelector('a');
+            if (link && link.getAttribute('href')) {
+                path = link.getAttribute('href');
+            }
+            // Now compare path to currentPath
+            if (path && currentPath === path) {
+                navItems.forEach(i => i.classList.remove('active-tab'));
+                item.classList.add('active-tab');
+                const span = item.querySelector('span');
+                document.querySelector("#active-tab-desc").innerHTML = span.textContent;
+                console.log("Selected Item: ", span ? span.textContent : '');
+            }
+        });
+    });
+
     console.log("Check Notification Permission: ",Notification.permission);
     // console.log("SaveIs Called: ");
     var userLabel =document.querySelector("#username-label");
