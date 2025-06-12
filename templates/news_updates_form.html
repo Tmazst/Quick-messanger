@@ -2,7 +2,11 @@
 
 {% block content %}
 <style>
-    section {
+  input[type="checkbox"]{
+    background: none;
+    border: 1px solid coral;
+  }
+section {
   display: flex;
   flex-flow: row wrap;
 }
@@ -142,6 +146,42 @@ section > div {
                     <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
                 </div>
 
+            <!-- Button to open modal -->
+            <button id="openHashtagModal" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hashtagModal">
+            Hashtags
+            </button>
+            <small>Pick Hashtags That Summarize Your Story for the Audience</small>
+            <!-- Modal -->
+            <div class="modal fade" id="hashtagModal" tabindex="-1" aria-labelledby="hashtagModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="hashtagModalLabel">Choose Hashtags</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row">
+                      {% for batch in form.hashtags.choices|batch(3) %}
+                        <div class="col-md-4">
+                          {% for v, l in batch %}
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" name="{{ form.hashtags.name }}" value="{{ v }}"
+                                id="hashtag-{{ v }}"
+                                {% if v in (form.hashtags.data or []) %}checked{% endif %}>
+                              <label class="form-check-label" for="hashtag-{{ v }}">{{ l }}</label>
+                            </div>
+                          {% endfor %}
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Done</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <div style="width:40% !important;" class="d-flex flex-row align-items-center justify-content-between">
                  {{ form.submit(class="btns") }}
                  <!--<input class="btns" type="submit" value="Create Account" />-->
@@ -152,10 +192,13 @@ section > div {
         </div>
 
 </div>
+
+
+
  <script src="https://unpkg.com/cropperjs"></script>
     <script>
          // Add event listener to the image input field
-         document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('imageInput').addEventListener('change', function() {
             var image = this.files[0];
             var reader = new FileReader();
@@ -173,6 +216,17 @@ section > div {
             };
             reader.readAsDataURL(image);
         });
+
+
+     
+        var hashtagModal = document.getElementById('hashtagModal');
+        var openBtn = document.getElementById('openHashtagModal');
+        if (hashtagModal && openBtn) {
+          hashtagModal.addEventListener('hidden.bs.modal', function () {
+            openBtn.focus();
+          });
+        }
+
         });
     </script>
 {% endblock %}

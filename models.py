@@ -83,7 +83,7 @@ class News(db.Model):
     comp_id = db.Column(db.Integer,ForeignKey('company_info.id'))
     story_title = db.Column(db.String(50))
     story = db.Column(db.String(350))
-    other = db.Column(db.String(50))
+    other = db.Column(db.String(50)) #Hashtags
     other1 = db.Column(db.String(50))
     timestamp = db.Column(db.DateTime())
     images_id = relationship("NewsImages",backref="news", lazy=True)

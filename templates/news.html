@@ -206,7 +206,7 @@
         Pick a highlight from your company newsletter — whether it’s a milestone, community initiative, or valuable business insight — and let others know.  
         Your network wants to stay connected, inspired, and informed. Start sharing today!
     </div>
-    <button onclick="window.location.href='/news_form'" class="advert-btn" >Post Story</button>
+    <button onclick="window.location.href='/news_form'" class="advert-btn" >+ Post Story</button>
 </div>
 <!-- <button id="open-reply-unit">Open Reply Unit</button> -->
 <br><br>
@@ -214,6 +214,7 @@
 <div style="margin-top: 200px;"></div>
     <!-- Top: Statuses with scroll buttons -->
 {% if news%}
+<!-- News Tabs/thumbnails/Buttons  -->
 <div class="news-status-cont">
     <button class="scroll-btn left" onclick="scrollStatuses(-1)">&#8592;</button>
     <div class="scrolling-statuses" id="scrolling-statuses">
@@ -224,9 +225,12 @@
                     data-title="{{ post.story_title|e }}"
                     data-story="{{ post.story|e }}"
                     data-compid="{{ post.comp_id|e }}"
+                    data-hashtags="{{ post.other|e }}"
                     data-images='{{ post_imgs|map(attribute="image")|list|tojson }}'
                     onclick="handleStatusClick(this)">
-                    <img src="static/comp-images/{{ post_imgs[0].image }}" alt="Status {{ loop.index }}">
+                    {%if post_imgs[0]%}
+                        <img src="static/comp-images/{{ post_imgs[0].image }}" alt="Status {{ loop.index }}">
+                    {%endif%}
                     <div class="story-caption gen-flex-col">
                         {%if post.story| length >= 23%}
                             <span class="story-cap-title">{{ post.story_title[:23]}}...</span>
@@ -281,6 +285,9 @@
     </div>
     <div class="content-viewer">
         <div id="cont-title" class="cont-title">{{ news[0].story_title }}</div>
+        {%if news[0].other and not news[0].other == "None" %}
+            <div id="r-hashtags" class="hashtags real-hashtags">{{ news[0].other }}</div> <!--hashtags-->
+        {%endif%}
         <div id="cont-body" class="content-body">{{ news[0].story }}</div>
         <div class="hashtags gen-flex" style="color:#616161">
             {% for company in companies %}
@@ -335,7 +342,10 @@
     </div>
     <div class="content-viewer">
         <div id="cont-title-2" class="cont-title"></div>
+        <div id="real-hashtags-2"></div>
         <div id="cont-body-2" class="content-body"></div>
+            <div style="flex-grow: 1;"></div>
+            
             <div class="hashtags gen-flex" style="color:#616161">
             
             </div>
@@ -395,10 +405,11 @@ function handleStatusClick(elem) {
     var story = elem.getAttribute('data-story');
     var images = JSON.parse(elem.getAttribute('data-images'));
     var compid = elem.getAttribute('data-compid');
-        viewInMinPreview(postid, title, story, images,compid);
+    var hashtags = elem.getAttribute('data-hashtags');
+        viewInMinPreview(postid, title, story, images,compid,hashtags);
     }
 
-function viewInMinPreview(postid, title, content, imglist, compid) {
+function viewInMinPreview(postid, title, content, imglist, compid,hashtags) {
     
 
     var activePreview = document.getElementById('min-preview-1');
@@ -436,8 +447,14 @@ function viewInMinPreview(postid, title, content, imglist, compid) {
     // Update content
     document.getElementById('cont-title-2').textContent = title;
     document.getElementById('cont-body-2').textContent = content;
+    console.log("Hashtag Lenght: ", hashtags.length);
+    if (hashtags !== "None") {
+        document.getElementById('real-hashtags-2').textContent = hashtags;
+    }else{
+        document.getElementById('real-hashtags-2').textContent = "";
+    }
 
-      // --- Dynamically populate social media links ---
+    // --- Dynamically populate social media links ---
     var hashtagsDiv = dynamicPreview.querySelector('.hashtags');
     hashtagsDiv.innerHTML = ""; // Clear previous
 

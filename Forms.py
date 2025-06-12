@@ -1,8 +1,9 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField,PasswordField,SubmitField, TextAreaField,BooleanField, SelectField,DateField, URLField, RadioField, TelField, MultipleFileField,IntegerField
+from wtforms import StringField,PasswordField,SubmitField, TextAreaField,BooleanField, SelectField,DateField, URLField, RadioField, TelField, MultipleFileField,IntegerField,SelectMultipleField
 from wtforms.validators import DataRequired,Length,Email, EqualTo, ValidationError, Optional
 from flask_login import current_user
 from flask_wtf.file import FileField , FileAllowed
+from wtforms.widgets import ListWidget, CheckboxInput
 # from wtforms.fields.html5 import DateField,DateTimeField
 
 
@@ -36,12 +37,94 @@ class MessagesForm(FlaskForm):
     message = TextAreaField('Message', validators=[DataRequired()])
     submit = SubmitField('Send')
 
+
+HASHTAG_CHOICES = [
+    ('public_relations', '#public_relations'),
+    ('community_service', '#community_service'),
+    ('product_campaign', '#product_campaign'),
+    ('product_features', '#product_features'),
+    ('new_product', '#new_product'),
+    ('general_news', '#general_news'),
+    ('upcoming_event', '#upcoming_event'),
+    ('webinar_review', '#webinar_review'),
+    ('company_history', '#company_history'),
+    ('company_update', '#company_update'),
+    ('milestone', '#milestone'),
+    ('leadership', '#leadership'),
+    ('team_spotlight', '#team_spotlight'),
+    ('partnership', '#partnership'),
+    ('awards', '#awards'),
+    ('csr', '#csr'),
+    ('sustainability', '#sustainability'),
+    ('diversity', '#diversity'),
+    ('inclusion', '#inclusion'),
+    ('press_release', '#pressRelease'),
+    ('expansion', '#expansion'),
+    ('rebranding', '#rebranding'),
+    ('anniversary', '#anniversary'),
+    ('customer_story', '#customerStory'),
+    ('testimonial', '#testimonial'),
+    ('product_launch', '#productLaunch'),
+    ('feature_update', '#featureUpdate'),
+    ('how_to', '#howTo'),
+    ('case_study', '#caseStudy'),
+    ('user_guide', '#userGuide'),
+    ('faq', '#faq'),
+    ('service_alert', '#serviceAlert'),
+    ('maintenance', '#maintenance'),
+    ('promotion', '#promotion'),
+    ('discount', '#discount'),
+    ('limited_offer', '#limitedOffer'),
+    ('event_recap', '#eventRecap'),
+    ('event_announcement', '#eventAnnouncement'),
+    ('webinar', '#webinar'),
+    ('conference', '#conference'),
+    ('meetup', '#meetup'),
+    ('training', '#training'),
+    ('workshop', '#workshop'),
+    ('charity', '#charity'),
+    ('volunteering', '#volunteering'),
+    ('community_engagement', '#communityEngagement'),
+    ('industry_news', '#industryNews'),
+    ('market_trends', '#marketTrends'),
+    ('thought_leadership', '#thoughtLeadership'),
+    ('expert_opinion', '#expertOpinion'),
+    ('innovation', '#innovation'),
+    ('technology', '#technology'),
+    ('research', '#research'),
+    ('insights', '#insights'),
+    ('best_practices', '#bestPractices'),
+    ('employee_spotlight', '#employeeSpotlight'),
+    ('culture', '#culture'),
+    ('wellbeing', '#wellbeing'),
+    ('career', '#career'),
+    ('job_opening', '#jobOpening'),
+    ('internship', '#internship'),
+    ('team_building', '#teamBuilding'),
+    ('announcement', '#announcement'),
+    ('reminder', '#reminder'),
+    ('safety', '#safety'),
+    ('compliance', '#compliance'),
+    ('policy_update', '#policyUpdate'),
+    ('success_story', '#successStory'),
+    ('behind_the_scenes', '#behindTheScenes'),
+    ('fun_fact', '#funFact'),
+    ('did_you_know', '#didYouKnow'),
+]
+
+
 class StoryForm(FlaskForm):
 
     story_title = StringField('Story Title', validators=[Optional()])
     story = TextAreaField('Story', validators=[Optional()])
     images = MultipleFileField("Images")
     main = BooleanField('Main Image?')
+    hashtags = SelectMultipleField(
+        'Select Hashtags',
+        choices=HASHTAG_CHOICES,
+        option_widget=CheckboxInput(),
+        widget=ListWidget(prefix_label=False)
+    )
     submit = SubmitField('Send')
 
 class AdvertForm(FlaskForm):

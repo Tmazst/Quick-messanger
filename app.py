@@ -1028,7 +1028,6 @@ def company_account():
     # from myproject.models import user
     return render_template("company_account.html", company_update=company_update,cmp_usr=cmp_usr,cmp_obj=cmp_obj)
 
-
 @app.route('/public_key/<usrname>', methods=['GET'])
 def get_public_key(usrname):
     try:
@@ -1203,14 +1202,19 @@ def news_form():
     form = StoryForm()
     
     if request.method == "POST":
+        hashtags = ''
+        for tag in form.hashtags.data:
+            hashtags += " #"+tag
+       
         news_obj = News(
             usr_id = current_user.id,
             comp_id = current_user.company_id[0].id,
             story_title = form.story_title.data,
             story=form.story.data,
-            timestamp=current_time_wlzone()
+            timestamp=current_time_wlzone(),
+            other = hashtags
         )
-
+        # db.session.rollback()
         db.session.add(news_obj)
         db.session.commit()
         # After committing, news_obj.id will be automatically set by SQLAlchemy
@@ -1225,7 +1229,7 @@ def news_form():
                     # caption = news_images_obj.caption.data,
                     # main = news_images_obj.main.data
                 )
-                
+                print("##News Image: ",news_images_obj.image )
                 db.session.add(news_images_obj)
 
             db.session.commit()
