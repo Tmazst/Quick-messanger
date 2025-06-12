@@ -119,11 +119,11 @@ section > div {
             <hr>
 
             <div style="width:80%;min-width:350px" class="form-group">
-                    <h3> Update Profile Images</h3>
+                    <h5>Images</h5>
                     {{ form.images(id="imageInput", class="acc-form-control",placeholder="reference_2")}}
             </div><br>
 
-                <div class="group">
+            <div class="group">
                 {{form.hidden_tag()}}
                 <div class="acc-labels">{{ form.story_title.label(class="labels")}}</div>
                     {{ form.story_title(class="form-control",placeholder="Story Title",id="ImageInput")}}
@@ -147,10 +147,10 @@ section > div {
                 </div>
 
             <!-- Button to open modal -->
-            <button id="openHashtagModal" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#hashtagModal">
+            <button id="openHashtagModal" type="button" class="btn" style="border:1px solid grey;border-radius: 12px;" data-bs-toggle="modal" data-bs-target="#hashtagModal">
             Hashtags
             </button>
-            <small>Pick Hashtags That Summarize Your Story for the Audience</small>
+            <small>Pick Hashtags That Summarize Your Story for the Audience</small><br><br><br>
             <!-- Modal -->
             <div class="modal fade" id="hashtagModal" tabindex="-1" aria-labelledby="hashtagModalLabel" aria-hidden="true">
               <div class="modal-dialog modal-dialog-scrollable modal-lg">
