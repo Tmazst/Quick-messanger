@@ -65,12 +65,12 @@ encrypt_password = Bcrypt(app)
 def load_user(user_id):
     return User.query.get(user_id)
 
-@login_manager.unauthorized_handler
-def custom_unauthorized():
-    if request.accept_mimetypes.accept_json or request.is_json or request.path.startswith("/api"):
-        return jsonify({"error": "Unauthorized", "message": "Please log in"}), 401
-    flash("Please Register or Login to Access your Account", "warning")
-    return redirect(url_for("register"))
+# @login_manager.unauthorized_handler
+# def custom_unauthorized():
+#     if request.accept_mimetypes.accept_json or request.is_json or request.path.startswith("/api"):
+#         return jsonify({"error": "Unauthorized", "message": "Please log in"}), 401
+#     flash("Please Register or Login to Access your Account", "warning")
+#     return redirect(url_for("register"))
 
 application = app
 
