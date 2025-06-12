@@ -117,7 +117,7 @@ form{
             <!-- Abbreviation  -->
             <div class="group">
                   <div class="acc-labels">{{ company_update.abbreviation.label(class="labels")}}</div>
-                  {{ company_update.abbreviation(class="form-control",placeholder="Also Known As (AKA)",value=company["abbreviation"])}}
+                  {{ company_update.abbreviation(class="form-control",placeholder="Also Known As (AKA)",value=cmp_obj["abbreviation"])}}
                   {% if company_update.abbreviation.errors %}
                     {% for error in company_update.abbreviation.errors %}
                         <span class="span-error" >*{{error}}</span>
@@ -128,7 +128,7 @@ form{
             <!-- Email  -->
             <div class="group">
                   <div class="acc-labels">{{ company_update.company_email.label(class="labels")}}</div>
-                  {{ company_update.company_email(class="form-control",placeholder="Email",value=company["email"])}}
+                  {{ company_update.company_email(class="form-control",placeholder="Email",value=cmp_obj["email"])}}
                   {% if company_update.company_email.errors %}
                     {% for error in company_update.company_email.errors %}
                         <span class="span-error" >*Company Email{{error}}</span>
@@ -139,7 +139,7 @@ form{
             <!-- Category  -->
             <div class="group">
                   <div class="acc-labels">{{ company_update.category.label(class="labels")}}</div>
-                  {{ company_update.category(class="form-control",placeholder="Category",id="category-select" ,value=company["category"])}}
+                  {{ company_update.category(class="form-control",placeholder="Category",id="category-select" ,value=cmp_obj["category"])}}
                   {% if company_update.category.errors %}
                     {% for error in company_update.category.errors %}
                         <span class="span-error" >*{{error}}</span>
@@ -161,7 +161,7 @@ form{
             <!-- Contacts  -->
             <div class="group">
                 <div class="acc-labels">{{ company_update.company_contacts.label(class="labels")}}</div>
-                 {{ company_update.company_contacts(class="form-control",placeholder="Contacts",value=company["company_contacts"])}}
+                 {{ company_update.company_contacts(class="form-control",placeholder="Contacts",value=cmp_obj["company_contacts"])}}
                  {% if company_update.company_contacts.errors %}
                     {% for error in company_update.company_contacts.errors %}
                         <span class="span-error" >* {{error}}</span>
@@ -172,7 +172,7 @@ form{
             <!-- Address  -->
             <div class="group">
                  <div class="acc-labels">{{ company_update.company_address.label(class="labels")}}</div>
-                 {{ company_update.company_address(style="font-weight:500", class="form-control", id="company_address",placeholder="Physical Address",value=company["company_address"])}}
+                 {{ company_update.company_address(style="font-weight:500", class="form-control", id="company_address",placeholder="Physical Address",value=cmp_obj["company_address"])}}
                  {% if company_update.company_address.errors %}
                     {% for error in company_update.company_address.errors %}
                         <span class="span-error" >*{{error}}</span>
@@ -183,7 +183,7 @@ form{
             <!-- tagline  -->
             <div class="group">
                  <div class="acc-labels">{{ company_update.tagline.label(class="labels")}}</div>
-                 {{ company_update.tagline(style="font-weight:500", class="form-control", id="tagline",placeholder="Tagline",value=company["tagline"])}}
+                 {{ company_update.tagline(style="font-weight:500", class="form-control", id="tagline",placeholder="Tagline",value=cmp_obj["tagline"])}}
                  {% if company_update.tagline.errors %}
                     {% for error in company_update.tagline.errors %}
                         <span class="span-error" >*{{error}}</span>
@@ -194,7 +194,7 @@ form{
               <!-- Website  -->
             <div class="group">
                  <div class="acc-labels">{{ company_update.website_link.label(class="labels")}}</div>
-                 {{ company_update.website_link(class="form-control",placeholder="Website Link",value=company["website_link"])}}
+                 {{ company_update.website_link(class="form-control",placeholder="Website Link",value=cmp_obj["website_link"])}}
                  {% if company_update.website_link.errors %}
                     {% for error in company_update.facebook_link.errors %}
                         <span class="span-error" >*{{error}}</span>
@@ -205,7 +205,7 @@ form{
             <!-- Facebook  -->
             <div class="group">
                  <div class="acc-labels">{{ company_update.facebook_link.label(class="labels")}}</div>
-                 {{ company_update.facebook_link(class="form-control",placeholder="Facebook Link",value=company["facebook_link"])}}
+                 {{ company_update.facebook_link(class="form-control",placeholder="Facebook Link",value=cmp_obj["facebook_link"])}}
                  {% if company_update.facebook_link.errors %}
                     {% for error in company_update.facebook_link.errors %}
                         <span class="span-error" >*{{error}}</span>
@@ -215,7 +215,7 @@ form{
 
             <div class="group">
                   <div class="acc-labels">{{ company_update.twitter_link.label(class="labels")}}</div>
-                 {{ company_update.twitter_link(class="form-control",placeholder="Twitter Link",value=company["twitter_link"])}}
+                 {{ company_update.twitter_link(class="form-control",placeholder="Twitter Link",value=cmp_obj["twitter_link"])}}
                  {% if company_update.twitter_link.errors %}
                     {% for error in company_update.twitter_link.errors %}
                         <span class="span-error" >*{{error}}</span>
@@ -225,7 +225,7 @@ form{
 
             <div class="group">
                  <div class="acc-labels">{{ company_update.youtube_link.label(class="labels")}}</div>
-                 {{ company_update.youtube_link(class="form-control",placeholder="YouTube Link",value=company["youtube_link"])}}
+                 {{ company_update.youtube_link(class="form-control",placeholder="YouTube Link",value=cmp_obj["youtube_link"])}}
                  {% if company_update.youtube_link.errors %}
                     {% for error in company_update.youtube_link.errors %}
                         <span class="span-error" >*{{error}}</span>
