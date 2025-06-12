@@ -177,6 +177,7 @@ class company_info(db.Model):
             "id": str(self.id),
             "company_name": clean(self.company_name),
             "abbreviation": clean(self.other2),
+            "category": clean(self.category),
             "email": clean(self.email),
             "company_address": clean(self.company_address),
             "postal_address": clean(self.postal_address),

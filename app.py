@@ -1228,13 +1228,27 @@ def news_form():
 
     return render_template("news_updates_form.html",form=form)
 
+
+class CompanyObj:
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+
 @app.route('/business_community', methods=['POST',"GET"])
 def business_community():
+
+    # Convert list of dicts to list of objects
+    company_dicts = [c.to_dict() for c in company_info.query.all()]
+    company_objs = [CompanyObj(**d) for d in company_dicts]
+
+    for comp in company_objs:
+        # for prop in comp:
+        print("DEBUG Companies: ", comp.company_name)
 
     companies = company_info.query.all()
     categories = {comp.category for comp in companies}
 
-    return render_template("business_community.html",companies=companies,categories=categories)
+    return render_template("business_community.html",companies=company_objs,categories=categories)
 
 @app.route('/get_messages', methods=['GET'])
 @login_required

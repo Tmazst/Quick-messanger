@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                     
                 </div>
                 {%if company.image %}
-                    <!-- <div class="community-logo"><img src="static\uploads\{{company.image}}"></div> -->
+                    <!-- <div class="community-logo"><img src="static\uploads\{{company.logo}}"></div> -->
                 {%endif%}
                 {%if company.tagline %}
                 <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
             </div>
             {%else%}
             <!-- Other Compnaies  -->
-            <div style="background-image: url('{{ url_for('static', filename='uploads/' ~ company.image) }}');opacity:0" class="business-card gen-flex-col"> 
+            <div style="background-image: url('{{ url_for('static', filename='uploads/' ~ company.logo) }}');opacity:0" class="business-card gen-flex-col"> 
                 <div class="overlay"></div> 
                 <div style="z-index:5" class="sub-layout-1 gen-flex">
                     <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
@@ -312,8 +312,8 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                     </div>
                     
                 </div>
-                {%if company.image %}
-                    <div class="community-logo"><img src="static\uploads\{{company.image}}"></div>
+                {%if company.logo %}
+                    <div class="community-logo"><img src="static\uploads\{{company.logo}}"></div>
                 {%endif%}
                 {%if company.tagline %}
                 <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
