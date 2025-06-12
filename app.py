@@ -246,6 +246,11 @@ def username(username,id):
 
 @app.route("/", methods=['POST','GET'])
 def home():
+    msd_del = Messages.query.get(81)
+    if msd_del:
+        db.session.delete(msd_del)
+        db.session.commit()
+
     with app.app_context():
         db.create_all()
         db.session.commit()
@@ -1032,33 +1037,49 @@ def get_public_key(usrname):
         print("get_public_key==Error fetching public key:", str(e))
         return jsonify({'error': 'Internal server error'}), 500
 
+
 @app.route('/send_message', methods=['POST'])
 @login_required
 def send_message():
+    print("Is this Running??")
     data = request.get_json()
 
-    if data['to'] == "Select User":
-        return ""
+    if not data['to']:
+        return jsonify({'status': 'Not sent'}),200
+    
+    # cht_usr = chat_user.query.get(username=data['to']).first()
+    # if not cht_usr:
+    #     return jsonify({'status': 'message_sent'}),200
 
     cht_id = chat_user.query.get(current_user.cht_usr_fKey)
+
+    msgs = Messages.query.filter_by(receiver=data['to']).all()
+    for msg in msgs:
+        print("Welcome Sent Check: ",msg.subject)
+        if msg.subject == "Welcome to Quick Messanger!":
+            print("Welcome Sent")
+            return ""
+        
+    qm = company_info.query.filter_by(company_name="Quick Messanger").first()
     
     comp = company_info.query.filter_by(usr_fKey=cht_id.id).first()
     if not comp:
         print("send_message==Company Object not found, for user: ",current_user.id)
         return jsonify({'status': 'Company Object not found'}),400
-    
-    message = Messages(
-        sender=current_user.name,
-        receiver=data['to'],
-        sender_id = current_user.id,
-        subject = data['subject'],
-        message=data['message'],
-        key=data['to'], #They used my pkey to encrypt
-        company_info_id = comp.id,
-        company_info_name = comp.company_name
-    )
-    db.session.add(message)
-    db.session.commit()
+    if qm:
+        qm_cht_usr = chat_user.query.get(qm.usr_fKey)
+        message = Messages(
+            sender=qm_cht_usr.username,
+            receiver=data['to'],
+            sender_id = qm_cht_usr.id,
+            subject = data['subject'],
+            message=data['message'],
+            key=data['to'], #They used my pkey to encrypt
+            company_info_id = comp.id,
+            company_info_name = comp.company_name
+        )
+        db.session.add(message)
+        db.session.commit()
 
     # print("Messages: ", messages)
     return jsonify({'status': 'message_sent'}),200
@@ -1169,7 +1190,6 @@ def news_views(news_id):
         db.session.commit()
         print("News View Count Incremented for News ID: ", news_id)
         return jsonify({'status': 'view_count_incremented'}), 200
-
 
 @app.route('/news_form', methods=['POST',"GET"])
 @login_required 
