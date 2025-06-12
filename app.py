@@ -64,6 +64,11 @@ encrypt_password = Bcrypt(app)
 def load_user(user_id):
     return User.query.get(user_id)
 
+@login_manager.unauthorized_handler
+def custom_unauthorized():
+    flash("Please Register or Login  First to Have Access", "warning")
+    return redirect(url_for("register"))
+
 application = app
 
 def current_time_wlzone():
@@ -89,7 +94,6 @@ ALLOWED_EXTENSIONS = {"txt", "xlxs",'docx', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 # Function to check if the file has an allowed extension
 def allowed_files(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 
 
 def process_news(file):
@@ -967,9 +971,7 @@ def user_account_form():
 @app.route("/company_account", methods=["POST", "GET"])
 @login_required
 def company_account():
-    if not current_user.is_authenticated:
-        flash("Please Register Account First","warning")
-        return redirect(url_for("register"))
+
 
     db.create_all()
     id = current_user.id
