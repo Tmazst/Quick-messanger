@@ -55,11 +55,19 @@
 
 
 let db_ind;
+window.addEventListener("DOMContentLoaded", async function(){
+    if(window.innerWidth <= "700"){
+      var companyInput = document.querySelector("#company_name");
+      companyInput.required = false;
+      companyInput.style.display = "none";
+    };
+});
 window.addEventListener('load', async function(){
 
     
     // console.log("SaveIs Called: ");
     var userLabel =document.querySelector("#username-label");
+
 
 
     if (userLabel){

@@ -89,11 +89,11 @@
                                 {% for user in users %}
                                     {%if not user.username == current%} <!--DO not include the current user in the list-->
                                         {%if chat_with %}
-                                        <option style="font-weight:500;color:#EF4036 !important" value="{{ chat_with.username }}" selected>{{ chat_with.user_details[0].name }} - <span 
+                                            <option style="font-weight:500;color:#EF4036 !important" value="{{ chat_with.username }}" selected>{{ chat_with.user_details[0].name }} - <span 
                                                 >{{chat_with_company.company_name}}</span>
                                             </option>
                                         {%else%} 
-                                            {%if user.company_details and user.user_details %}
+                                            {%if user.company_details and user.user_details and user.company_details[0].company_name %}
                                             <option value="{{ user.username }}">{{ user.user_details[0].name }} - 
                                                 <span style="font-weight:500;color:rgb(173, 30, 30) !important">{{user.company_details[0].company_name}}</span>
                                             </option>
@@ -149,10 +149,10 @@
     <div style="justify-content: flex-start;" class="sender-profile gen-flex">
         {%if usr_obj.image%}
             <div class="footer-sender-profile-cont gen-flex">
-                <img src="{{ url_for('static', filename='uploads/'+ usr_obj.image) }}" alt="profile" class="footer-sender-profile">
+                <!-- <img src="{{ url_for('static', filename='uploads/'+ usr_obj.image) }}" alt="profile" class="footer-sender-profile"> -->
             </div>
         {%else%}
-            <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="profile" class="footer-sender-profile">
+            <!-- <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="profile" class="footer-sender-profile"> -->
         {%endif%}
         <div class="sender-profile-details">
             <div style="align-items: flex-start;gap:0" class="comp-details gen-flex-col">
@@ -162,7 +162,7 @@
                     <span class="edit-icon">&#9998;</span> <!-- ASCII code for a pencil icon -->
                     {%endif%}
                 </div>
-                <div class="editable-field-user gen-flex">
+                <div id="position_mobile" class="editable-field-user gen-flex">
                     <input type="text" class="form-control" name="position" {% if usr_obj.position%} value="{{ usr_obj.position}}" {%endif%} placeholder="e.g. Sales Manager" />
                     {% if not usr_obj.position or usr_obj.position == 'None' %}
                     <span class="edit-icon">&#9998;</span>
@@ -444,6 +444,12 @@
         .catch(error => {
             console.error('Error sending message:', error);
         });
+    }
+
+    if(window.innerWidth <= "700"){
+        document.querySelector(".letterhead-header").style.display="none";
+        document.querySelector(".letterhead-footer").style.display="none";
+        document.querySelector("#position_mobile").style.display="none";
     }
 
 </script>

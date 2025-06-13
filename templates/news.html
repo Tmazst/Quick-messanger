@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <style>
+<style>
 .news-status-cont {
     position: relative;
     height: 300px;
@@ -116,6 +116,7 @@
     gap: 10px;
     position: absolute;
     bottom: 10px;
+    height: max-content;
 }
 
 .thumbnails-initial {
@@ -215,9 +216,13 @@
     <button onclick="window.location.href='/news_form'" class="advert-btn" >+ Post Story</button>
 </div>
 <!-- <button id="open-reply-unit">Open Reply Unit</button> -->
-<br><br>
 
-<div style="margin-top: 200px;"></div>
+
+<div class="margin-spacer" style="margin-top: 200px;"></div>
+<div style="display: none;" class="mobile-page-welcome-tags">
+    <h1><strong>Business Buzz:</strong> Latest Stories, Campaigns & Events from Top Companies</h1>
+    <br>
+</div>
     <!-- Top: Statuses with scroll buttons -->
 {% if news%}
 <!-- News Tabs/thumbnails/Buttons  -->
@@ -264,6 +269,11 @@
         {% endfor %}
     </div>
     <button class="scroll-btn right" onclick="scrollStatuses(1)">&#8594;</button>
+</div>
+<!-- Skeleton / Frames Mobile  -->
+<div  id="min-preview-skel" class="min-preview-skel">
+    <div style="height:300px;width:100%;background-color: #c2c2c2;border-radius: 12px;border:2px solid #cccccc">
+    </div>
 </div>
 
 <!-- Bottom: Main preview and thumbnails - Active/Default -->
@@ -336,7 +346,8 @@
 <div style="display: none;" id="min-preview-2" class="min-preview">
     <div class="image-viewer" id="main-image-viewer">
         <img id="main-image-2" src="" alt="Main Preview" class="main-image">
-        <div class="thumbnails gen-flex" id="thumbnails-2">
+        <!-- Desktop Thumbnails -->
+        <div class="thumbnails gen-flex thumbnails-desktop" id="thumbnails-2">
             <img id="clicked-tumb" class="thumbnail" src="" >
         </div>
         <a href="#"><img id="news-comp-logo" src="static/uploads/{{company['logo']}}" class="logo news-comp-logo"/></a>
@@ -345,15 +356,33 @@
                 <img src="static/icons/imbc-icon.png" />
             </a>
         </div>
+        <!-- Mobile Post Content  -->
+        <div style="display: none;" id="clickable-caption" class="content-body-caption">content-viewer-desktop</div>
+        <div style="display:none" class="content-viewer content-viewer-mobile">
+            <div class="scroll-content">
+                <div id="cont-title-2" class="cont-title"></div>
+                <div id="real-hashtags-2"></div>
+                <div id="cont-body-2" class="content-body">content-viewer-desktop</div>
+                <div style="flex-grow: 1;"></div>
+                <div style="position: relative;" class="hashtags gen-flex" style="color:#616161"></div>
+            </div>
+        </div>
     </div>
-    <div class="content-viewer">
+    <!-- Mobile Thumbnails -->
+     <div class="mobile-swipe-cont gen-flex">
+        <div class="thumbnails gen-flex thumbnails-mobile" id="thumbnails-mobile">
+            <img id="clicked-tumb" class="thumbnail" src="" >
+        </div>
+    </div>
+
+    <!-- Desktop Post Content  -->
+    <div class="content-viewer content-viewer-desktop">
         <div id="cont-title-2" class="cont-title"></div>
         <div id="real-hashtags-2"></div>
         <div id="cont-body-2" class="content-body"></div>
             <div style="flex-grow: 1;"></div>
             
             <div class="hashtags gen-flex" style="color:#616161">
-            
             </div>
     </div>
 </div>
@@ -417,7 +446,7 @@ function handleStatusClick(elem) {
 
 function viewInMinPreview(postid, title, content, imglist, compid,hashtags) {
     
-
+    var skelFrame = document.querySelector("#min-preview-skel").classList.remove("min-preview-skel");
     var activePreview = document.getElementById('min-preview-1');
     var dynamicPreview = document.getElementById('min-preview-2');
     activePreview.style.display = 'none';
@@ -438,27 +467,107 @@ function viewInMinPreview(postid, title, content, imglist, compid,hashtags) {
     } else {
         mainImg.src = '';
     }
-    // Update thumbnails
-    var thumbnailsDiv = document.getElementById('thumbnails-2');
-    thumbnailsDiv.innerHTML = '';
-    imglist.forEach(function(img, idx) {
-        var thumb = document.createElement('img');
-        thumb.className = 'thumbnail';
-        thumb.src = "static/comp-images/" + img;
-        thumb.onclick = function() {
-            mainImg.src = thumb.src;
-        };
-        thumbnailsDiv.appendChild(thumb);
-    });
+    if(window.innerWidth <= "700"){
+        // Update thumbnails for mobile phones
+        var thumbnailsDiv = document.getElementById('thumbnails-mobile');
+        thumbnailsDiv.innerHTML = '';
+        imglist.forEach(function(img, idx) {
+            var thumb = document.createElement('img');
+            thumb.className = 'thumbnail';
+            thumb.src = "static/comp-images/" + img;
+            thumb.onclick = function() {
+                mainImg.src = thumb.src;
+            };
+            thumbnailsDiv.appendChild(thumb);
+        });
+
+        // Add swipe support for mobile thumbnails
+        let startX = 0;
+        let currentIdx = 0;
+        const thumbs = thumbnailsDiv.querySelectorAll('.thumbnail');
+        if (thumbs.length > 0) {
+            // Highlight the first thumb
+            thumbs[0].style.border = '2px solid #EF4036';
+            // Set main image to first thumb
+            mainImg.src = thumbs[0].src;
+        }
+
+        function showImage(idx) {
+            if (idx < 0) idx = thumbs.length - 1;
+            if (idx >= thumbs.length) idx = 0;
+            currentIdx = idx;
+            mainImg.src = thumbs[currentIdx].src;
+            thumbs.forEach((t, i) => t.style.border = i === currentIdx ? '2px solid #EF4036' : '2px solid #eee');
+        }
+
+        thumbnailsDiv.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 1) {
+                startX = e.touches[0].clientX;
+            }
+        });
+        thumbnailsDiv.addEventListener('touchend', function(e) {
+            if (e.changedTouches.length === 1) {
+                let endX = e.changedTouches[0].clientX;
+                let diff = endX - startX;
+                if (Math.abs(diff) > 30) { // Minimum swipe distance
+                    if (diff < 0) {
+                        // Swipe left
+                        showImage(currentIdx + 1);
+                    } else {
+                        // Swipe right
+                        showImage(currentIdx - 1);
+                    }
+                }
+            }
+        });
+
+        // Also update currentIdx on thumb click
+        thumbs.forEach((thumb, idx) => {
+            thumb.addEventListener('click', function() {
+                showImage(idx);
+            });
+        });
+
+    }else{
+        // Update thumbnails
+        var thumbnailsDiv = document.getElementById('thumbnails-2');
+        thumbnailsDiv.innerHTML = '';
+        imglist.forEach(function(img, idx) {
+            var thumb = document.createElement('img');
+            thumb.className = 'thumbnail';
+            thumb.src = "static/comp-images/" + img;
+            thumb.onclick = function() {
+                mainImg.src = thumb.src;
+            };
+            thumbnailsDiv.appendChild(thumb);
+        });
+
+    }
+
+
     // Update content
     document.getElementById('cont-title-2').textContent = title;
     document.getElementById('cont-body-2').textContent = content;
+    var caption = document.getElementById('clickable-caption');
+    caption.textContent = content.substring(0,40)+"....";
+    // View Content Mobile Phones
+    if(window.innerWidth <= "700"){
+        var content = document.querySelector(".content-viewer-mobile");
+        caption.addEventListener("click", function(){
+            content.classList.toggle("display-status-content");
+            caption.classList.toggle("turn-off-caption");
+        });
+        content.addEventListener("click", function(){
+            content.classList.toggle("display-status-content");
+            caption.classList.toggle("turn-off-caption");
+        });
+    };
     console.log("Hashtag Lenght: ", hashtags.length);
     if (hashtags !== "None") {
         document.getElementById('real-hashtags-2').textContent = hashtags;
     }else{
         document.getElementById('real-hashtags-2').textContent = "";
-    }
+    };
 
     // --- Dynamically populate social media links ---
     var hashtagsDiv = dynamicPreview.querySelector('.hashtags');
@@ -537,7 +646,6 @@ function viewAsMainImg(thmbid,postid) {
     postViewdImg.src = clickedThumb.src;
 }
 
-
 function showModalImage() {
     console.log("On Modal Show Current Img: ", currentModalIndex);
     console.log("On Modal Show Current Images: ", statusImages);
@@ -552,9 +660,39 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('main-image').src = statusImages[idx];
         });
     });
+
+
+    // Only enable swipe on mobile
+    if (window.innerWidth > 700) return;
+
+    var scrollContainer = document.getElementById('scrolling-statuses');
+    if (!scrollContainer) return;
+
+    let startX = 0;
+    let scrollLeft = 0;
+    let isDragging = false;
+
+    scrollContainer.addEventListener('touchstart', function(e) {
+        if (e.touches.length === 1) {
+            isDragging = true;
+            startX = e.touches[0].clientX;
+            scrollLeft = scrollContainer.scrollLeft;
+        }
+    });
+
+    scrollContainer.addEventListener('touchmove', function(e) {
+        if (!isDragging) return;
+        let x = e.touches[0].clientX;
+        let walk = startX - x;
+        scrollContainer.scrollLeft = scrollLeft + walk;
+    });
+
+    scrollContainer.addEventListener('touchend', function(e) {
+        isDragging = false;
+    });
+
+
 });
-
-
 
 
 </script>

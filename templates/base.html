@@ -41,6 +41,7 @@
             <!-- </a> -->
             <!-- <a href="/subscribe" class="top-bar-link ">Subscribe</a> -->
         </div>
+        <button id="register-mobile" onclick="window.location.href='/register'" class="btns">Register</button>
     </div>
     <style>
         .nav-message-text{
@@ -63,7 +64,51 @@
     {% block replyunit%}
     {%endblock%}
     {% block about%}
-    {%endblock%}
+    {%endblock%} 
+    <button style="z-index:1900" onclick="openQMenu()" id="quick-menu-btn">Quick Menu</button>
+   
+    <!-- Mobile Quick Menu  -->
+    <div style="display:none" class="mobile-quick-menu gen-flex-col">
+        <img class="quick-me-logo" src="static/images/logo-icon-white.png" />
+        <div class="gen-flex"><img class="quick-esw-logo" src="static/images/eswatini_flag.png" />
+        <div style="color:#5a5a5a;text-shadow: #919191;">QM - Eswatini</div></div>
+         <h1 style="margin-top:-10px;color:#EF4036;text-shadow: #919191;">Quick Menu</h1>
+        <div class="gen-flex">
+            <div id="link-1"  onclick="window.location.href='/business_community'" class="side-nav-item gen-flex">
+                <img src="static/icons/business-comm-icon.png" />
+                <div  class="link-title gen-flex-col">
+                    <span class="nav-link" >Business Community</span>
+                    <!-- <small>Find Small, Big Enteprises</small> -->
+                </div>
+            </div>
+            <div id="link-1"  onclick="window.location.href='/user_inbox'" class="side-nav-item gen-flex">
+                <img src="static/icons/qm-messaging-icon.png" />
+                <div  class="link-title gen-flex-col">
+                    <span class="nav-link" >Inbox</span>
+                    <!-- <small>Responses for Equiries</small> -->
+                </div>
+            </div>
+        </div>
+        <div class="gen-flex">
+            <div id="link-2" onclick="window.location.href='/adverts'" class="side-nav-item gen-flex">
+                <img src="static/icons/advert-icon.png" />
+                <div class="link-title gen-flex-col">
+                    <span class="nav-link" href="">Adverts</span>
+                    <!-- <small>Explore products and services</small> -->
+                </div>
+            </div>
+            <div id="link-3" onclick="window.location.href='/company_stories'" class="side-nav-item gen-flex">
+                <img src="static/icons/business-news-icon.png" />
+                <div class="link-title gen-flex-col">
+                    <span class="nav-link" >Companies</span>
+                    <span class="nav-link" >News & Events</span>
+                    <!-- <small>Explore Business Statuses</small> -->
+                </div> 
+            </div>
+        </div>
+        <button onclick="closeQMenu()" class="qm-exit">Exit</button>
+    </div>
+
     <div id="notification-container" class="notification-container"></div>
     <!-- Login Modal (hidden by default) -->
     <div style="z-index: 2000;" id="alert-confirm" class="login-modal-bg gen-flex-col">
@@ -77,20 +122,21 @@
 
     <!-- Recovery Modal (hidden by default) -->
     <div id="recovery-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
-    <div style="background:#fff; padding:2em; border-radius:10px; max-width:400px; margin:auto;">
-        <h2 style="color:#EF4036">Backup Your Account</h2>
-        <p>Save your recovery file and key below. You will need them to restore your account if you lose access.</p>
-        <div><br>
-        <b>Recovery Key:</b>
-        <div id="recovery-key" style="font-family:monospace; font-size:1.2em; margin:0.5em 0;"></div>
-            <button class="btns"  id="copy-recovery-key">Copy Key</button>
-        </div><br><br>
-        <b>Save Recovery File:</b><br>
-        <button class="btns" id="download-recovery-file">Download Recovery File</button>
-        <br><br>
-        <button style="padding:7px;border-radius: 15px;background: none;"  onclick="closeRefresh()">Close</button>
+        <div style="background:#fff; padding:2em; border-radius:10px; max-width:400px; margin:auto;">
+            <h2 style="color:#EF4036">Backup Your Account</h2>
+            <p>Save your recovery file and key below. You will need them to restore your account if you lose access.</p>
+            <div><br>
+            <b>Recovery Key:</b>
+            <div id="recovery-key" style="font-family:monospace; font-size:1.2em; margin:0.5em 0;"></div>
+                <button class="btns"  id="copy-recovery-key">Copy Key</button>
+            </div><br><br>
+            <b>Save Recovery File:</b><br>
+            <button class="btns" id="download-recovery-file">Download Recovery File</button>
+            <br><br>
+            <button style="padding:7px;border-radius: 15px;background: none;"  onclick="closeRefresh()">Close</button>
+        </div>
     </div>
-    </div>
+    
     <div style="width:100%  !important;gap:0" class="gen-flex navigation-main">
         <!-- Main App Navigation Bar  -->
         <div style="padding-top:60px" class="app-nav-bar-left">
@@ -127,9 +173,10 @@
             {%endif%}
             
         </div>
+
         <!-- Container for Chats Nav & Content Section  -->
         <div style="gap:0px;" class="left-main gen-flex">
-            <!-- Chats Nav   -->
+            <!-- Chats & App Navigation  -->
             <div class="left-side-section-container">
                 <div class="side-section gen-flex-col">
                     <!-- <a href="/compose"> -->
@@ -170,7 +217,11 @@
                                                     <div  class="message-item-header-left gen-flex">
                                                         <div onclick="window.location.href='/get_messages?key={{rec_usrnm.username}}'" class="message-item-header-left gen-flex">
                                                             {% set name = rec_usrnm.user_details[0].name %}
-                                                            <img src="{{ url_for('static', filename='uploads/'+ rec_usrnm.company_details[0].image) }}" alt="Logo" class="message-item-icon">
+                                                            {%if rec_usrnm.company_details[0].company_name  %}
+                                                                <img src="{{ url_for('static', filename='uploads/'+ rec_usrnm.company_details[0].image) }}" alt="Logo" class="message-item-icon">
+                                                            {%else%}
+                                                                <img src="{{ url_for('static', filename='uploads/'+ rec_usrnm.user_details[0].image) }}" alt="Logo" class="message-item-icon">
+                                                            {%endif%}
                                                             {% if name | length >= 12 %}
                                                                 <span class="message-item-name">{{ name[:12] }}...-</span>
                                                             {% else %}
@@ -197,7 +248,11 @@
                                                         <div  class="message-item-header-left gen-flex">
                                                             
                                                             {% set name = send_usrnm.user_details[0].name %}
-                                                            <img src="{{ url_for('static', filename='uploads/'+ send_usrnm.company_details[0].image) }}" alt="Logo" class="message-item-icon">
+                                                            {%if send_usrnm.company_details[0].company_name  %}
+                                                                <img src="{{ url_for('static', filename='uploads/'+ send_usrnm.company_details[0].image) }}" alt="Logo" class="message-item-icon">
+                                                            {%else%}
+                                                                <img src="{{ url_for('static', filename='uploads/'+ send_usrnm.user_details[0].image) }}" alt="Logo" class="message-item-icon">
+                                                            {%endif%}
                                                             {% if name | length >= 12 %}
                                                                 <span class="message-item-name">{{ name[:12] }}...++</span>
                                                             {% else %}
@@ -260,6 +315,7 @@
             </div>
             <!-- Content Section  -->
             <div class="right-side-section-container">
+                <!-- Profile Bar  -->
                 <div style="justify-content: flex-start;" class="sub-titles gen-flex">
                     {%if company.image %}
                     <img onclick="window.location.href='/company_account'" src="{{ url_for('static', filename='uploads/'+ company.image) }}" alt="Logo" class="sub-title-logo">
@@ -274,7 +330,6 @@
                             {% endif %}
                         {% endwith %}
                     </div>
-                    <!-- <div class="active-tab-desc">Business Community</div> -->
                     <div id="active-tab-desc" class="filler gen-flex">  </div>
                     {%if current%}
                     <div onclick="window.location.href='/user_account'" class="username gen-flex" style="cursor: pointer;">
@@ -290,7 +345,8 @@
                         <span class="">Register</span>
                     </div>
                     {%endif%}
-                </div><br>
+                </div>
+
                 <div style="overflow-y: auto; height: calc(100% - 60px);" class="displaying-section"><br>
                     <div style="height: max-content; width: 100%;position: relative;" class="be-scrollable">
                         {% block content %}
@@ -311,6 +367,16 @@
     
 
 <script>
+
+function openQMenu(){
+    var menu = document.querySelector(".mobile-quick-menu");
+    menu.classList.toggle("drop-menu");
+}
+function closeQMenu(){
+    var menu = document.querySelector(".mobile-quick-menu");
+    menu.classList.toggle("drop-menu");
+}
+
  document.addEventListener('DOMContentLoaded', function() {
         var navItems = document.querySelectorAll('.side-navbar-nav .side-nav-item, .side-navbar-nav .app-nav-icons');
         var currentPath = window.location.pathname;
@@ -351,17 +417,21 @@
             // preRegister();
             console.log("db", db.objectStoreNames.contains("keys"));
             console.log("User Found");
-        });  
-        
-    }else{
-        // initialise DB 
-        initDB().then((db) =>{
-            console.log("db", db.objectStoreNames.contains("keys"));
-            console.log("User Not Found");
-            preRegister();
-            // sessionStorage.setItem("recCredInfo", "NA");
+            var regMobile = document.querySelector('#register-mobile');
+            if(regMobile)(
+                regMobile.style.display="none"
+            ); 
         });
-    }
+        }else{
+            // initialise DB 
+            initDB().then((db) =>{
+                console.log("db", db.objectStoreNames.contains("keys"));
+                console.log("User Not Found");
+                preRegister();
+                
+                // sessionStorage.setItem("recCredInfo", "NA");
+            });
+        }
 
     // Register Service Worker
     if ('serviceWorker' in navigator) {
@@ -392,6 +462,7 @@
         const messagesContainer = document.querySelector(".scorllable-messages");
         messagesContainer.classList.toggle("open");
     }
+
 
  </script>
 

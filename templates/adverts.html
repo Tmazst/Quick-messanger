@@ -49,6 +49,15 @@
         background-size: contain;
         background-repeat: no-repeat;
     }
+    @media (max-width: 700px) {
+    html,body{
+        width:100% !important;
+        min-width: 100px !important;
+        overflow: auto;
+        /* height: max-content; */
+        background-color: rgb(214, 214, 214);
+    }
+}
 </style>
 
 <div class="view-container">
@@ -65,32 +74,8 @@
         
     </div>
 
-    <br>
-    <!-- <div class="masonry-cont gen-flex">
-        Static Image Ad
-        <div class="column gen-flex-col">
-            <img src="static/images/burgerad15179945781952220614.png" alt="Static Ad">
-            <iframe src="https://www.youtube.com/embed/xwH4oVnuIAs?start=80" allowfullscreen></iframe>
-            <img src="static/images/artificial-intelligence-used-generate-images-collage.jpg" alt="Square Ad">
-        </div>
-        Video Ad (YouTube)
-        <div class="column gen-flex-col">
-            <img src="static/ad-images/4ea9d0a0a20ba691048ff31323dbd1a5.jpg" alt="Square Ad">
-            <img src="static/ad-images/tlp_hero_real-estate-ad-1c42ffc89274261ddbdb9b5b4b00dd12.jpg" alt="Square Ad">
-            <img src="static/ad-images/shareacoke-724x1024.jpg" alt="Square Ad"> 
-        </div>
-
-        <div class="column gen-flex-col">
-            <img src="static/ad-images/revolut-71-travelers-card-beach-female.webp" alt="Square Ad">
-            <img src="static/ad-images/Express-Clothing-Display-Ad-Example-300-X-600-1.jpg" alt="Square Ad">
-            <img src="static/ad-images/mars-truck-size-truck-promo.jpg" alt="Square Ad">
-        </div>
-
-    </div> -->
-
-     <!-- # Adverts Code  -->
-     <!-- <div style="width:90%;max-width: 1224px;margin:0 auto"> -->
-    <div class="masonry-cont gen-flex">
+    <!-- Desktop Screens  -->
+    <div id="ads-desktop" class="masonry-cont gen-flex">
         {% for column in columns %}
             <div class="column gen-flex-col">
                 {% for ad in column %}
@@ -123,6 +108,45 @@
             </div>
         {% endfor %}
     </div>
+
+    <!-- Mobile Screens  -->
+    <div class="welcome-ad-mobile" style="display: none;position:relative;height:inherit;width:90%;margin:10px auto">
+        <div class="advert-welcome">
+            Discover live ads and exclusive offers! <br>
+            <span style="font-weight: 400;color:rgb(96, 120, 139)">
+                Explore products and services, make quick enquiries, and get instant responses—right here on our platform.
+            </span>
+        </div>
+    </div>
+    <div style="display: none;" id="ads-mobile" class="masonry-cont gen-flex-col">
+        {%for ad in adverts%}
+            {% if ad.advert_image %}
+                {% set comp_obj = companies[ad.comp_id] if ad.comp_id in companies else None %}
+                <div onclick="revealDrawer(event,'{{ad.id}}')" class="img-contain" style="position:relative;">
+                    <img src="static/ad-images/{{ ad.advert_image }}" alt="Ad Image" class="ad_image">
+                    <div id="m-ad00{{ad.id}}" style="justify-content: flex-end;gap:2px" class="ad-comp-details gen-flex-col">
+                        {%if comp_obj.website%}
+                            <a href="{{comp_obj.website}}"><img src="static/icons/ads-web-icon.png" class="ads-icons"/> </a>
+                        {%endif%}
+                        {%if comp_obj.company_contacts%}
+                            <a href="{{comp_obj.company_contacts}}"><img src="static/icons/ads-tel-icon.png" class="ads-icons"/> </a>
+                        {%endif%}
+                        {%if comp_obj.email%}
+                            <a href="{{comp_obj.email}}"><img src="static/icons/ads-email-icon.png" class="ads-icons"/> </a>
+                        {%endif%}
+                        <div class=" qm-icon-adverts">
+                            <a href="/compose?id={{ser.dumps({'data':comp_obj.id})}}" >
+                                <img src="static/icons/imbc-icon.png" style="height: 50px;width:50px ;" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            {% if ad.video %}
+                <iframe src="{{ ad.video }}" allowfullscreen></iframe>
+            {% endif %}
+        {%endfor%}
+    </div>
 </div>
 
 <script>
@@ -134,13 +158,22 @@
     });
 
     function revealDrawer(e,id){
-        var ida = "ad00" + id.toString();
+        var ida = "m-ad00" + id.toString();
         var sideDraw = document.getElementById(ida);
-        sideDraw.classList.add('reveal-side-icons');
-
-        e.target.addEventListener("mouseleave", function(){
-            sideDraw.classList.remove('reveal-side-icons');
-        });
+        console.log("Click Event Recieved",sideDraw , "A",id);
+        if (!sideDraw) {
+            console.error("Element with id " + ida + " not found.");
+            return;
+        }
+        if(window.innerWidth <= "700"){
+            console.log("Click Event Recieved2");
+            sideDraw.classList.toggle('off-on');
+        }else{
+            sideDraw.classList.add('reveal-side-icons');
+            e.target.addEventListener("mouseleave", function(){
+                sideDraw.classList.remove('reveal-side-icons');
+            });
+        }
     }
 </script>
 

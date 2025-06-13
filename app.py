@@ -254,6 +254,7 @@ def username(username,id):
 @app.route("/", methods=['POST','GET'])
 def home():
     msd_del = Messages.query.get(81)
+
     if msd_del:
         db.session.delete(msd_del)
         db.session.commit()
@@ -269,9 +270,11 @@ def home():
 
     if current_user and current_user.is_authenticated:
         company = company_info.query.filter_by(usr_id=current_user.id).first()
-        if company and company.image == "logo-avator.png" or not company.email:
-            flash("Please Finish Company Regstration","warning")
-            return redirect(url_for("company_account"))
+        if company and company.company_name:
+            if company.image == "logo-avator.png" or not company.email:
+                flash("Please Finish Company Regstration","warning")
+                print("Company Name: ",)
+                return redirect(url_for("company_account"))
 
     if chk_if_reg:
         print("Hoping for a redirect")
@@ -441,6 +444,11 @@ def send_chat_message(message_form,receiver_,recipientMsg_):
         flash("Message Sent!!","success")
         print("Messages Sent!!")
 
+
+@app.route("/user_inbox", methods=['POST','GET'])
+@login_required
+def user_inbox():
+    return render_template("user_messages.html")
 
 @app.route("/reply_unit", methods=['POST','GET'])
 @login_required
@@ -863,7 +871,7 @@ def register():
             company_details = company_info(
                 company_name = form['company_name'],
                 usr_fKey = get_user.id,
-                usr_id=user.id,
+                usr_id = user.id,
                 image = "logo-avator.png",
                 country = form['country']
             )
@@ -936,6 +944,11 @@ def fetch_user_data():
 
 
     return 
+
+@app.route("/mobile", methods=["POST", "GET"])
+def mobile():
+
+    return render_template("mobile_menu.html")
 
 # ------------------------------user DATA------------------------------- #
 @app.route("/user_account", methods=["POST", "GET"])
@@ -1158,7 +1171,7 @@ def adverts():
         print("idx % num_columns: ",idx % num_columns)
         columns[idx % num_columns].append(ad)
     # print("All Cols: ",columns)
-    return render_template("adverts.html",columns=columns,companies=companies)
+    return render_template("adverts.html",columns=columns,companies=companies,adverts=adverts)
 
 @app.route("/company_stories")
 @app.route("/news")
