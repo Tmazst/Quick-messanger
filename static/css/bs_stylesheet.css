@@ -1625,10 +1625,6 @@ a {
     right:10px;
 }
 
-.swipe-for-mobile{
-    width:100%;
-    height: max-content;
-}
 
 #main-logo{
     cursor: pointer;
@@ -1800,6 +1796,17 @@ a {
     }
 /* Responsive Design */
 @media (max-width: 700px) {
+    
+    .swipe-for-mobile{
+        width:100% !important;
+        height: max-content !important;
+        overflow-x: auto !important;
+    }
+    .cards-container{
+        width:max-content !important;
+        flex-wrap: nowrap !important;
+
+    }
     .menu-icon{
         display:flex;
         height:30px;

@@ -408,88 +408,88 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
 
     
 // --- Mobile swipe/scroll for cards-container ---
-document.addEventListener('DOMContentLoaded', function() {
-    var cardsContainers = document.querySelectorAll('.cards-container');
-    cardsContainers.forEach(function(cardsContainer) {
-        function applyMobileScroll() {
-            if (window.innerWidth <= 700) {
-                cardsContainer.style.flexWrap = 'nowrap';
-                cardsContainer.style.overflowX = 'auto';
-                cardsContainer.style.WebkitOverflowScrolling = 'touch';
-                cardsContainer.style.display = 'flex';
-                cardsContainer.style.gap = '16px';
-                cardsContainer.style.scrollBehavior = 'auto'; // Let browser handle smoothness
+// document.addEventListener('DOMContentLoaded', function() {
+//     var cardsContainers = document.querySelectorAll('.cards-container');
+//     cardsContainers.forEach(function(cardsContainer) {
+//         function applyMobileScroll() {
+//             if (window.innerWidth <= 700) {
+//                 cardsContainer.style.flexWrap = 'nowrap';
+//                 cardsContainer.style.overflowX = 'auto';
+//                 cardsContainer.style.WebkitOverflowScrolling = 'touch';
+//                 cardsContainer.style.display = 'flex';
+//                 cardsContainer.style.gap = '16px';
+//                 cardsContainer.style.scrollBehavior = 'auto'; // Let browser handle smoothness
 
-                // Set min-width for cards for better swipe
-                var cards = cardsContainer.querySelectorAll('.business-card');
-                cards.forEach(function(card) {
-                    card.style.minWidth = '350px';
-                    card.style.flex = '0 0 auto';
-                });
+//                 // Set min-width for cards for better swipe
+//                 var cards = cardsContainer.querySelectorAll('.business-card');
+//                 cards.forEach(function(card) {
+//                     card.style.minWidth = '350px';
+//                     card.style.flex = '0 0 auto';
+//                 });
 
-                // Only attach listeners once
-                if (!cardsContainer._dragScrollAttached) {
-                    let isDown = false, startX, scrollLeft;
+//                 // Only attach listeners once
+//                 if (!cardsContainer._dragScrollAttached) {
+//                     let isDown = false, startX, scrollLeft;
 
-                    cardsContainer.addEventListener('mousedown', function(e) {
-                        isDown = true;
-                        cardsContainer.classList.add('dragging');
-                        startX = e.pageX - cardsContainer.offsetLeft;
-                        scrollLeft = cardsContainer.scrollLeft;
-                    });
-                    cardsContainer.addEventListener('mouseleave', function() {
-                        isDown = false;
-                        cardsContainer.classList.remove('dragging');
-                    });
-                    cardsContainer.addEventListener('mouseup', function() {
-                        isDown = false;
-                        cardsContainer.classList.remove('dragging');
-                    });
-                    cardsContainer.addEventListener('mousemove', function(e) {
-                        if (!isDown) return;
-                        e.preventDefault();
-                        const x = e.pageX - cardsContainer.offsetLeft;
-                        const walk = (x - startX);
-                        cardsContainer.scrollLeft = scrollLeft - walk;
-                    });
+//                     cardsContainer.addEventListener('mousedown', function(e) {
+//                         isDown = true;
+//                         cardsContainer.classList.add('dragging');
+//                         startX = e.pageX - cardsContainer.offsetLeft;
+//                         scrollLeft = cardsContainer.scrollLeft;
+//                     });
+//                     cardsContainer.addEventListener('mouseleave', function() {
+//                         isDown = false;
+//                         cardsContainer.classList.remove('dragging');
+//                     });
+//                     cardsContainer.addEventListener('mouseup', function() {
+//                         isDown = false;
+//                         cardsContainer.classList.remove('dragging');
+//                     });
+//                     cardsContainer.addEventListener('mousemove', function(e) {
+//                         if (!isDown) return;
+//                         e.preventDefault();
+//                         const x = e.pageX - cardsContainer.offsetLeft;
+//                         const walk = (x - startX);
+//                         cardsContainer.scrollLeft = scrollLeft - walk;
+//                     });
 
-                    // Touch events
-                    let touchStartX = 0, touchScrollLeft = 0;
-                    cardsContainer.addEventListener('touchstart', function(e) {
-                        if (e.touches.length === 1) {
-                            touchStartX = e.touches[0].clientX;
-                            touchScrollLeft = cardsContainer.scrollLeft;
-                        }
-                    });
-                    cardsContainer.addEventListener('touchmove', function(e) {
-                        if (e.touches.length === 1) {
-                            const x = e.touches[0].clientX;
-                            const walk = (x - touchStartX);
-                            cardsContainer.scrollLeft = touchScrollLeft - walk;
-                        }
-                    });
+//                     // Touch events
+//                     let touchStartX = 0, touchScrollLeft = 0;
+//                     cardsContainer.addEventListener('touchstart', function(e) {
+//                         if (e.touches.length === 1) {
+//                             touchStartX = e.touches[0].clientX;
+//                             touchScrollLeft = cardsContainer.scrollLeft;
+//                         }
+//                     });
+//                     cardsContainer.addEventListener('touchmove', function(e) {
+//                         if (e.touches.length === 1) {
+//                             const x = e.touches[0].clientX;
+//                             const walk = (x - touchStartX);
+//                             cardsContainer.scrollLeft = touchScrollLeft - walk;
+//                         }
+//                     });
 
-                    cardsContainer._dragScrollAttached = true;
-                }
-            } else {
-                // Reset to original for desktop
-                cardsContainer.style.flexWrap = '';
-                cardsContainer.style.overflowX = '';
-                cardsContainer.style.WebkitOverflowScrolling = '';
-                cardsContainer.style.display = '';
-                cardsContainer.style.gap = '';
-                cardsContainer.style.scrollBehavior = '';
-                var cards = cardsContainer.querySelectorAll('.business-card');
-                cards.forEach(function(card) {
-                    card.style.minWidth = '';
-                    card.style.flex = '';
-                });
-            }
-        }
-        applyMobileScroll();
-        window.addEventListener('resize', applyMobileScroll);
-    });
-});
+//                     cardsContainer._dragScrollAttached = true;
+//                 }
+//             } else {
+//                 // Reset to original for desktop
+//                 cardsContainer.style.flexWrap = '';
+//                 cardsContainer.style.overflowX = '';
+//                 cardsContainer.style.WebkitOverflowScrolling = '';
+//                 cardsContainer.style.display = '';
+//                 cardsContainer.style.gap = '';
+//                 cardsContainer.style.scrollBehavior = '';
+//                 var cards = cardsContainer.querySelectorAll('.business-card');
+//                 cards.forEach(function(card) {
+//                     card.style.minWidth = '';
+//                     card.style.flex = '';
+//                 });
+//             }
+//         }
+//         applyMobileScroll();
+//         window.addEventListener('resize', applyMobileScroll);
+//     });
+// });
     // Function to handle the intersection event
     function handleIntersection(entries, observer) {
         entries.forEach(entry => {
