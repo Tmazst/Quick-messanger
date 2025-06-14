@@ -1483,6 +1483,7 @@ a {
     max-width: 500px;
     min-width: 350px;
     width:max-content;
+    opacity: 1;
     /* width:100%; */
 }
 

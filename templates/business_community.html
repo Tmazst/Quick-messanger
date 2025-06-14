@@ -100,6 +100,14 @@
     .links a:hover {
         text-decoration: underline;
     }
+    .cards-container {
+    scroll-behavior: smooth;
+    /* Optional: */
+    /* scroll-snap-type: x mandatory; */
+    }
+    .business-card {
+    /* scroll-snap-align: start; */
+    }
 </style>
 <script>
 function randomChar() {
@@ -189,7 +197,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
             {%for company in companies%}
             {%if category == company.category%}
                 {%if company.company_name == "Quick Messanger"%}
-                <div style="background-image: url('{{ url_for('static', filename='images/qm_community_bg.gif') }}');opacity:0" class="business-card gen-flex-col"> 
+                <div style="background-image: url('{{ url_for('static', filename='images/qm_community_bg.gif') }}')" class="business-card gen-flex-col"> 
                     <!-- <div class="overlay"></div>  -->
                     <div style="z-index:5" class="sub-layout-1 gen-flex">
                         <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
@@ -274,7 +282,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                 </div>
                 {%else%}
                 <!-- Other Compnaies  -->
-                <div style="background-image: url('{{ url_for('static', filename='uploads/' ~ company.logo) }}');opacity:0" class="business-card gen-flex-col"> 
+                <div style="background-image: url('{{ url_for('static', filename='uploads/' ~ company.logo) }}');" class="business-card gen-flex-col"> 
                     <div class="overlay"></div> 
                     <div style="z-index:5" class="sub-layout-1 gen-flex">
                         <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
@@ -410,53 +418,59 @@ document.addEventListener('DOMContentLoaded', function() {
                 cardsContainer.style.WebkitOverflowScrolling = 'touch';
                 cardsContainer.style.display = 'flex';
                 cardsContainer.style.gap = '16px';
-                cardsContainer.style.scrollBehavior = 'smooth';
+                cardsContainer.style.scrollBehavior = 'auto'; // Let browser handle smoothness
+
                 // Set min-width for cards for better swipe
                 var cards = cardsContainer.querySelectorAll('.business-card');
                 cards.forEach(function(card) {
                     card.style.minWidth = '350px';
                     card.style.flex = '0 0 auto';
                 });
-                // Mouse drag support (with requestAnimationFrame for smoothness)
-                let isDown = false, startX, scrollLeft;
-                let rafId = null;
-                function onMouseMove(e) {
-                    if (!isDown) return;
-                    e.preventDefault();
-                    const x = e.pageX - cardsContainer.offsetLeft;
-                    const walk = (x - startX) * 1.2;
-                    if (rafId) cancelAnimationFrame(rafId);
-                    rafId = requestAnimationFrame(() => {
+
+                // Only attach listeners once
+                if (!cardsContainer._dragScrollAttached) {
+                    let isDown = false, startX, scrollLeft;
+
+                    cardsContainer.addEventListener('mousedown', function(e) {
+                        isDown = true;
+                        cardsContainer.classList.add('dragging');
+                        startX = e.pageX - cardsContainer.offsetLeft;
+                        scrollLeft = cardsContainer.scrollLeft;
+                    });
+                    cardsContainer.addEventListener('mouseleave', function() {
+                        isDown = false;
+                        cardsContainer.classList.remove('dragging');
+                    });
+                    cardsContainer.addEventListener('mouseup', function() {
+                        isDown = false;
+                        cardsContainer.classList.remove('dragging');
+                    });
+                    cardsContainer.addEventListener('mousemove', function(e) {
+                        if (!isDown) return;
+                        e.preventDefault();
+                        const x = e.pageX - cardsContainer.offsetLeft;
+                        const walk = (x - startX);
                         cardsContainer.scrollLeft = scrollLeft - walk;
                     });
-                }
-                cardsContainer.addEventListener('mousedown', function(e) {
-                    isDown = true;
-                    startX = e.pageX - cardsContainer.offsetLeft;
-                    scrollLeft = cardsContainer.scrollLeft;
-                });
-                cardsContainer.addEventListener('mouseleave', function() { isDown = false; });
-                cardsContainer.addEventListener('mouseup', function() { isDown = false; });
-                cardsContainer.addEventListener('mousemove', onMouseMove);
-                // Touch events for mobile (with requestAnimationFrame)
-                let touchStartX = 0, touchScrollLeft = 0;
-                function onTouchMove(e) {
-                    if (e.touches.length === 1) {
-                        const x = e.touches[0].clientX;
-                        const walk = (x - touchStartX) * 1.2;
-                        if (rafId) cancelAnimationFrame(rafId);
-                        rafId = requestAnimationFrame(() => {
+
+                    // Touch events
+                    let touchStartX = 0, touchScrollLeft = 0;
+                    cardsContainer.addEventListener('touchstart', function(e) {
+                        if (e.touches.length === 1) {
+                            touchStartX = e.touches[0].clientX;
+                            touchScrollLeft = cardsContainer.scrollLeft;
+                        }
+                    });
+                    cardsContainer.addEventListener('touchmove', function(e) {
+                        if (e.touches.length === 1) {
+                            const x = e.touches[0].clientX;
+                            const walk = (x - touchStartX);
                             cardsContainer.scrollLeft = touchScrollLeft - walk;
-                        });
-                    }
+                        }
+                    });
+
+                    cardsContainer._dragScrollAttached = true;
                 }
-                cardsContainer.addEventListener('touchstart', function(e) {
-                    if (e.touches.length === 1) {
-                        touchStartX = e.touches[0].clientX;
-                        touchScrollLeft = cardsContainer.scrollLeft;
-                    }
-                });
-                cardsContainer.addEventListener('touchmove', onTouchMove);
             } else {
                 // Reset to original for desktop
                 cardsContainer.style.flexWrap = '';
@@ -476,8 +490,6 @@ document.addEventListener('DOMContentLoaded', function() {
         window.addEventListener('resize', applyMobileScroll);
     });
 });
-
-
     // Function to handle the intersection event
     function handleIntersection(entries, observer) {
         entries.forEach(entry => {
