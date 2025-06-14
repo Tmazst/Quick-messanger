@@ -62,15 +62,28 @@
         color: #fff;
         font-size: 24px;
         font-weight: bold;
-        position: absolute;
-        top:15px;
-        right:15px;
+        /* position: absolute; */
+        /* top:15px;
+        right:15px; */
+    }
+    .imbc-icon-comm{
+        position: relative !important;
+        bottom:none !important;
+        right:none !important;
+    }
+    .imbc-icon-comm img{
+        height:65px;
+        box-shadow:  0px 1px 3px rgba(0, 0, 0, 0.16);
+        border-radius: 15px;
+        background-color:#fde7e6;
+        transition: all 0.3s ease;
     }
     .company-name {
         font-size: 20px;
         font-weight: bold;
         margin-bottom: 10px;
         color: #333;
+        text-align: left;
     }
     .company-details {
         font-size: 14px;
@@ -156,7 +169,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
     <div class="advertise-here">
         <div style="position: relative;height:inherit;width:100%">
             <div class="advert-welcome">
-            Discover new business partners with QM’s dynamic directory —<span style="font-weight: 400;color:rgb(96, 120, 139)"> connect and grow your network today.</span>
+                 Discover new business partners with QM’s dynamic directory —<span style="font-weight: 400;color:rgb(96, 120, 139)"> connect and grow your network today.</span>
             </div>
             <button onclick="window.location.href='/advert_form'" class="advert-btn" >Register</button>
              <img src="static/icons/add-icon.png" class="close-btn" />
@@ -169,7 +182,8 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
         <img src="static/icons/category-icon.png" class="cat-icon" />
          <div class="category-title category-title-animated " >{{category}}</div><div style="flex-grow: 1;"></div>
          <div class="other-cat-info gen-flex"><span>This week</span></div>
-    </div><br>
+    </div>
+    <br>
     <div style="flex-wrap:wrap;justify-content: flex-start;align-items: stretch;gap:0px" class="gen-flex">
         {%for company in companies%}
         {%if category == company.category%}
@@ -179,13 +193,11 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                 <div style="z-index:5" class="sub-layout-1 gen-flex">
                     <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
                         <div class="company-name">{{company.company_name}}</div>
-                        
                         {%if company.category %}
                             <label class="category">{{company.category}}</label>
                         {%endif%}
 
                         <div style="align-items: flex-start;" class="company-details gen-flex-col">
-
                             {%if company.postal_address %}
                                 <div>{{company.postal_address}}</div>
                             {%endif%}
@@ -211,9 +223,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                                     </div>
                                 </a>
                             {%endif%}
-                            
                         </div>
-
                     </div>
                     
                 </div>
@@ -221,7 +231,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                     <!-- <div class="community-logo"><img src="static\uploads\{{company.logo}}"></div> -->
                 {%endif%}
                 {%if company.tagline %}
-                <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
+                    <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
                 {%endif%}
                 <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
                     {%if company.website %}
@@ -267,54 +277,68 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                 <div class="overlay"></div> 
                 <div style="z-index:5" class="sub-layout-1 gen-flex">
                     <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
-                        {%if company.company_name | length >= 34 %}
-                            <div class="company-name">{{company.company_name[:34]}}..</div>
-                        {%else%}
-                            <div class="company-name">{{company.company_name}}</div>
-                        {%endif%}
-                        {%if company.other2%}
-                            <div style="font-size: 17px;color: #575757;" class="company-name">({{company.other2}})</div>
-                        {%endif%}
-                        {%if company.category %}
-                            <label class="category">{{company.category}}</label>
-                        {%endif%}
+                        <!-- Card Header - Company Name - Logo  -->
+                        <div style="align-items: flex-start;" class="bscomm-card-header gen-flex">
+                            <div style="justify-content: flex-start;flex-grow:1;">
+                                {%if company.company_name | length >= 34 %}
+                                    <div class="company-name">{{company.company_name[:34]}}..</div>
+                                {%else%}
+                                    <div  class="company-name">{{company.company_name}}</div>
+                                {%endif%}
+                                {%if company.other2%}
+                                    <div style="font-size: 17px;color: #575757;" class="company-name">({{company.other2}})</div>
+                                {%endif%}
+                                {%if company.category %}
+                                    <div class="category">{{company.category}}</div>
+                                {%endif%}
+                            </div>
+                            <div style="justify-self: flex-end;">
+                                <div class="community-logo"><img src="static\uploads\{{company.logo}}"></div>
+                            </div>
+                        </div>
 
-                        <div style="align-items: flex-start;" class="company-details gen-flex-col">
+                        <!-- Contact Details  -->
+                        <div style="align-items: flex-start;width: 100%;" class="company-details gen-flex">
+                            <div style="justify-content: flex-start;flex-grow:1;align-items: flex-start;" class="gen-flex-col">
+                                {%if company.postal_address %}
+                                    <div>{{company.postal_address}}</div>
+                                {%endif%}
 
-                            {%if company.postal_address %}
-                                <div>{{company.postal_address}}</div>
-                            {%endif%}
+                                {%if company.company_address%}
+                                    <div style="text-align: left;">{{company.company_address[:60]}}</div>
+                                {%endif%}
 
-                            {%if company.company_address%}
-                                <div style="text-align: left;">{{company.company_address[:60]}}</div>
-                            {%endif%}
+                                {%if company.company_contacts%}
+                                    <a href="tel:{{company.company_contacts}}" target="_blank">
+                                        <div class="comm-icons-cont gen-flex">
+                                            <img src="static/icons/tel-blue-outline.png" />
+                                            <span>{{company.company_contacts}}</span>
+                                        </div>
+                                    </a>
+                                {%endif%}
 
-                            {%if company.company_contacts%}
-                                <a href="tel:{{company.company_contacts}}" target="_blank">
-                                    <div class="comm-icons-cont gen-flex">
-                                        <img src="static/icons/tel-blue-outline.png" />
-                                        <span>{{company.company_contacts}}</span>
-                                    </div>
-                                </a>
-                            {%endif%}
-
-                            {%if company.email%}
-                                <a href="mailto:{{company.email}}">
-                                    <div class="comm-icons-cont gen-flex">
-                                        <img src="static/icons/email-blue-outline.png" />
-                                        <span>{{company.email}}</span>
-                                    </div>
-                                </a>
-                            {%endif%}
-                            
+                                {%if company.email%}
+                                    <a href="mailto:{{company.email}}">
+                                        <div class="comm-icons-cont gen-flex">
+                                            <img src="static/icons/email-blue-outline.png" />
+                                            <span>{{company.email}}</span>
+                                        </div>
+                                    </a>
+                                {%endif%}
+                            </div>
+                            <div style="justify-self: flex-end;">
+                                <div style="z-index: 500;" class="imbc-icon-comm">
+                                    <a href="/compose?id={{ser.dumps({'data':company.id})}}" >
+                                        <img src="static/icons/imbc-icon.png" />
+                                    </a>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
                     
                 </div>
-                {%if company.logo %}
-                    <div class="community-logo"><img src="static\uploads\{{company.logo}}"></div>
-                {%endif%}
+
                 {%if company.tagline %}
                 <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
                 {%endif%}
@@ -349,11 +373,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                     {%endif%}
                 </div>
                 
-                <div style="z-index: 500;" class="imbc-icon">
-                    <a href="/compose?id={{ser.dumps({'data':company.id})}}" >
-                        <img src="static/icons/imbc-icon.png" />
-                    </a>
-                </div>
+
 
             </div>
             {%endif%}

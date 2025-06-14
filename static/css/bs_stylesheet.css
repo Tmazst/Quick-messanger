@@ -1383,7 +1383,10 @@ a {
 
 }
 
-
+.bscomm-card-header{
+    height:max-content;
+    width:100%
+}
 
 .message-body{
     overflow: hidden;
@@ -1415,7 +1418,8 @@ a {
     font-weight: 500;
     font-size:16px;
     color:var(--theme-color);
-    margin: 0;
+    text-align: left;
+    /* margin: 0; */
 }
 
 .company-name{
