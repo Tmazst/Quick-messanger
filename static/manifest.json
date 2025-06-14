@@ -1,6 +1,6 @@
 {
   "name": "Quick Messanger",
-  "short_name": "Q-Messenger",
+  "short_name": "Q-Messanger",
     "version": "1.0.0",
   "description": "Secure business messaging and networking platform.",
   "start_url": "/",
