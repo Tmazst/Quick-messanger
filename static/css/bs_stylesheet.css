@@ -1796,7 +1796,9 @@ a {
     }
 /* Responsive Design */
 @media (max-width: 700px) {
-    
+    .topbar{
+        gap:0px !important
+    }
     .swipe-for-mobile{
         width:100% !important;
         height: max-content !important;
