@@ -1807,6 +1807,16 @@ a {
         flex-wrap: nowrap !important;
 
     }
+    .news-status-cont{
+        width:100% !important;
+        height: max-content !important;
+        overflow-x: auto !important;
+    }
+    .scrolling-statuses{
+        width:max-content !important;
+        flex-wrap: nowrap !important;
+
+    }
     .menu-icon{
         display:flex;
         height:30px;

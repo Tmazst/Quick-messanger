@@ -411,11 +411,11 @@ var companies = {{ companies_n_news | tojson }};
 
 let currentModalIndex = 0;
 
-function scrollStatuses(direction) {
-    const container = document.getElementById('scrolling-statuses');
-    const scrollAmount = 220; // width of status + gap
-    container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
-}
+// function scrollStatuses(direction) {
+//     const container = document.getElementById('scrolling-statuses');
+//     const scrollAmount = 220; // width of status + gap
+//     container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+// }
 
 function openModal(index) {
     // currentModalIndex = index;
