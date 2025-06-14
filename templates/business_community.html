@@ -410,14 +410,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 cardsContainer.style.WebkitOverflowScrolling = 'touch';
                 cardsContainer.style.display = 'flex';
                 cardsContainer.style.gap = '16px';
+                cardsContainer.style.scrollBehavior = 'smooth';
                 // Set min-width for cards for better swipe
                 var cards = cardsContainer.querySelectorAll('.business-card');
                 cards.forEach(function(card) {
-                    card.style.minWidth = '280px';
+                    card.style.minWidth = '350px';
                     card.style.flex = '0 0 auto';
                 });
-                // Mouse drag support
+                // Mouse drag support (with requestAnimationFrame for smoothness)
                 let isDown = false, startX, scrollLeft;
+                let rafId = null;
+                function onMouseMove(e) {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - cardsContainer.offsetLeft;
+                    const walk = (x - startX) * 1.2;
+                    if (rafId) cancelAnimationFrame(rafId);
+                    rafId = requestAnimationFrame(() => {
+                        cardsContainer.scrollLeft = scrollLeft - walk;
+                    });
+                }
                 cardsContainer.addEventListener('mousedown', function(e) {
                     isDown = true;
                     startX = e.pageX - cardsContainer.offsetLeft;
@@ -425,28 +437,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 cardsContainer.addEventListener('mouseleave', function() { isDown = false; });
                 cardsContainer.addEventListener('mouseup', function() { isDown = false; });
-                cardsContainer.addEventListener('mousemove', function(e) {
-                    if (!isDown) return;
-                    e.preventDefault();
-                    const x = e.pageX - cardsContainer.offsetLeft;
-                    const walk = (x - startX) * 1.2;
-                    cardsContainer.scrollLeft = scrollLeft - walk;
-                });
-                // Touch events for mobile
+                cardsContainer.addEventListener('mousemove', onMouseMove);
+                // Touch events for mobile (with requestAnimationFrame)
                 let touchStartX = 0, touchScrollLeft = 0;
+                function onTouchMove(e) {
+                    if (e.touches.length === 1) {
+                        const x = e.touches[0].clientX;
+                        const walk = (x - touchStartX) * 1.2;
+                        if (rafId) cancelAnimationFrame(rafId);
+                        rafId = requestAnimationFrame(() => {
+                            cardsContainer.scrollLeft = touchScrollLeft - walk;
+                        });
+                    }
+                }
                 cardsContainer.addEventListener('touchstart', function(e) {
                     if (e.touches.length === 1) {
                         touchStartX = e.touches[0].clientX;
                         touchScrollLeft = cardsContainer.scrollLeft;
                     }
                 });
-                cardsContainer.addEventListener('touchmove', function(e) {
-                    if (e.touches.length === 1) {
-                        const x = e.touches[0].clientX;
-                        const walk = (x - touchStartX) * 1.2;
-                        cardsContainer.scrollLeft = touchScrollLeft - walk;
-                    }
-                });
+                cardsContainer.addEventListener('touchmove', onTouchMove);
             } else {
                 // Reset to original for desktop
                 cardsContainer.style.flexWrap = '';
@@ -454,6 +464,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 cardsContainer.style.WebkitOverflowScrolling = '';
                 cardsContainer.style.display = '';
                 cardsContainer.style.gap = '';
+                cardsContainer.style.scrollBehavior = '';
                 var cards = cardsContainer.querySelectorAll('.business-card');
                 cards.forEach(function(card) {
                     card.style.minWidth = '';
