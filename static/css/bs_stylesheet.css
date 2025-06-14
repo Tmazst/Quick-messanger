@@ -1622,6 +1622,11 @@ a {
     right:10px;
 }
 
+.swipe-for-mobile{
+    width:100%;
+    height: max-content;
+}
+
 #main-logo{
     cursor: pointer;
 }

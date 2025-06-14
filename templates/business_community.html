@@ -184,122 +184,21 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
          <div class="other-cat-info gen-flex"><span>This week</span></div>
     </div>
     <br>
-    <div style="flex-wrap:wrap;justify-content: flex-start;align-items: stretch;gap:0px" class="gen-flex">
-        {%for company in companies%}
-        {%if category == company.category%}
-            {%if company.company_name == "Quick Messanger"%}
-            <div style="background-image: url('{{ url_for('static', filename='images/qm_community_bg.gif') }}');opacity:0" class="business-card gen-flex-col"> 
-                <!-- <div class="overlay"></div>  -->
-                <div style="z-index:5" class="sub-layout-1 gen-flex">
-                    <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
-                        <div class="company-name">{{company.company_name}}</div>
-                        {%if company.category %}
-                            <label class="category">{{company.category}}</label>
-                        {%endif%}
-
-                        <div style="align-items: flex-start;" class="company-details gen-flex-col">
-                            {%if company.postal_address %}
-                                <div>{{company.postal_address}}</div>
+    <div class="swipe-for-mobile">
+        <div style="flex-wrap:wrap;justify-content: flex-start;align-items: stretch;gap:0px" class="gen-flex cards-container" id="cards-container">
+            {%for company in companies%}
+            {%if category == company.category%}
+                {%if company.company_name == "Quick Messanger"%}
+                <div style="background-image: url('{{ url_for('static', filename='images/qm_community_bg.gif') }}');opacity:0" class="business-card gen-flex-col"> 
+                    <!-- <div class="overlay"></div>  -->
+                    <div style="z-index:5" class="sub-layout-1 gen-flex">
+                        <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
+                            <div class="company-name">{{company.company_name}}</div>
+                            {%if company.category %}
+                                <label class="category">{{company.category}}</label>
                             {%endif%}
 
-                            {%if company.company_address%}
-                                <div style="text-align: left;">{{company.company_address[:60]}}</div>
-                            {%endif%}
-
-                            {%if company.company_contacts%}
-                                <a href="tel:{{company.company_contacts}}" target="_blank">
-                                    <div class="comm-icons-cont gen-flex">
-                                        <img src="static/icons/tel-blue-outline.png" />
-                                        <span>{{company.company_contacts}}</span>
-                                    </div>
-                                </a>
-                            {%endif%}
-
-                            {%if company.email%}
-                                <a href="mailto:{{company.email}}">
-                                    <div style="margin-bottom: 7px;" class="comm-icons-cont gen-flex">
-                                        <img src="static/icons/email-blue-outline.png" />
-                                        <span>{{company.email}}</span>
-                                    </div>
-                                </a>
-                            {%endif%}
-                        </div>
-                    </div>
-                    
-                </div>
-                {%if company.image %}
-                    <!-- <div class="community-logo"><img src="static\uploads\{{company.logo}}"></div> -->
-                {%endif%}
-                {%if company.tagline %}
-                    <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
-                {%endif%}
-                <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
-                    {%if company.website %}
-                    <a href="{{company.website}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/website-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                    {%if company.fb_link %}
-                    <a href="{{company.fb_link}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/facebook-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                    {%if company.instagram_link%}
-                    <a href="{{comapny.instagram_link}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/insta-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                    {%if company.linkedIn_link%}
-                    <a href="{{company.linkedIn_link}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/linkedin-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                </div>
-                
-                <div class="imbc-icon">
-                    <a href="/compose?id={{ser.dumps({'data':company.id})}}" target="_blank">
-                        <img src="static/icons/imbc-icon.png" />
-                    </a>
-                </div>
-
-            </div>
-            {%else%}
-            <!-- Other Compnaies  -->
-            <div style="background-image: url('{{ url_for('static', filename='uploads/' ~ company.logo) }}');opacity:0" class="business-card gen-flex-col"> 
-                <div class="overlay"></div> 
-                <div style="z-index:5" class="sub-layout-1 gen-flex">
-                    <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
-                        <!-- Card Header - Company Name - Logo  -->
-                        <div style="align-items: flex-start;" class="bscomm-card-header gen-flex">
-                            <div style="justify-content: flex-start;flex-grow:1;">
-                                {%if company.company_name | length >= 34 %}
-                                    <div class="company-name">{{company.company_name[:34]}}..</div>
-                                {%else%}
-                                    <div  class="company-name">{{company.company_name}}</div>
-                                {%endif%}
-                                {%if company.other2%}
-                                    <div style="font-size: 17px;color: #575757;" class="company-name">({{company.other2}})</div>
-                                {%endif%}
-                                {%if company.category %}
-                                    <div class="category">{{company.category}}</div>
-                                {%endif%}
-                            </div>
-                            <div style="justify-self: flex-end;">
-                                <div class="community-logo"><img src="static\uploads\{{company.logo}}"></div>
-                            </div>
-                        </div>
-
-                        <!-- Contact Details  -->
-                        <div style="align-items: flex-start;width: 100%;" class="company-details gen-flex">
-                            <div style="justify-content: flex-start;flex-grow:1;align-items: flex-start;" class="gen-flex-col">
+                            <div style="align-items: flex-start;" class="company-details gen-flex-col">
                                 {%if company.postal_address %}
                                     <div>{{company.postal_address}}</div>
                                 {%endif%}
@@ -319,72 +218,177 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
 
                                 {%if company.email%}
                                     <a href="mailto:{{company.email}}">
-                                        <div class="comm-icons-cont gen-flex">
+                                        <div style="margin-bottom: 7px;" class="comm-icons-cont gen-flex">
                                             <img src="static/icons/email-blue-outline.png" />
                                             <span>{{company.email}}</span>
                                         </div>
                                     </a>
                                 {%endif%}
                             </div>
-                            <div style="justify-self: flex-end;">
-                                <div style="z-index: 500;" class="imbc-icon-comm">
-                                    <a href="/compose?id={{ser.dumps({'data':company.id})}}" >
-                                        <img src="static/icons/imbc-icon.png" />
-                                    </a>
-                                </div>
-                            </div>
                         </div>
-
+                        
+                    </div>
+                    {%if company.image %}
+                        <!-- <div class="community-logo"><img src="static\uploads\{{company.logo}}"></div> -->
+                    {%endif%}
+                    {%if company.tagline %}
+                        <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
+                    {%endif%}
+                    <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
+                        {%if company.website %}
+                        <a href="{{company.website}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/website-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                        {%if company.fb_link %}
+                        <a href="{{company.fb_link}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/facebook-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                        {%if company.instagram_link%}
+                        <a href="{{comapny.instagram_link}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/insta-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                        {%if company.linkedIn_link%}
+                        <a href="{{company.linkedIn_link}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/linkedin-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
                     </div>
                     
-                </div>
+                    <div class="imbc-icon">
+                        <a href="/compose?id={{ser.dumps({'data':company.id})}}" target="_blank">
+                            <img src="static/icons/imbc-icon.png" />
+                        </a>
+                    </div>
 
-                {%if company.tagline %}
-                <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
+                </div>
+                {%else%}
+                <!-- Other Compnaies  -->
+                <div style="background-image: url('{{ url_for('static', filename='uploads/' ~ company.logo) }}');opacity:0" class="business-card gen-flex-col"> 
+                    <div class="overlay"></div> 
+                    <div style="z-index:5" class="sub-layout-1 gen-flex">
+                        <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
+                            <!-- Card Header - Company Name - Logo  -->
+                            <div style="align-items: flex-start;" class="bscomm-card-header gen-flex">
+                                <div style="justify-content: flex-start;flex-grow:1;">
+                                    {%if company.company_name | length >= 34 %}
+                                        <div class="company-name">{{company.company_name[:34]}}..</div>
+                                    {%else%}
+                                        <div  class="company-name">{{company.company_name}}</div>
+                                    {%endif%}
+                                    {%if company.other2%}
+                                        <div style="font-size: 17px;color: #575757;" class="company-name">({{company.other2}})</div>
+                                    {%endif%}
+                                    {%if company.category %}
+                                        <div class="category">{{company.category}}</div>
+                                    {%endif%}
+                                </div>
+                                <div style="justify-self: flex-end;">
+                                    <div class="community-logo"><img src="static\uploads\{{company.logo}}"></div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Details  -->
+                            <div style="align-items: flex-start;width: 100%;" class="company-details gen-flex">
+                                <div style="justify-content: flex-start;flex-grow:1;align-items: flex-start;" class="gen-flex-col">
+                                    {%if company.postal_address %}
+                                        <div>{{company.postal_address}}</div>
+                                    {%endif%}
+
+                                    {%if company.company_address%}
+                                        <div style="text-align: left;">{{company.company_address[:60]}}</div>
+                                    {%endif%}
+
+                                    {%if company.company_contacts%}
+                                        <a href="tel:{{company.company_contacts}}" target="_blank">
+                                            <div class="comm-icons-cont gen-flex">
+                                                <img src="static/icons/tel-blue-outline.png" />
+                                                <span>{{company.company_contacts}}</span>
+                                            </div>
+                                        </a>
+                                    {%endif%}
+
+                                    {%if company.email%}
+                                        <a href="mailto:{{company.email}}">
+                                            <div class="comm-icons-cont gen-flex">
+                                                <img src="static/icons/email-blue-outline.png" />
+                                                <span>{{company.email}}</span>
+                                            </div>
+                                        </a>
+                                    {%endif%}
+                                </div>
+                                <div style="justify-self: flex-end;">
+                                    <div style="z-index: 500;" class="imbc-icon-comm">
+                                        <a href="/compose?id={{ser.dumps({'data':company.id})}}" >
+                                            <img src="static/icons/imbc-icon.png" />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        
+                    </div>
+
+                    {%if company.tagline %}
+                    <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
+                    {%endif%}
+                    <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
+                        {%if company.website %}
+                        <a href="{{company.website}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/website-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                        {%if company.fb_link %}
+                        <a href="{{company.fb_link}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/facebook-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                        {%if company.instagram_link%}
+                        <a href="{{comapny.instagram_link}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/insta-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                        {%if company.linkedIn_link%}
+                        <a href="{{company.linkedIn_link}}" target="_blank">
+                            <div class="social-media-cont">
+                                <img src="static/icons/linkedin-outline-icon.png" />
+                            </div>
+                        </a>
+                        {%endif%}
+                    </div>
+                    
+
+
+                </div>
                 {%endif%}
-                <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
-                    {%if company.website %}
-                    <a href="{{company.website}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/website-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                    {%if company.fb_link %}
-                    <a href="{{company.fb_link}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/facebook-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                    {%if company.instagram_link%}
-                    <a href="{{comapny.instagram_link}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/insta-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                    {%if company.linkedIn_link%}
-                    <a href="{{company.linkedIn_link}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/linkedin-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                </div>
-                
-
-
-            </div>
             {%endif%}
-        {%endif%}
-        {%endfor%}   
-    </div><br><br>
+            {%endfor%}   
+        </div>
+    </div>
+    <br><br>
     {%endif%}
     {%endfor%}
 </div>
 
 <script>
+
     var closeBtn = document.querySelector(".close-btn");
     var adContainer = document.querySelector('.advertise-here');
     var contanier = document.querySelector('.view-container');
@@ -393,6 +397,74 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
         adContainer.style.display = 'none';
         contanier.style.paddingTop = '7px';
     });
+
+    
+// --- Mobile swipe/scroll for cards-container ---
+document.addEventListener('DOMContentLoaded', function() {
+    var cardsContainers = document.querySelectorAll('.cards-container');
+    cardsContainers.forEach(function(cardsContainer) {
+        function applyMobileScroll() {
+            if (window.innerWidth <= 700) {
+                cardsContainer.style.flexWrap = 'nowrap';
+                cardsContainer.style.overflowX = 'auto';
+                cardsContainer.style.WebkitOverflowScrolling = 'touch';
+                cardsContainer.style.display = 'flex';
+                cardsContainer.style.gap = '16px';
+                // Set min-width for cards for better swipe
+                var cards = cardsContainer.querySelectorAll('.business-card');
+                cards.forEach(function(card) {
+                    card.style.minWidth = '280px';
+                    card.style.flex = '0 0 auto';
+                });
+                // Mouse drag support
+                let isDown = false, startX, scrollLeft;
+                cardsContainer.addEventListener('mousedown', function(e) {
+                    isDown = true;
+                    startX = e.pageX - cardsContainer.offsetLeft;
+                    scrollLeft = cardsContainer.scrollLeft;
+                });
+                cardsContainer.addEventListener('mouseleave', function() { isDown = false; });
+                cardsContainer.addEventListener('mouseup', function() { isDown = false; });
+                cardsContainer.addEventListener('mousemove', function(e) {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - cardsContainer.offsetLeft;
+                    const walk = (x - startX) * 1.2;
+                    cardsContainer.scrollLeft = scrollLeft - walk;
+                });
+                // Touch events for mobile
+                let touchStartX = 0, touchScrollLeft = 0;
+                cardsContainer.addEventListener('touchstart', function(e) {
+                    if (e.touches.length === 1) {
+                        touchStartX = e.touches[0].clientX;
+                        touchScrollLeft = cardsContainer.scrollLeft;
+                    }
+                });
+                cardsContainer.addEventListener('touchmove', function(e) {
+                    if (e.touches.length === 1) {
+                        const x = e.touches[0].clientX;
+                        const walk = (x - touchStartX) * 1.2;
+                        cardsContainer.scrollLeft = touchScrollLeft - walk;
+                    }
+                });
+            } else {
+                // Reset to original for desktop
+                cardsContainer.style.flexWrap = '';
+                cardsContainer.style.overflowX = '';
+                cardsContainer.style.WebkitOverflowScrolling = '';
+                cardsContainer.style.display = '';
+                cardsContainer.style.gap = '';
+                var cards = cardsContainer.querySelectorAll('.business-card');
+                cards.forEach(function(card) {
+                    card.style.minWidth = '';
+                    card.style.flex = '';
+                });
+            }
+        }
+        applyMobileScroll();
+        window.addEventListener('resize', applyMobileScroll);
+    });
+});
 
 
     // Function to handle the intersection event
