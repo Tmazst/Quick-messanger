@@ -279,7 +279,9 @@
 <!-- Bottom: Main preview and thumbnails - Active/Default -->
 <div id="min-preview-1" class="min-preview">
     <div class="image-viewer" id="main-image-viewer">
-        <img onclick="openModal(0)" id="main-image" src="static/comp-images/{% set first_post = news[0] %}{% set first_imgs = all_news_imgs %}{{ first_imgs[0].image if first_imgs else '' }}" class="main-image" alt="Main Preview">
+        {% set first_post = news[0] %}
+        {% set first_imgs = all_news_imgs | selectattr('news_id', 'equalto', first_post.id) | list %}
+        <img onclick="openModal(0)" id="main-image" src="static/comp-images/{{ first_imgs[0].image if first_imgs else '' }}" class="main-image" alt="Main Preview">
         <div class="thumbnails gen-flex" id="thumbnails">
             {% for img_thmb in all_news_imgs %}
                 {% if img_thmb.news_id == news[0].id %}
