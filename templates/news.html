@@ -360,9 +360,9 @@
         <div style="display: none;" id="clickable-caption" class="content-body-caption">content-viewer-desktop</div>
         <div style="display:none" class="content-viewer content-viewer-mobile">
             <div class="scroll-content">
-                <div id="cont-title-2" class="cont-title"></div>
-                <div id="real-hashtags-2"></div>
-                <div id="cont-body-2" class="content-body">content-viewer-desktop</div>
+                <div id="cont-title-mobile" class="cont-title"></div>
+                <div id="real-hashtags-mobile"></div>
+                <div id="cont-body-mobile" class="content-body">content-viewer-desktop</div>
                 <div style="flex-grow: 1;"></div>
                 <div style="position: relative;" class="hashtags gen-flex" style="color:#616161"></div>
             </div>
@@ -381,7 +381,6 @@
         <div id="real-hashtags-2"></div>
         <div id="cont-body-2" class="content-body"></div>
             <div style="flex-grow: 1;"></div>
-            
             <div class="hashtags gen-flex" style="color:#616161">
             </div>
     </div>
@@ -542,16 +541,24 @@ function viewInMinPreview(postid, title, content, imglist, compid,hashtags) {
             thumbnailsDiv.appendChild(thumb);
         });
 
+         // Update content
+        document.getElementById('cont-title-2').textContent = title;
+        document.getElementById('cont-body-2').textContent = content;
+        document.getElementById('real-hashtags-2').textContent = hashtags;
+
     }
 
 
-    // Update content
-    document.getElementById('cont-title-2').textContent = title;
-    document.getElementById('cont-body-2').textContent = content;
+   
     var caption = document.getElementById('clickable-caption');
     caption.textContent = content.substring(0,40)+"....";
     // View Content Mobile Phones
     if(window.innerWidth <= "700"){
+         // Update content
+        document.getElementById('cont-title-mobile').textContent = title;
+        document.getElementById('cont-body-mobile').textContent = content;
+        document.getElementById('real-hashtags-mobile').textContent = hashtags;
+
         var content = document.querySelector(".content-viewer-mobile");
         caption.addEventListener("click", function(){
             content.classList.toggle("display-status-content");
