@@ -549,36 +549,39 @@ function viewInMinPreview(postid, title, content, imglist, compid,hashtags) {
 
     }
 
-  // Always select from the dynamic preview
-var dynamicPreview = document.getElementById('min-preview-2');
-var caption = dynamicPreview.querySelector('#clickable-caption');
-caption.textContent = content.substring(0,40) + "....";
+    // Always select from the dynamic preview
+    var dynamicPreview = document.getElementById('min-preview-2');
+    var caption = dynamicPreview.querySelector('#clickable-caption');
+    caption.textContent = content.substring(0,40) + "....";
 
-// Always reset classes so caption and content are visible
-caption.classList.remove("turn-off-caption");
-var contentViewer = dynamicPreview.querySelector(".content-viewer-mobile");
-contentViewer.classList.remove("display-status-content");
+    // Always reset classes so caption and content are visible
+    caption.classList.remove("turn-off-caption");
+    var contentViewer = dynamicPreview.querySelector(".content-viewer-mobile");
+    contentViewer.classList.remove("display-status-content");
 
-    // View Content Mobile Phones
+    // Remove all previous event listeners by replacing both nodes
     if(window.innerWidth <= 700){
         // Update content
         dynamicPreview.querySelector('#cont-title-mobile').textContent = title;
         dynamicPreview.querySelector('#cont-body-mobile').textContent = content;
         dynamicPreview.querySelector('#real-hashtags-mobile').textContent = hashtags;
 
-        // Remove previous listeners by replacing with a fresh clone
+        // Replace caption node
         var newCaption = caption.cloneNode(true);
         caption.parentNode.replaceChild(newCaption, caption);
+        // Replace contentViewer node
+        var newContentViewer = contentViewer.cloneNode(true);
+        contentViewer.parentNode.replaceChild(newContentViewer, contentViewer);
 
         // Attach listeners
         newCaption.addEventListener("click", function(e){
             e.stopPropagation();
-            contentViewer.classList.toggle("display-status-content");
+            newContentViewer.classList.toggle("display-status-content");
             newCaption.classList.toggle("turn-off-caption");
         });
-        contentViewer.addEventListener("click", function(e){
+        newContentViewer.addEventListener("click", function(e){
             e.stopPropagation();
-            contentViewer.classList.toggle("display-status-content");
+            newContentViewer.classList.toggle("display-status-content");
             newCaption.classList.toggle("turn-off-caption");
         });
     }
