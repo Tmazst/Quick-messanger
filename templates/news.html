@@ -549,27 +549,30 @@ function viewInMinPreview(postid, title, content, imglist, compid,hashtags) {
 
     }
 
-
-   
-    var caption = document.getElementById('clickable-caption');
+    // Always select from the dynamic preview
+    var dynamicPreview = document.getElementById('min-preview-2');
+    var caption = dynamicPreview.querySelector('#clickable-caption');
     caption.textContent = content.substring(0,40)+"....";
     // View Content Mobile Phones
-    if(window.innerWidth <= "700"){
-         // Update content
-        document.getElementById('cont-title-mobile').textContent = title;
-        document.getElementById('cont-body-mobile').textContent = content;
-        document.getElementById('real-hashtags-mobile').textContent = hashtags;
+    if(window.innerWidth <= 700){
+        // Update content
+        dynamicPreview.querySelector('#cont-title-mobile').textContent = title;
+        dynamicPreview.querySelector('#cont-body-mobile').textContent = content;
+        dynamicPreview.querySelector('#real-hashtags-mobile').textContent = hashtags;
 
-        var content = document.querySelector(".content-viewer-mobile");
-        caption.addEventListener("click", function(){
-            content.classList.toggle("display-status-content");
-            caption.classList.toggle("turn-off-caption");
+        var contentViewer = dynamicPreview.querySelector(".content-viewer-mobile");
+        // Remove previous listeners to avoid stacking
+        var newCaption = caption.cloneNode(true);
+        caption.parentNode.replaceChild(newCaption, caption);
+        newCaption.addEventListener("click", function(){
+            contentViewer.classList.toggle("display-status-content");
+            newCaption.classList.toggle("turn-off-caption");
         });
-        content.addEventListener("click", function(){
-            content.classList.toggle("display-status-content");
-            caption.classList.toggle("turn-off-caption");
+        contentViewer.addEventListener("click", function(){
+            contentViewer.classList.toggle("display-status-content");
+            newCaption.classList.toggle("turn-off-caption");
         });
-    };
+    }
     console.log("Hashtag Lenght: ", hashtags.length);
     if (hashtags !== "None") {
         document.getElementById('real-hashtags-2').textContent = hashtags;

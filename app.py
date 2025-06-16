@@ -1224,6 +1224,8 @@ def news_views(news_id):
         print("News View Count Incremented for News ID: ", news_id)
         return jsonify({'status': 'view_count_incremented'}), 200
 
+    return jsonify({'status': 'previously'}), 200
+
 @app.route('/news_form', methods=['POST',"GET"])
 @login_required 
 def news_form():

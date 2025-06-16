@@ -183,13 +183,17 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
              <img src="static/icons/add-icon.png" class="close-btn" />
         </div>
     </div>
-    <h2> </h2>
+    <h2></h2>
     {%for category in categories%}
     {%if  category%}
     <div class="category-cont gen-flex sticky-category">
         <img src="static/icons/category-icon.png" class="cat-icon" />
          <div class="category-title category-title-animated " >{{category}}</div><div style="flex-grow: 1;"></div>
-         <div class="other-cat-info gen-flex"><span>This week</span></div>
+         {%for company in companies%}
+            {%if category == company.category%}
+                <div class="other-cat-info gen-flex"><span>({{index}})</span></div>
+            {%end%}
+         {%endfor%}
     </div>
     <br>
     <div class="swipe-for-mobile">
