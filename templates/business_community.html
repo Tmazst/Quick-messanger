@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
          {%for company in companies%}
             {%if category == company.category%}
                 <div class="other-cat-info gen-flex"><span>({{index}})</span></div>
-            {%end%}
+            {%endif%}
          {%endfor%}
     </div>
     <br>
