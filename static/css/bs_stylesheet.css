@@ -1944,6 +1944,7 @@ a {
         height: 110px !important;
         justify-content: flex-start;
         padding-top:30px ;
+        display: flex !important;
     }
     .thumbnails-desktop{
         display: none !important;
