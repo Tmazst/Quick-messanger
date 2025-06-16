@@ -39,7 +39,7 @@ app.config["VAPID_PUBLIC_KEY"] = "BF-IKMwncA7cR08RWECfzfmYHFCeXFx97-P2_ZFxd5DDHH
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db" 
 # Local
 if os.environ.get('EMAIL_INFO') == 'info@techxolutions.com':
-    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db.db"
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db2.db"
 else:#Online
     app.config[
     "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db" 
@@ -298,7 +298,9 @@ def home():
     # latest_entry = Messages.query.filter_by(sender=user.id).order_by(Messages.date.desc()).first()
     # return redirect(url_for('home'))
     qm_bs_obj = company_info.query.filter_by(company_name="Quick Messanger").first()
-    latest_req = company_info.query.order_by(company_info.id.asc()).all()[1]
+    latest_req=None
+    if latest_req:
+        latest_req = company_info.query.order_by(company_info.id.asc()).all()[1]
     messages = get_all_messages()
     print("Home==Companies Showcasing: ", qm_bs_obj, latest_req)
     del_al_msgs = Messages.query.all()
@@ -1190,9 +1192,10 @@ def news():
 @login_required
 def news_pinned():
     news_id = request.args.get("nid")
+    print("News ID: ", news_id)
     news = News.query.filter_by(id=news_id).first()
     news_imgs = NewsImages.query.filter_by(news_id=news_id).all()
-    company = company_info.query.filter_by(usr_id=current_user).first().to_dict()
+    company = company_info.query.filter_by(usr_id=current_user.id).first().to_dict()
 
     return render_template("news_pinned.html",story=news,news_imgs=news_imgs,company=company)
 

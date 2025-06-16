@@ -209,7 +209,7 @@
 
 <div id="min-preview-1" class="min-preview">
     <div class="image-viewer" id="main-image-viewer">
-        {% set first_post = news[0] %}
+        {% set first_post = story %}
         {% set first_imgs = all_news_imgs | selectattr('news_id', 'equalto', first_post.id) | list %}
 
         <img onclick="openModal({{story.id}})" id="main-image" src="static/comp-images/{{news_imgs[0].image}}" class="main-image" alt="Main Preview">
@@ -230,7 +230,7 @@
 
     <div class="content-viewer">
         <div id="cont-title" class="cont-title">{{ story.story_title }}</div>
-        {%if news[0].other and not news[0].other == "None" %}
+        {%if story.other and not story.other == "None" %}
            <div id="r-hashtags" class="hashtags real-hashtags"></div> 
         {%endif%}
         <div id="cont-body" class="content-body">{{ story.story }}</div>
@@ -278,7 +278,7 @@
 
 var statusImages = {{ img_paths | tojson }};
 
-var companies = {{ companies_n_news | tojson }};
+var companies = {{ company | tojson }};
 
 let currentModalIndex = 0;
 

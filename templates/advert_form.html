@@ -132,14 +132,15 @@ section > div {
                     {% endif %}
                     <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
                 </div>
-
+                
                 <div class="group">
-                    
+                    <!-- <label for="pinned-story">Pin Product Campign</label> -->
                     {%for story in comp_news%}
-                    <select id="pinned-story" name="pinned-story" class="form-control" required>
-                        <option value="" disabled >Pin Product Info</option>
+                    <label for="pinned-story">Pin Product Campign</label>
+                    <select id="pinned-story" name="pinned-story" class="form-control" >
+                        <option value="" disabled selected>Pin Product Info</option>
                         {%if story %}
-                            <option value="Eswatini" selected>{{story.story_title}}</option>
+                            <option value="{{story.id}}">{{story.story_title}}</option>
                         {%endif%}
                         <!-- Add more countries as needed -->
                     </select>

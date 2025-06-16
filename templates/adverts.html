@@ -99,6 +99,9 @@
                                     </a>
                                 </div>
                             </div>
+                            {%if ad.pinned_1%}
+                                <button onclick="window.location.href='/news_pinned?nid={{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
+                            {%end%}
                         </div>
                     {% endif %}
                     {% if ad.video %}
@@ -140,7 +143,9 @@
                             </a>
                         </div>
                     </div>
-                    <button onclick="window.location.href='/news_pinned?nid={{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌Pinned</button>
+                    {%if ad.pinned_1%}
+                        <button onclick="window.location.href='/news_pinned?nid={{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
+                    {%end%}
                 </div>
             {% endif %}
             {% if ad.video %}
@@ -170,6 +175,8 @@
             console.log("Click Event Recieved2");
             sideDraw.classList.toggle('off-on');
         }else{
+            var ida = "ad00" + id.toString();
+            var sideDraw = document.getElementById(ida);
             sideDraw.classList.add('reveal-side-icons');
             e.target.addEventListener("mouseleave", function(){
                 sideDraw.classList.remove('reveal-side-icons');
