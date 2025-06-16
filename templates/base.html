@@ -478,43 +478,48 @@ function closeQMenu(){
         messagesContainer.classList.toggle("open");
     }
 
-    // Universal Progress Indicator
-    (function() {
-        // Show loader
-        function showLoader() {
-            var loader = document.getElementById('global-loader');
-            if (loader) loader.style.display = 'flex';
-        }
-        // Hide loader
-        function hideLoader() {
-            var loader = document.getElementById('global-loader');
-            if (loader) loader.style.display = 'none';
-        }
+// Universal Progress Indicator
+(function() {
+    function showLoader() {
+        var loader = document.getElementById('global-loader');
+        if (loader) loader.style.display = 'flex';
+    }
+    function hideLoader() {
+        var loader = document.getElementById('global-loader');
+        if (loader) loader.style.display = 'none';
+    }
 
-        // Show loader on navigation (link click)
-        document.addEventListener('DOMContentLoaded', function() {
-            // Intercept all <a> clicks (except those with target _blank or download)
-            document.body.addEventListener('click', function(e) {
-                var el = e.target;
-                while (el && el.tagName !== 'A' && el !== document.body) el = el.parentElement;
-                if (el && el.tagName === 'A' && !el.hasAttribute('target') && !el.hasAttribute('download') && el.href && el.origin === window.location.origin) {
-                    showLoader();
-                }
-            }, true);
-
-            // Show loader on form submit
-            document.body.addEventListener('submit', function(e) {
+    document.addEventListener('DOMContentLoaded', function() {
+        // Intercept all <a> clicks (except those with target _blank or download)
+        document.body.addEventListener('click', function(e) {
+            var el = e.target;
+            // Check for <a> tag
+            while (el && el.tagName !== 'A' && el !== document.body) el = el.parentElement;
+            if (el && el.tagName === 'A' && !el.hasAttribute('target') && !el.hasAttribute('download') && el.href && el.origin === window.location.origin) {
                 showLoader();
-            }, true);
+            }
+        }, true);
 
-            // Hide loader when page is loaded
-            window.addEventListener('pageshow', hideLoader);
-            window.addEventListener('load', hideLoader);
+        // Intercept all .side-nav-item clicks
+        var navItems = document.querySelectorAll('.side-nav-item.gen-flex');
+        navItems.forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                showLoader();
+            });
         });
 
-        // Optionally, hide loader on popstate (back/forward navigation)
-        window.addEventListener('popstate', hideLoader);
-    })();
+        // Show loader on form submit
+        document.body.addEventListener('submit', function(e) {
+            showLoader();
+        }, true);
+
+        // Hide loader when page is loaded
+        window.addEventListener('pageshow', hideLoader);
+        window.addEventListener('load', hideLoader);
+    });
+
+    window.addEventListener('popstate', hideLoader);
+})();
 
 
  </script>
