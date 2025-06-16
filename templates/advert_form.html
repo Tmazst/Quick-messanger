@@ -134,6 +134,20 @@ section > div {
                 </div>
 
                 <div class="group">
+                    
+                    {%for story in comp_news%}
+                    <select id="pinned-story" name="pinned-story" class="form-control" required>
+                        <option value="" disabled >Pin Product Info</option>
+                        {%if story %}
+                            <option value="Eswatini" selected>{{story.story_title}}</option>
+                        {%endif%}
+                        <!-- Add more countries as needed -->
+                    </select>
+                    {%endfor%}
+                    <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+                </div>
+
+                <div class="group">
                     <!--<input type="password" class="form-control" id="confirm-password" name="confirm_pass" placeholder="confirm-password">-->
                     <div class="acc-labels">{{ form.start_date.label(class="labels")}}</div>
                     {{ form.start_date(class="form-control",placeholder="Starting Date")}}

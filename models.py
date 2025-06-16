@@ -71,6 +71,8 @@ class Advert(db.Model):
     comp_id = db.Column(db.Integer,ForeignKey('company_info.id'))
     advert_image = db.Column(db.String(100))
     advert_image = db.Column(db.String(100))
+    pinned_1 = db.Column(db.Integer)
+    pinned_2 = db.Column(db.Integer)
     advert_days = db.Column(db.Integer)
     start_date = db.Column(db.DateTime)
     timestamp = db.Column(db.DateTime)

@@ -1315,6 +1315,14 @@ a {
     border-radius: 15px;
 }
 
+.pinned-btn{
+    background-color: #00A79D;
+    color: white;
+    position: absolute;
+    bottom: 10px;
+    left: 15px;
+}
+
 .real-hashtags{
     font-family: Montserrat,Arial, Helvetica, sans-serif;
     color:#616161;

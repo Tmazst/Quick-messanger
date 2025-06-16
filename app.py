@@ -1143,11 +1143,15 @@ def sendme_message():
 def adverts_form():
 
     form = AdvertForm()
+    form_req = request.form.get('pinned-story')
+
+    comp_news = News.query.filter_by(usr_id=current_user.id).all()
 
     if request.method == "POST":
         advert = Advert(
             usr_id = current_user.id,
             comp_id = current_user.company_id[0].id,
+            pinned_1 = form_req
         )
 
         if form.advert_image.data:
@@ -1158,7 +1162,7 @@ def adverts_form():
         db.session.commit()
         flash("Advert Uploaded Successfully","success")
 
-    return render_template("advert_form.html",form=form)
+    return render_template("advert_form.html",form=form,comp_news=comp_news)
 
 @app.route("/adverts")
 def adverts():
@@ -1176,12 +1180,21 @@ def adverts():
 @app.route("/company_stories")
 @app.route("/news")
 def news():
-
     news = News.query.all()
     all_news_imgs = NewsImages.query.all()
     companies_n_news = [company.to_dict() for company in company_info.query.all()]
 
     return render_template("news.html",news=news,all_news_imgs=all_news_imgs,companies_n_news=companies_n_news)
+
+@app.route("/news_pinned")
+@login_required
+def news_pinned():
+    news_id = request.args.get("nid")
+    news = News.query.filter_by(id=news_id).first()
+    news_imgs = NewsImages.query.filter_by(news_id=news_id).all()
+    company = company_info.query.filter_by(usr_id=current_user).first().to_dict()
+
+    return render_template("news_pinned.html",story=news,news_imgs=news_imgs,company=company)
 
 
 @app.route('/update_news_views/<int:news_id>', methods=['GET'])
