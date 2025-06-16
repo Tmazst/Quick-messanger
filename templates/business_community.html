@@ -188,12 +188,10 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
     {%if  category%}
     <div class="category-cont gen-flex sticky-category">
         <img src="static/icons/category-icon.png" class="cat-icon" />
-         <div class="category-title category-title-animated " >{{category}}</div><div style="flex-grow: 1;"></div>
-         {%for company in companies%}
-            {%if category == company.category%}
-                <div class="other-cat-info gen-flex"><span>({{index}})</span></div>
-            {%endif%}
-         {%endfor%}
+        <div class="category-title category-title-animated">{{ category }}</div>
+        <div style="flex-grow: 1;"></div>
+        {% set count = companies | selectattr('category', 'equalto', category) | list | length %}
+        <div class="other-cat-info gen-flex"><span>({{ count }})</span></div>
     </div>
     <br>
     <div class="swipe-for-mobile">

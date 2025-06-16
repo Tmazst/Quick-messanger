@@ -71,6 +71,16 @@
         <div style="z-index:1905;" class="stroke"></div>
         <div style="z-index:1905;" class="stroke"></div>
     </div> -->
+    <div id="global-loader" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;background:rgba(255,255,255,0.85);align-items:center;justify-content:center;flex-direction:column;">
+        <div style="margin-bottom:20px;">
+            <svg width="60" height="60" viewBox="0 0 50 50">
+                <circle cx="25" cy="25" r="20" fill="none" stroke="#EF4036" stroke-width="5" stroke-linecap="round" stroke-dasharray="31.4 31.4" transform="rotate(-90 25 25)">
+                    <animateTransform attributeName="transform" type="rotate" from="0 25 25" to="360 25 25" dur="1s" repeatCount="indefinite"/>
+                </circle>
+            </svg>
+        </div>
+        <div style="font-family:Montserrat,sans-serif;font-size:1.2em;color:#EF4036;">Please wait...</div>
+    </div>
    
     <!-- Mobile Quick Menu  -->
     <div style="display:none" class="mobile-quick-menu gen-flex-col">
@@ -467,6 +477,44 @@ function closeQMenu(){
         const messagesContainer = document.querySelector(".scorllable-messages");
         messagesContainer.classList.toggle("open");
     }
+
+    // Universal Progress Indicator
+    (function() {
+        // Show loader
+        function showLoader() {
+            var loader = document.getElementById('global-loader');
+            if (loader) loader.style.display = 'flex';
+        }
+        // Hide loader
+        function hideLoader() {
+            var loader = document.getElementById('global-loader');
+            if (loader) loader.style.display = 'none';
+        }
+
+        // Show loader on navigation (link click)
+        document.addEventListener('DOMContentLoaded', function() {
+            // Intercept all <a> clicks (except those with target _blank or download)
+            document.body.addEventListener('click', function(e) {
+                var el = e.target;
+                while (el && el.tagName !== 'A' && el !== document.body) el = el.parentElement;
+                if (el && el.tagName === 'A' && !el.hasAttribute('target') && !el.hasAttribute('download') && el.href && el.origin === window.location.origin) {
+                    showLoader();
+                }
+            }, true);
+
+            // Show loader on form submit
+            document.body.addEventListener('submit', function(e) {
+                showLoader();
+            }, true);
+
+            // Hide loader when page is loaded
+            window.addEventListener('pageshow', hideLoader);
+            window.addEventListener('load', hideLoader);
+        });
+
+        // Optionally, hide loader on popstate (back/forward navigation)
+        window.addEventListener('popstate', hideLoader);
+    })();
 
 
  </script>
