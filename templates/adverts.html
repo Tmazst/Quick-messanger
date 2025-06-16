@@ -101,7 +101,7 @@
                             </div>
                             {%if ad.pinned_1%}
                                 <button onclick="window.location.href='/news_pinned?nid={{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
-                            {%end%}
+                            {%endif%}
                         </div>
                     {% endif %}
                     {% if ad.video %}
@@ -145,7 +145,7 @@
                     </div>
                     {%if ad.pinned_1%}
                         <button onclick="window.location.href='/news_pinned?nid={{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
-                    {%end%}
+                    {%endif%}
                 </div>
             {% endif %}
             {% if ad.video %}
