@@ -264,9 +264,9 @@ def username(username,id):
 def home():
 
     # Example usage:
-    compress_folder(app.config["NEWS_IMAGES"])
-    compress_folder(app.config["ADVERTS_IMAGES"])
-    compress_folder(app.config["UPLOADED"])
+    # compress_folder(app.config["NEWS_IMAGES"])
+    # compress_folder(app.config["ADVERTS_IMAGES"])
+    # compress_folder(app.config["UPLOADED"])
 
     msd_del = Messages.query.get(81)
 
