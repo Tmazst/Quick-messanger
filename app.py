@@ -94,6 +94,28 @@ def current_time_wlzone():
 
 ALLOWED_EXTENSIONS = {"txt", "xlxs",'docx', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
+from PIL import Image
+
+def compress_image(file_path, max_size_kb=150, quality=85):
+    img = Image.open(file_path)
+    img_format = img.format
+    # Only compress if file is larger than max_size_kb
+    if os.path.getsize(file_path) > max_size_kb * 1024:
+        # For JPEG/WEBP, use quality; for PNG, use optimize
+        if img_format in ['JPEG', 'JPG', 'WEBP']:
+            img.save(file_path, format=img_format, quality=quality, optimize=True)
+        elif img_format == 'PNG':
+            img.save(file_path, format=img_format, optimize=True)
+        print(f"Compressed: {file_path}")
+
+def compress_folder(folder):
+    for root, dirs, files in os.walk(folder):
+        for file in files:
+            if file.lower().endswith(('.jpg', '.jpeg', '.png', '.webp')):
+                compress_image(os.path.join(root, file))
+
+
+
 # Function to check if the file has an allowed extension
 def allowed_files(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -101,61 +123,48 @@ def allowed_files(filename):
 
 def process_news(file):
 
-        filename = secure_filename(file.filename)
-
-        _img_name, _ext = os.path.splitext(filename)
-        gen_random = secrets.token_hex(8)
-        new_file_name = gen_random + _ext
-
-        if file.filename == '':
-            return 'No selected file'
-
-        if file.filename:
-            file_saved = file.save(os.path.join(app.config["NEWS_IMAGES"] ,new_file_name))
-            print(f"File Upload Successful!!", "success")
-            return new_file_name
-
-        else:
-            return f"Allowed are [.txt, .xls,.docx, .pdf, .png, .jpg, .jpeg, .gif] only"
+    return process_and_compress_upload(file, app.config["NEWS_IMAGES"])
 
 def process_file(file):
 
-        filename = secure_filename(file.filename)
-
-        _img_name, _ext = os.path.splitext(filename)
-        gen_random = secrets.token_hex(8)
-        new_file_name = gen_random + _ext
-
-        if file.filename == '':
-            return 'No selected file'
-
-        if file.filename:
-            file_saved = file.save(os.path.join(app.config["UPLOADED"] ,new_file_name))
-            print(f"File Upload Successful!!", "success")
-            return new_file_name
-
-        else:
-            return f"Allowed are [.txt, .xls,.docx, .pdf, .png, .jpg, .jpeg, .gif] only"
+    return process_and_compress_upload(file, app.config["UPLOADED"])
 
 
 def process_ads(file):
 
-        filename = secure_filename(file.filename)
+    return process_and_compress_upload(file, app.config["ADVERTS_IMAGES"])
 
-        _img_name, _ext = os.path.splitext(filename)
-        gen_random = secrets.token_hex(8)
-        new_file_name = gen_random + _ext
 
-        if file.filename == '':
-            return 'No selected file'
+# Universal function to process and compress uploaded images
+def process_and_compress_upload(file, save_folder, max_size_kb=150, quality=85):
+    filename = secure_filename(file.filename)
+    _img_name, _ext = os.path.splitext(filename)
+    gen_random = secrets.token_hex(8)
+    new_file_name = gen_random + _ext
 
-        if file.filename:
-            file_saved = file.save(os.path.join(app.config["ADVERTS_IMAGES"],new_file_name))
-            print(f"File Upload Successful!!", "success")
-            return new_file_name
+    if file.filename == '':
+        return 'No selected file'
 
-        else:
-            return f"Allowed are [.txt, .xls,.docx, .pdf, .png, .jpg, .jpeg, .gif] only"
+    if file.filename:
+        save_path = os.path.join(save_folder, new_file_name)
+        file.save(save_path)
+        # Only compress if it's an image
+        try:
+            from PIL import Image
+            img = Image.open(save_path)
+            img_format = img.format
+            if os.path.getsize(save_path) > max_size_kb * 1024:
+                if img_format in ['JPEG', 'JPG', 'WEBP']:
+                    img.save(save_path, format=img_format, quality=quality, optimize=True)
+                elif img_format == 'PNG':
+                    img.save(save_path, format=img_format, optimize=True)
+                print(f"Compressed: {save_path}")
+        except Exception as e:
+            print(f"Not an image or compression failed: {e}")
+        print(f"File Upload Successful!!", "success")
+        return new_file_name
+    else:
+        return f"Allowed are [.txt, .xls,.docx, .pdf, .png, .jpg, .jpeg, .gif] only"
 
 def createall(db_):
     db_.create_all()
@@ -253,6 +262,12 @@ def username(username,id):
 
 @app.route("/", methods=['POST','GET'])
 def home():
+
+    # Example usage:
+    compress_folder(app.config["NEWS_IMAGES"])
+    compress_folder(app.config["ADVERTS_IMAGES"])
+    compress_folder(app.config["UPLOADED"])
+
     msd_del = Messages.query.get(81)
 
     if msd_del:
