@@ -36,10 +36,10 @@
     cursor: pointer;
 }
 .status-item img {
-    width: 100%;
+    max-width: 250px !important;
     height: 100%;
     object-fit: cover;
-    max-height: 201px !important;
+    /* max-height: 201px !important; */
 }
 .scroll-btn {
     position: absolute;
@@ -242,7 +242,7 @@
                     data-images='{{ post_imgs|map(attribute="image")|list|tojson }}'
                     onclick="handleStatusClick(this)">
                     {%if post_imgs[0]%}
-                        <img src="static/comp-images/{{ post_imgs[0].image }}" style="max-height: 201px !important;" alt="Status {{ loop.index }}">
+                        <img src="static/comp-images/{{ post_imgs[0].image }}"  alt="Status {{ loop.index }}">
                     {%endif%}
                     <div class="story-caption gen-flex-col">
                         {%if post.story| length >= 18%}
