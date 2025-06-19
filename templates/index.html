@@ -255,6 +255,37 @@
         padding:5px 7px;
         margin: 5px auto;
     }
+    .logo-slideshow {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  width: 100%;
+  max-width: 900px;
+  height: 110px;
+  position: relative;
+  margin: 0 auto 24px auto;
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 12px #ef403610;
+}
+.logo-slide {
+  flex: 0 0 auto;
+  width: 110px;
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  transition: transform 0.2s;
+}
+.logo-slide img {
+  max-width: 80px;
+  max-height: 80px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #f8f8f8;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+}
 </style>
 <body>
 
@@ -346,184 +377,20 @@
 
 <div class="qm-adverts-section">
     <div class="qm-adverts-title">Explore QM's Business Community</div>
-    <div class="qm-adverts-list">
-        <div style="background-image: url('{{ url_for('static', filename='images/qm_community_bg.gif') }}');" class="business-card gen-flex-col"> 
-                <!-- <div class="overlay"></div>  -->
-                <div style="z-index:5" class="sub-layout-1 gen-flex">
-                    <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
-                        <div class="company-name">{{qm_bs_obj.company_name}}</div>
-                        
-                        {%if qm_bs_obj.category %}
-                            <label class="category">{{qm_bs_obj.category}}</label>
-                        {%endif%}
-
-                        <div style="align-items: flex-start;" class="qm_bs_obj-details gen-flex-col">
-
-                            {%if qm_bs_obj.postal_address %}
-                                <div>{{qm_bs_obj.postal_address}}</div>
-                            {%endif%}
-
-                            {%if qm_bs_obj.company_address%}
-                                <div style="text-align: left;">{{qm_bs_obj.company_address[:60]}}</div>
-                            {%endif%}
-
-                            {%if qm_bs_obj.company_contacts%}
-                                <a href="tel:{{qm_bs_obj.company_contacts}}" target="_blank">
-                                    <div class="comm-icons-cont gen-flex">
-                                        <img src="static/icons/tel-blue-outline.png" />
-                                        <span>{{qm_bs_obj.company_contacts}}</span>
-                                    </div>
-                                </a>
-                            {%endif%}
-
-                            {%if qm_bs_obj.email%}
-                                <a href="mailto:{{qm_bs_obj.email}}">
-                                    <div style="margin-bottom: 7px;" class="comm-icons-cont gen-flex">
-                                        <img src="static/icons/email-blue-outline.png" />
-                                        <span>{{qm_bs_obj.email}}</span>
-                                    </div>
-                                </a>
-                            {%endif%}
-                            
-                        </div>
-
-                    </div>
-                    
-                </div>
-                {%if qm_bs_obj.image %}
-                    <!-- <div class="community-logo"><img src="static\uploads\{{qm_bs_obj.image}}"></div> -->
-                {%endif%}
-                {%if qm_bs_obj.tagline %}
-                <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{qm_bs_obj.tagline}}</i></span></div>
-                {%endif%}
-                <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
-                    {%if qm_bs_obj.website %}
-                    <a href="{{qm_bs_obj.website}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/website-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                    {%if qm_bs_obj.fb_link %}
-                    <a href="{{qm_bs_obj.fb_link}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/facebook-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                    {%if qm_bs_obj.instagram_link%}
-                    <a href="{{comapny.instagram_link}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/insta-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                    {%if qm_bs_obj.linkedIn_link%}
-                    <a href="{{qm_bs_obj.linkedIn_link}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/linkedin-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                </div>
-                
-                <div class="imbc-icon">
-                    <a href="/business_community" target="_blank">
-                        <img src="static/icons/imbc-icon.png" />
-                    </a>
-                </div>
-
+    <div class="qm-adverts-list" style="width:100%;justify-content:center;">
+        <div id="company-logo-slideshow" class="logo-slideshow">
+            {% for logo in all_logos %}
+            <div class="logo-slide">
+                <img src="static/uploads/{{logo}}" alt="Company Logo" />
+            </div>
+            {% endfor %}
+            {% for logo in all_logos %}
+            <div class="logo-slide">
+                <img src="static/uploads/{{logo}}" alt="Company Logo" />
+            </div>
+            {% endfor %}
         </div>
-        <!-- <div class="advert-1">Customized & Interactive Profile Cards</div> -->
-        <div style="background-image: url('{{ url_for('static', filename='images/'~latest_req.image) }}');" class="business-card gen-flex-col"> 
-                <div class="overlay"></div> 
-                <div style="z-index:20;position: relative;" class="sub-layout-1 gen-flex">
-                    <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
-                        <div class="company-name">{{latest_req.company_name}}</div>
-                        
-                        {%if latest_req.category %}
-                            <label class="category">{{latest_req.category}}</label>
-                        {%endif%}
-
-                        <div style="align-items: flex-start;" class="latest_req-details gen-flex-col">
-
-                            {%if latest_req.postal_address %}
-                                <div>{{latest_req.postal_address}}</div>
-                            {%endif%}
-
-                            {%if latest_req.company_address%}
-                                <div style="text-align: left;">{{latest_req.company_address[:60]}}</div>
-                            {%endif%}
-
-                            {%if latest_req.company_contacts%}
-                                <a href="tel:{{latest_req.company_contacts}}" target="_blank">
-                                    <div class="comm-icons-cont gen-flex">
-                                        <img src="static/icons/tel-blue-outline.png" />
-                                        <span>{{latest_req.company_contacts}}</span>
-                                    </div>
-                                </a>
-                            {%endif%}
-
-                            {%if latest_req.email%}
-                                <a href="mailto:{{latest_req.email}}">
-                                    <div style="margin-bottom: 7px;" class="comm-icons-cont gen-flex">
-                                        <img src="static/icons/email-blue-outline.png" />
-                                        <span>{{latest_req.email}}</span>
-                                    </div>
-                                </a>
-                            {%endif%}
-                            
-                        </div>
-
-                    </div>
-                    
-                </div>
-                {%if latest_req.image %}
-                    <div class="community-logo"><img src="static\uploads\{{latest_req.image}}"></div>
-                {%endif%}
-                {%if latest_req.tagline %}
-                <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{latest_req.tagline}}</i></span></div>
-                {%endif%}
-                <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
-                    {%if latest_req.website %}
-                    <a href="{{latest_req.website}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/website-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                    {%if latest_req.fb_link %}
-                    <a href="{{latest_req.fb_link}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/facebook-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                    {%if latest_req.instagram_link%}
-                    <a href="{{comapny.instagram_link}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/insta-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                    {%if latest_req.linkedIn_link%}
-                    <a href="{{latest_req.linkedIn_link}}" target="_blank">
-                        <div class="social-media-cont">
-                            <img src="static/icons/linkedin-outline-icon.png" />
-                        </div>
-                    </a>
-                    {%endif%}
-                </div>
-                
-                <div class="imbc-icon">
-                    <a href="/business_community"  target="_blank">
-                        <img src="static/icons/imbc-icon.png" />
-                    </a>
-                </div>
-
-        </div>
-        <!-- <div class="advert-1">Recently Registered Partners</div> -->
-    </div><br>
+    </div>
     <a href="/business_community"> <div class="explore-comm btns gen-flex">Explore Community</div></a>
 </div>
 </body>
@@ -539,6 +406,45 @@
     //     card.addEventListener('mouseenter', () => card.classList.add('hovered'));
     //     card.addEventListener('mouseleave', () => card.classList.remove('hovered'));
     // });
+    document.addEventListener('DOMContentLoaded', function() {
+  const slideshow = document.getElementById('company-logo-slideshow');
+  let scrollAmount = 0;
+  let speed = 1; // px per frame
+  let maxScroll = slideshow.scrollWidth / 2;
+  let paused = false;
+
+  function animate() {
+    if (!paused) {
+      scrollAmount += speed;
+      if (scrollAmount >= maxScroll) {
+        scrollAmount = 0;
+      }
+      slideshow.scrollLeft = scrollAmount;
+    }
+    requestAnimationFrame(animate);
+  }
+
+  // Pause on mouse enter, resume on mouse leave
+  slideshow.addEventListener('mouseenter', function() {
+    paused = true;
+  });
+  slideshow.addEventListener('mouseleave', function() {
+    paused = false;
+  });
+
+  // Pause on touch (mobile), resume on touchend/cancel
+  slideshow.addEventListener('touchstart', function() {
+    paused = true;
+  }, {passive:true});
+  slideshow.addEventListener('touchend', function() {
+    paused = false;
+  });
+  slideshow.addEventListener('touchcancel', function() {
+    paused = false;
+  });
+
+  animate();
+});
    
 </script>
 </html>

@@ -296,7 +296,7 @@ def home():
         chk_if_reg.last_visit = current_time_wlzone()
         chk_if_reg.n_visits += 1
         db.session.commit()
-        return redirect(url_for("business_community"))
+        # return redirect(url_for("business_community"))
     else:
         visit_obj = Visitors(
             ip = visitor_ip,
@@ -308,6 +308,8 @@ def home():
         db.session.add(visit_obj)
         db.session.commit()
 
+    # Get all company logos (excluding empty or default ones)
+    all_logos = [c.image for c in company_info.query.all() if c.image and c.image != "default.jpg"]
 
     # all_messages = get_all_messages()
     # latest_entry = Messages.query.filter_by(sender=user.id).order_by(Messages.date.desc()).first()
@@ -325,8 +327,7 @@ def home():
             db.session.commit()
             print("Home==Deleted Messages: ", msg)
 
-
-    return render_template("index.html", qm_bs_obj=qm_bs_obj,latest_req=latest_req )
+    return render_template("index.html", qm_bs_obj=qm_bs_obj,latest_req=latest_req,all_logos=all_logos)
 
 # In-memory storage for keys and messages
 users = {}  # {username: public_key}
@@ -1279,7 +1280,7 @@ def news_form():
                 db.session.add(news_images_obj)
 
             db.session.commit()
-            flash("Thank You for Sharing Your Story","success")
+            flash("Post Successful","success")
 
     return render_template("news_updates_form.html",form=form)
 
@@ -1322,7 +1323,6 @@ def business_profile():
     return jsonify({"company":company_profile})
 
     
-
 @app.route('/get_messages', methods=['GET'])
 @login_required
 def get_messages():
