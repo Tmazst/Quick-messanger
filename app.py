@@ -1291,7 +1291,11 @@ class CompanyObj:
 
 @app.route('/business_community', methods=['POST',"GET"])
 def business_community():
+    view = None
 
+    requested_list_view = request.args.get("req_view")
+    if requested_list_view:
+        view = requested_list_view
     # Convert list of dicts to list of objects
     company_dicts = [c.to_dict() for c in company_info.query.all()]
     company_objs = [CompanyObj(**d) for d in company_dicts]
@@ -1303,7 +1307,20 @@ def business_community():
     companies = company_info.query.all()
     categories = {comp.category for comp in companies}
 
-    return render_template("business_community.html",companies=company_objs,categories=categories)
+    return render_template("business_community.html",companies=company_objs,categories=categories,view=view)
+
+@app.route('/business_profile', methods=['POST',"GET"])
+def business_profile():
+    data = request.get_json()
+    if data:
+        de_ser = ser.loads(data["cid"])
+        id_ = de_ser.get('cid')
+        print("ID Request: ", id_)
+        company_profile = company_info.query.get(id_).to_dict()
+
+    return jsonify({"company":company_profile})
+
+    
 
 @app.route('/get_messages', methods=['GET'])
 @login_required

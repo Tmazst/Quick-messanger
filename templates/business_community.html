@@ -108,7 +108,155 @@
     .business-card {
     /* scroll-snap-align: start; */
     }
+    .grid-view{
+        width:95%;
+        margin: 0 auto;
+        flex-wrap: wrap;justify-content: flex-start;
+        /* max-width: ; */
+    }
+    .company-logos-cards{
+        height:120px;
+        width:max-content;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .comp-logos{
+        height: inherit !important;
+    }
+    .list-card{
+        min-height: 80px;
+        height:max-content;
+        width:max-content;
+    }
+    .toggle-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+.toggle-btn {
+    background: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 6px 18px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s, border 0.2s;
+}
+.toggle-btn span{
+    font-size: 15px;
+    cursor: pointer;
+}
+.toggle-btn img{
+    height: 25px;
+}
+.list-view{
+    flex-wrap: wrap;justify-content: flex-start;
+}
+.toggle-btn[aria-pressed="true"] {
+    background: #e0e7ff;
+    border-color: #3667ef;
+    font-weight: bold;
+}
+.grid-view, .list-view {
+    width: 100%;
+}
+.grid-view .company-logos-cards {
+    display: inline-block;
+    margin: 10px;
+    gap:3px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.2);
+}
+.list-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px 18px;
+    margin: 10px 0;
+    min-width: 250px;
+    max-width: 300px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    align-items: center;
+}
+.comp-logos {
+    /* width: 60px;
+    height: 60px; */
+    object-fit: contain;
+    border-radius: 12px;
+    background: #f8f8f8;
+    /* margin-right: 16px; */
+}
+.comp_name {
+    font-size: 15px;
+    font-weight: 600;
+}
+.comp_services {
+    color: #575656;
+    font-size: 11px;
+    font-weight: 500;
+}
+.company-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0; top: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.45);
+  justify-content: center;
+  align-items: center;
+}
+.company-modal-content {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 420px;
+  width: 95vw;
+  padding: 32px 24px 24px 24px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  position: relative;
+  animation: modalIn 0.2s;
+}
+@keyframes modalIn {
+  from { transform: translateY(40px) scale(0.98); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.company-modal-close {
+  position: absolute;
+  right: 18px; top: 12px;
+  font-size: 2rem;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.company-modal-close:hover { color: #222; }
+.company-modal-loading {
+  text-align: center;
+  color: #888;
+  font-size: 1.1em;
+  margin: 30px 0;
+}
+.company-modal-body-content {
+  text-align: left;
+}
+.company-modal-body-content h2 {
+  margin-top: 0;
+  font-size: 1.5em;
+  color: #2a2a2a;
+}
+.company-modal-body-content .modal-logo {
+  width: 80px; height: 80px; object-fit: contain; border-radius: 12px; background: #f8f8f8; margin-bottom: 12px;
+}
+.company-modal-body-content .modal-field {
+  margin-bottom: 8px;
+  font-size: 1em;
+}
+.company-modal-body-content .modal-label {
+  font-weight: 600;
+  color: #555;
+  margin-right: 6px;
+}
+@media (max-width: 700px) {
+    .list-card { min-width: 90vw; }
+}
 </style>
+
 <script>
 function randomChar() {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -184,6 +332,49 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
         </div>
     </div>
     <h2></h2>
+<!-- Toggle View  -->
+<div class="toggle-container">
+    <button id="toggle-general" class="toggle-btn" aria-pressed="false">Default</button>
+  <button id="toggle-grid" class="toggle-btn" aria-pressed="{{ 'true' if view == 'grid' else 'false' }}"><img src="static/icons/grid-icon.png" /> <span>Grid</span></button>
+  <button id="toggle-list" class="toggle-btn" aria-pressed="{{ 'true' if view == 'list' else 'false' }}"><img src="static/icons/list-icon.png" /> <span>List</span></button>
+</div>
+
+<!-- Grid View  -->
+<div style="display: none;" class="grid-view gen-flex">
+    {%for company in companies%}
+        <div data-cid="{{ser.dumps({'cid':company.id})}}" class="company-logos-cards"> 
+            <img src="static/uploads/{{company.logo}}" class="comp-logos" />
+        </div>
+    {%endfor%}
+</div>
+<!-- List View  -->
+<div style="display: none;" class="list-view gen-flex">
+    {%for category in categories%}
+        {%if  category%}
+        <div class="category-cont gen-flex sticky-category">
+            <img src="static/icons/category-icon.png" class="cat-icon" />
+            <div class="category-title category-title-animated">{{ category }}</div>
+            <div style="flex-grow: 1;"></div>
+            {% set count = companies | selectattr('category', 'equalto', category) | list | length %}
+            <div class="other-cat-info gen-flex"><span>({{ count }})</span></div>
+        </div>
+            {%for company in companies%}
+                {%if category == company.category%}
+                    <div class="company-logos-cards"> 
+                        <div data-cid="{{ser.dumps({'cid':company.id})}}" style="justify-content: flex-start;" class="list-card gen-flex">
+                            <img style="height:80px !important" src="static/uploads/{{company.logo}}" class="comp-logos" />
+                            <div class="gen-flex-col">
+                                <div class="comp_name">{{company.company_name}}</div>
+                                <small class="comp_services">{{company.tagline}}</small>
+                            </div>
+                        </div>
+                    </div>
+                {%endif%}
+            {%endfor%}
+        {%endif%}
+    {%endfor%}
+</div>
+<!-- General View  -->
     {%for category in categories%}
     {%if  category%}
     <div class="category-cont gen-flex sticky-category">
@@ -395,6 +586,17 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
     <br><br>
     {%endif%}
     {%endfor%}
+
+</div>
+<!-- Company Details Modal -->
+<div id="company-modal" class="company-modal">
+  <div class="company-modal-content">
+    <span class="company-modal-close">&times;</span>
+    <div id="company-modal-body">
+      <!-- Company details will be loaded here -->
+      <div class="company-modal-loading">Loading...</div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -407,6 +609,49 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
         adContainer.style.display = 'none';
         contanier.style.paddingTop = '7px';
     });
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const gridBtn = document.getElementById('toggle-grid');
+    const listBtn = document.getElementById('toggle-list');
+    const generalBtn = document.getElementById('toggle-general');
+    const gridView = document.querySelector('.grid-view');
+    const listView = document.querySelector('.list-view');
+    const generalViewBlocks = Array.from(document.querySelectorAll('.category-cont, .swipe-for-mobile, br'));
+
+    function setView(view) {
+        if (view === 'grid') {
+            gridView.style.display = 'flex';
+            listView.style.display = 'none';
+            gridBtn.setAttribute('aria-pressed', 'true');
+            listBtn.setAttribute('aria-pressed', 'false');
+            generalBtn.setAttribute('aria-pressed', 'false');
+            generalViewBlocks.forEach(el => el.style.display = 'none');
+        } else if (view === 'list') {
+            gridView.style.display = 'none';
+            listView.style.display = 'flex';
+            gridBtn.setAttribute('aria-pressed', 'false');
+            listBtn.setAttribute('aria-pressed', 'true');
+            generalBtn.setAttribute('aria-pressed', 'false');
+            generalViewBlocks.forEach(el => el.style.display = 'none');
+        } else {
+            gridView.style.display = 'none';
+            listView.style.display = 'none';
+            gridBtn.setAttribute('aria-pressed', 'false');
+            listBtn.setAttribute('aria-pressed', 'false');
+            generalBtn.setAttribute('aria-pressed', 'true');
+            generalViewBlocks.forEach(el => el.style.display = '');
+        }
+    }
+
+    // Initial state: show general view, hide grid/list
+    setView('general');
+
+    gridBtn.addEventListener('click', function() { setView('grid'); });
+    listBtn.addEventListener('click', function() { setView('list'); });
+    generalBtn.addEventListener('click', function() { setView('general'); });
+});
 
     
 // --- Mobile swipe/scroll for cards-container ---
@@ -518,6 +763,107 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
     targetFeatured.forEach(el => {
         observer.observe(el);
     });
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+    // ... your toggle code ...
+
+    // Modal logic
+    const modal = document.getElementById('company-modal');
+    const modalBody = document.getElementById('company-modal-body');
+    const closeBtn = document.querySelector('.company-modal-close');
+
+    // Helper to open modal
+    function openModal() {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    // Helper to close modal
+    function closeModal() {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+        modalBody.innerHTML = '<div class="company-modal-loading">Loading...</div>';
+    }
+    closeBtn.onclick = closeModal;
+    modal.onclick = function(e) { if (e.target === modal) closeModal(); };
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // Attach click listeners to all cards in grid and list
+    function attachCardListeners() {
+        document.querySelectorAll('.company-logos-cards, .list-card').forEach(function(card) {
+            card.onclick = function(e) {
+                // Find the company logo img inside the card
+                let img = card.querySelector('img.comp-logos');
+                if (!img) return;
+                // Get the company logo filename
+                let logo = img.getAttribute('src').split('/').pop();
+                // Find the company object in JS (optional: you can add a data attribute with company id)
+                // Instead, let's use a data-cid attribute for security
+                let cid = card.getAttribute('data-cid') || img.getAttribute('data-cid');
+                if (!cid) {
+                    // fallback: try to get from alt or src
+                    return;
+                }
+                // Show modal and fetch details
+                openModal();
+                fetch('/business_profile', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cid: cid })
+                })
+                .then(resp => resp.json())
+                .then(data => {
+                    if (data.company) {
+                        modalBody.innerHTML = renderCompanyDetails(data.company);
+                    } else {
+                        modalBody.innerHTML = '<div class="company-modal-loading">No details found.</div>';
+                    }
+                })
+                .catch(() => {
+                    modalBody.innerHTML = '<div class="company-modal-loading">Error loading details.</div>';
+                });
+            };
+        });
+    }
+
+    // Helper to render company details
+    function renderCompanyDetails(company) {
+        return `
+        <div class="company-modal-body-content">
+            <div style="text-align:center;">
+                <img class="modal-logo" src="/static/uploads/${company.logo}" alt="${company.company_name} logo">
+            </div>
+            <h2>${company.company_name || ''}</h2>
+            <div class="modal-field"><span class="modal-label">Category:</span> ${company.category || ''}</div>
+            <div class="modal-field"><span class="modal-label"></span> ${company.tagline || ''}</div>
+            <div class="modal-field"><span class="modal-label">Address:</span> ${company.company_address || ''}</div>
+            <div class="modal-field"><span class="modal-label">Contacts:</span> ${company.company_contacts || ''}</div>
+            <div class="modal-field"><span class="modal-label">Email:</span> ${company.email || ''}</div>
+            <div class="modal-field"><span class="modal-label">Website:</span> <a href="${company.website || '#'}" target="_blank">${company.website || ''}</a></div>
+        </div>
+        `;
+    }
+
+    // Add data-cid attribute to each card for secure lookup
+    function addCidToCards() {
+        
+        document.querySelectorAll('.company-logos-cards, .list-card').forEach(function(card) {
+            // Only add if not already present
+            if (!card.getAttribute('data-cid')) {
+                // Try to get from child img
+                let img = card.querySelector('img.comp-logos');
+                if (img && img.hasAttribute('data-cid')) {
+                    card.setAttribute('data-cid', img.getAttribute('data-cid'));
+                }
+            }
+        });
+    }
+
+    addCidToCards();
+    attachCardListeners();
+});
 
 </script>
 <!-- </html> -->
