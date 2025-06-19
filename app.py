@@ -1312,6 +1312,7 @@ def business_community():
 @app.route('/business_profile', methods=['POST',"GET"])
 def business_profile():
     data = request.get_json()
+    print("ID Request: ", data)
     if data:
         de_ser = ser.loads(data["cid"])
         id_ = de_ser.get('cid')

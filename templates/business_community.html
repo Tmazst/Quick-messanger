@@ -194,24 +194,27 @@
     font-size: 11px;
     font-weight: 500;
 }
+/* --- Modern Modal Styles --- */
 .company-modal {
   display: none;
   position: fixed;
   z-index: 9999;
   left: 0; top: 0; width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.45);
+  background: rgba(30, 41, 59, 0.55); /* slate-800/60 */
   justify-content: center;
   align-items: center;
+  backdrop-filter: blur(2px);
 }
 .company-modal-content {
-  background: #fff;
-  border-radius: 12px;
-  max-width: 420px;
+  background: linear-gradient(135deg, #f8fafc 60%, #e0e7ef 100%);
+  border-radius: 18px;
+  max-width: 410px;
   width: 95vw;
-  padding: 32px 24px 24px 24px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  padding: 36px 28px 28px 28px;
+  box-shadow: 0 8px 32px rgba(30,41,59,0.18), 0 1.5px 8px rgba(80,80,120,0.08);
   position: relative;
-  animation: modalIn 0.2s;
+  animation: modalIn 0.22s cubic-bezier(.4,1.4,.6,1);
+  border: 1.5px solid #e0e7ef;
 }
 @keyframes modalIn {
   from { transform: translateY(40px) scale(0.98); opacity: 0; }
@@ -220,37 +223,76 @@
 .company-modal-close {
   position: absolute;
   right: 18px; top: 12px;
-  font-size: 2rem;
-  color: #888;
+  font-size: 2.1rem;
+  color: #64748b;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.18s, transform 0.18s;
+  font-weight: 400;
+  z-index: 2;
 }
-.company-modal-close:hover { color: #222; }
+.company-modal-close:hover {
+  color: #1e293b;
+  transform: scale(1.15);
+}
 .company-modal-loading {
   text-align: center;
-  color: #888;
-  font-size: 1.1em;
-  margin: 30px 0;
+  color: #64748b;
+  font-size: 1.13em;
+  margin: 32px 0 24px 0;
+  letter-spacing: 0.02em;
 }
 .company-modal-body-content {
   text-align: left;
+  padding-top: 6px;
 }
 .company-modal-body-content h2 {
-  margin-top: 0;
-  font-size: 1.5em;
-  color: #2a2a2a;
+  margin-top: 0.5em;
+  font-size: 1.45em;
+  color: #1e293b;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin-bottom: 0.2em;
 }
 .company-modal-body-content .modal-logo {
-  width: 80px; height: 80px; object-fit: contain; border-radius: 12px; background: #f8f8f8; margin-bottom: 12px;
+  width: 84px; height: 84px; object-fit: contain; border-radius: 16px; background: #f1f5f9; margin-bottom: 10px; box-shadow: 0 2px 12px rgba(80,80,120,0.07);
+  border: 1.5px solid #e0e7ef;
+}
+.company-modal-body-content .modal-fields {
+  margin-top: 18px;
 }
 .company-modal-body-content .modal-field {
-  margin-bottom: 8px;
-  font-size: 1em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 13px;
+  font-size: 1.04em;
+  color: #334155;
+  background: #f8fafc;
+  border-radius: 7px;
+  padding: 7px 10px 7px 8px;
+  box-shadow: 0 1px 4px rgba(80,80,120,0.04);
 }
 .company-modal-body-content .modal-label {
   font-weight: 600;
-  color: #555;
-  margin-right: 6px;
+  color: #475569;
+  margin-right: 4px;
+  min-width: 28px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.company-modal-body-content .modal-label img {
+  width: 30px; height: 30px; object-fit: contain; margin-right: 2px; filter: grayscale(0.2) brightness(0.95);
+}
+.company-modal-body-content .modal-field a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.18s;
+}
+.company-modal-body-content .modal-field a:hover {
+  color: #1e40af;
+  text-decoration: underline;
 }
 @media (max-width: 700px) {
     .list-card { min-width: 90vw; }
@@ -586,8 +628,8 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
     <br><br>
     {%endif%}
     {%endfor%}
-
 </div>
+
 <!-- Company Details Modal -->
 <div id="company-modal" class="company-modal">
   <div class="company-modal-content">
@@ -646,7 +688,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Initial state: show general view, hide grid/list
-    setView('general');
+    if(innerWidth <= 700){
+        setView('list');
+    }else{
+        setView('general');
+    }
+    
 
     gridBtn.addEventListener('click', function() { setView('grid'); });
     listBtn.addEventListener('click', function() { setView('list'); });
@@ -828,7 +875,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Helper to render company details
     function renderCompanyDetails(company) {
         return `
         <div class="company-modal-body-content">
@@ -836,12 +882,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 <img class="modal-logo" src="/static/uploads/${company.logo}" alt="${company.company_name} logo">
             </div>
             <h2>${company.company_name || ''}</h2>
-            <div class="modal-field"><span class="modal-label">Category:</span> ${company.category || ''}</div>
-            <div class="modal-field"><span class="modal-label"></span> ${company.tagline || ''}</div>
-            <div class="modal-field"><span class="modal-label">Address:</span> ${company.company_address || ''}</div>
-            <div class="modal-field"><span class="modal-label">Contacts:</span> ${company.company_contacts || ''}</div>
-            <div class="modal-field"><span class="modal-label">Email:</span> ${company.email || ''}</div>
-            <div class="modal-field"><span class="modal-label">Website:</span> <a href="${company.website || '#'}" target="_blank">${company.website || ''}</a></div>
+            <div class="modal-fields">
+                <div class="modal-field"><span class="modal-label"><img src="/static/icons/category-icon.png" alt="Category">Category:</span> ${company.category || ''}</div>
+                ${company.tagline ? `<div class="modal-field" style="font-family:Montserrat;"><i>${company.tagline}</i></div>` : ''}
+                <div class="modal-field"><span class="modal-label"><img src="/static/icons/location-icon.png" alt="Address">Address:</span> ${company.company_address || ''}</div>
+                <div class="modal-field"><span class="modal-label"><img src="/static/icons/tel-blue-outline.png" alt="Contacts">Contacts:</span> <a href="tel:${company.company_contacts || ''}">${company.company_contacts || ''}</a></div>
+                ${company.email ? `<div class="modal-field"><span class="modal-label"><img src="/static/icons/email-blue-outline.png" alt="Email">Email:</span> <a href="mailto:${company.email}">${company.email}</a></div>` : ''}
+                ${company.website ? `<div class="modal-field"><span class="modal-label"><img src="/static/icons/website-outline-icon.png" alt="Website">Website:</span> <a href="${company.website}" target="_blank">${company.website}</a></div>` : ''}
+            
+                </div>
+                <div class="gen-flex"><img src="static/icons/portfolio-icon.png" style="height:40px;width:40px;" /> Client Projects</div>
         </div>
         `;
     }
