@@ -296,7 +296,7 @@ def home():
         chk_if_reg.last_visit = current_time_wlzone()
         chk_if_reg.n_visits += 1
         db.session.commit()
-        # return redirect(url_for("business_community"))
+        return redirect(url_for("business_community"))
     else:
         visit_obj = Visitors(
             ip = visitor_ip,
