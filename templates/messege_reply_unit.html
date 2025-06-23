@@ -94,7 +94,6 @@
             <small>Inbox Messages</small>
         </div>
     </div> -->
-    <div style="height: 200px;"></div>
     
     <div class="scorllable-messages gen-flex-col">
         <div style="height:200px;width:100%"></div>
@@ -105,7 +104,7 @@
             {%if current == my_msgs%}
                 {%if msg.sender == current%}<!--sent messages-->
                 {%set rec_usrnm = usrn.query.filter_by(username=msg.receiver).first()%}
-                <div style="min-height: 120px !important;padding-top:50px"  id="messages-inbox-cont" onclick="minMaxMsgBox('{{rec_usrnm.id}}')"  class="reply-message-item message-item gen-flex-col">
+                <div  id="messages-inbox-cont" onclick="minMaxMsgBox('{{rec_usrnm.id}}')"  class="reply-message-item message-item gen-flex-col">
                     <!-- Name, Logo, and Time  -->
                     <div  class="message-item-header-left gen-flex">
                         <div class="message-item-header-left gen-flex">
