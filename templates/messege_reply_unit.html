@@ -88,6 +88,13 @@
         background: none !important;
     }
 
+    @media (max-width: 700px) {
+        .msg-reply-unit{
+            max-width: 700px;
+            height: 99%;
+        }
+    }
+
 </style>
 
 <div class="msg-reply-unit">
@@ -103,7 +110,9 @@
     <div style="justify-content: flex-start !important;" class="scorllable-messages gen-flex-col">
         <div style="height:200px;width:100%"></div>
         <!-- <div style="display: block !important;" class="messages-container"> -->
+            {%if messages%}
             {% for msg in messages %}
+            
             {%set the_sender = msg.sender%}
             {%set my_msgs = msg.key%}
             {%if current == my_msgs%}
@@ -195,6 +204,12 @@
             <!-- </div> -->
             {%endif%}
             {% endfor %}
+            {%else%}
+            <div style="width:90%;margin: 0 auto;">
+                <h3 style="color:white">Currently No Messages Received</h3>
+                <small style="color:white">Make inqueries about your favorite products & services, and get instant responses today!</small>
+            </div>
+            {%endif%}
 
         <!-- </div> -->
     </div>

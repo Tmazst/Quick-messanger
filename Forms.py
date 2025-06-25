@@ -29,14 +29,12 @@ class Register(FlaskForm):
         if user_email:
             return ValidationError(f"Email already registered in this platform")
 
-
 class MessagesForm(FlaskForm):
     receiver = SelectField('To', validators=[Optional()])
     email = StringField('Email', validators=[DataRequired(), Email()])
     subject = StringField('Subject', validators=[Optional()])
     message = TextAreaField('Message', validators=[DataRequired()])
     submit = SubmitField('Send')
-
 
 HASHTAG_CHOICES = [
     ('public_relations', '#public_relations'),
@@ -111,7 +109,6 @@ HASHTAG_CHOICES = [
     ('fun_fact', '#funFact'),
     ('did_you_know', '#didYouKnow'),
 ]
-
 
 class StoryForm(FlaskForm):
 
@@ -234,7 +231,6 @@ class Company_Register_Form(FlaskForm):
 
     submit = SubmitField('Submit')
 
-
 class Company_UpdateAcc_Form(FlaskForm):
 
     company_name = StringField('Company Name', validators=[DataRequired(), Length(min=2, max=60)])
@@ -269,7 +265,6 @@ class Company_UpdateAcc_Form(FlaskForm):
 
     company_submit = SubmitField('Update')
 
-
 class Logo_Options(FlaskForm):
 
     email_signature = BooleanField("Email Signature")
@@ -296,7 +291,6 @@ class Poster_Options(FlaskForm):
     file_type3 = BooleanField("JPG", default=True)
     file_type4 = BooleanField("PNG")
 
-
 class Flyer_Options(FlaskForm):
 
     theme_color = StringField("Theme Color(s)")
@@ -309,7 +303,6 @@ class Flyer_Options(FlaskForm):
     file_type2 = BooleanField("PDF", default=True)
     file_type3 = BooleanField("JPG", default=True)
     file_type4 = BooleanField("PNG")
-
 
 class Brochure_Options(FlaskForm):
 
@@ -329,7 +322,6 @@ class Brochure_Options(FlaskForm):
     file_type3 = BooleanField("JPG", default=True)
     file_type4 = BooleanField("PNG")
 
-
 class Ecommerce_Options(FlaskForm):
 
     theme_color = StringField("Theme Color(s)")
@@ -348,7 +340,6 @@ class Login(FlaskForm):
     password = PasswordField('password', validators=[DataRequired(), Length(min=8, max=64)])
     submit = SubmitField('Login')
 
-
 class Contact_Form(FlaskForm):
 
     name = StringField('name')
@@ -356,7 +347,6 @@ class Contact_Form(FlaskForm):
     subject = StringField("subject")
     message = TextAreaField("Message",validators=[Length(min=8, max=2000)])
     submit = SubmitField("Send")
-
 
 class Project_Form(FlaskForm):
 
@@ -384,7 +374,6 @@ class Project_Form(FlaskForm):
     comp_colors2 = StringField('Choose Color')
 
     submit = SubmitField('Submit')
-
 
 class Web_Design_Brief(Project_Form):
 
@@ -440,7 +429,6 @@ class Web_Design_Brief(Project_Form):
 
     update = SubmitField('Update')
 
-
 class Reset(FlaskForm):
 
     old_password = PasswordField('old password', validators=[DataRequired(), Length(min=8, max=64)])
@@ -448,7 +436,6 @@ class Reset(FlaskForm):
     confirm_password = PasswordField('confirm password', validators=[DataRequired(), EqualTo('new_password'), Length(min=8, max=64)])
 
     reset = SubmitField('Reset')
-
 
 class Reset_Request(FlaskForm):
 
