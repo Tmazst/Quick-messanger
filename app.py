@@ -260,6 +260,28 @@ def username(username,id):
     return jsonify({"User":"Success"}),200
 
 
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
+
+# Google Sheets setup (do this once at the top of your file)
+SCOPE = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+CREDS = ServiceAccountCredentials.from_json_keyfile_name('appenda-d102d5f024d6.json', SCOPE)
+gc = gspread.authorize(CREDS)
+SHEET = gc.open('via').sheet1  # Replace with your sheet name
+
+@app.route('/queue_sms', methods=['POST'])
+def queue_sms():
+    data = request.get_json()
+    phone = data.get('phone')
+    message = data.get('message')
+    if not phone or not message:
+        return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
+
+    # Add new row: phone, message, status, timestamp
+    SHEET.append_row([phone, message, 'pending', datetime.now().isoformat()])
+    return jsonify({'status': 'success', 'msg': 'SMS job queued'})
+
+
 @app.route("/", methods=['POST','GET'])
 def home():
 
@@ -287,7 +309,7 @@ def home():
         company = company_info.query.filter_by(usr_id=current_user.id).first()
         if company and company.company_name:
             if company.image == "logo-avator.png" or not company.email:
-                flash("Please Finish Company Regstration","warning")
+                flash("Please Finish Company Registration","warning")
                 print("Company Name: ",)
                 return redirect(url_for("company_account"))
 
@@ -332,6 +354,14 @@ def home():
 # In-memory storage for keys and messages
 users = {}  # {username: public_key}
 messages = {}  # {username: [encrypted_messages]}
+
+@app.route('/send_sms', methods=['POST'])
+def send_sms():
+    data = request.get_json()
+    phone = data.get('phone')
+    message = data.get('message')
+    result = send_sms_via_huawei(phone, message)
+    return {"result": result}
 
 @app.route("/recovery_status_reg", methods=['POST','GET'])
 def recovery_register():
