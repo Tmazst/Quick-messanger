@@ -270,7 +270,7 @@ sms = africastalking.SMS
 
 def send_sms_via_africastalking(phone, message,):
     try:
-        response = sms.send(message, [phone],sender_id="Quick Messanger")  # Replace with your sender ID
+        response = sms.send(message, [phone])  # Replace with your sender ID
         print("SMS sent:", response)
         return {"status": "success", "response": response}
     except Exception as e:
