@@ -1310,7 +1310,7 @@ def news_form():
                 db.session.add(news_images_obj)
 
             db.session.commit()
-            flash("Post Successful","success")
+            flash("Post successful","success")
 
     return render_template("news_updates_form.html",form=form)
 
