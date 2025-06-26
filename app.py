@@ -259,27 +259,54 @@ def username(username,id):
 
     return jsonify({"User":"Success"}),200
 
+import africastalking
 
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
+# Initialize Africa's Talking
+AT_USERNAME = "thabo"  # Replace with your Africa's Talking username
+AT_API_KEY = "atsk_8f084216094ad2630840078202328804584781195f017493341390e99016c0f6bf96f6c8"    # Replace with your Africa's Talking API key
 
-# Google Sheets setup (do this once at the top of your file)
-SCOPE = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
-CREDS = ServiceAccountCredentials.from_json_keyfile_name('appenda-d102d5f024d6.json', SCOPE)
-gc = gspread.authorize(CREDS)
-SHEET = gc.open('via').sheet1  # Replace with your sheet name
+africastalking.initialize(AT_USERNAME, AT_API_KEY)
+sms = africastalking.SMS
 
-@app.route('/queue_sms', methods=['POST'])
-def queue_sms():
-    data = request.get_json()
-    phone = data.get('phone')
-    message = data.get('message')
+def send_sms_via_africastalking(phone, message,):
+    try:
+        response = sms.send(message, [phone],sender_id="Quick Messanger")  # Replace with your sender ID
+        print("SMS sent:", response)
+        return {"status": "success", "response": response}
+    except Exception as e:
+        print("SMS sending failed:", e)
+        return {"status": "error", "error": str(e)}
+
+@app.route('/send_sms') #, methods=['POST']
+def send_af_sms():
+    # data = request.get_json()sender="20404" 
+    phone = "+26876412255" #data.get('phone')
+    message = "Test"#data.get('message')
     if not phone or not message:
         return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
+    result = send_sms_via_africastalking(phone, message)
+    return jsonify(result)
 
-    # Add new row: phone, message, status, timestamp
-    SHEET.append_row([phone, message, 'pending', datetime.now().isoformat()])
-    return jsonify({'status': 'success', 'msg': 'SMS job queued'})
+# import gspread
+# from oauth2client.service_account import ServiceAccountCredentials
+
+# Google Sheets setup (do this once at the top of your file)
+# SCOPE = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
+# CREDS = ServiceAccountCredentials.from_json_keyfile_name('appenda-d102d5f024d6.json', SCOPE)
+# gc = gspread.authorize(CREDS)
+# SHEET = gc.open('via').sheet1  # Replace with your sheet name
+
+# @app.route('/queue_sms', methods=['POST'])
+# def queue_sms():
+#     data = request.get_json()
+#     phone = data.get('phone')
+#     message = data.get('message')
+#     if not phone or not message:
+#         return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
+
+#     # Add new row: phone, message, status, timestamp
+#     SHEET.append_row([phone, message, 'pending', datetime.now().isoformat()])
+#     return jsonify({'status': 'success', 'msg': 'SMS job queued'})
 
 
 @app.route("/", methods=['POST','GET'])
