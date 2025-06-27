@@ -282,28 +282,30 @@ def send_sms_via_africastalking(phone, message,):
 
 @app.route('/send_sms') #, methods=['POST']
 def send_af_sms():
+    print("Phone Number to Validate:xxx ")
     # data = request.get_json()sender="20404" 
-    techxolutions = company_info.query.filter_by(company_name="Tech Xolutions").first()
+    all_companies = company_info.query.all()
     # if not phone or not message:
     #     return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
+    for company in all_companies:
+        company_name = company.company_name
+
+        if len(company_name) > 17:
+            company_name = company_name[:17] + "..."
     
-    
-    phone = techxolutions.company_contacts
-    phone_validator = PhoneValidator
-    print("Phone Number to Validate: ", phone)
-    try:
-        val_phone = phone_validator(phone).validate()
-        message = (
-            "Welcome to Quick Messanger! We help you grow your market presence, "
-            "improve B2B/B2C communication & build networks easily. "
-            "Download: https://qm.techxolutions.com/install_app"
-        )
-        print("Phone Number to Validate2: ", val_phone)
-        result = send_sms_via_africastalking(val_phone, message)
-        return jsonify(result)
-    except PhoneNumberError as e:
-        flash(f"Invalid phone number: {e}", "danger")
-        return redirect(url_for("company_account"))
+        if company.company_contacts and len(company.company_contacts) > 6:
+            phone = company.company_contacts # techxolutions.company_contacts
+            phone_validator = PhoneValidator
+            print("Phone Number to Validate: ", phone)
+            try:
+                val_phone = phone_validator(phone).validate()
+                message = f"Welcome to Quick Messanger {company_name}! Grow your market presence, improve B2B/B2C communication & build networks. Visit: https://qm.techxolutions.com"
+                print("Phone Number to Validate2: ", val_phone)
+                result = send_sms_via_africastalking(val_phone, message)
+                return jsonify(result)
+            except PhoneNumberError as e:
+                flash(f"Invalid phone number: {e}", "danger")
+                return redirect(url_for("company_account"))
    
 
 # import gspread
@@ -882,7 +884,7 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
 
 
 
-@app.route('/install_app')
+@app.route('/install')
 def install_app():
     return render_template('download_app.html')
 

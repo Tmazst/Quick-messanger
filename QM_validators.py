@@ -19,32 +19,23 @@ class PhoneValidator:
         return valid_number
     
 def phone_number_validator(phone_number):
-    # Split on /, \, ;, ,, or whitespace
-    numbers = re.split(r"[\/\\,; ]+", phone_number)
-    valid_number = None
-    for num in numbers:
-        num = num.strip()
-        # Remove any non-digit except leading '+'
-        num = re.sub(r"(?!^\+)\D", "", num)
-        # Remove leading zeros
-        num = re.sub(r"^0+", "", num)
-        # Normalize to +268 format
-        if num.startswith("+268"):
-            num_core = num[4:]
-        elif num.startswith("268"):
-            num_core = num[3:]
-        else:
-            num_core = num
-        # Check for valid Eswatini mobile prefixes
-        if num_core.startswith("76") or num_core.startswith("79"):
-            # Must be 8 digits after country code
-            if len(num_core) == 8:
-                valid_number = "+268" + num_core
-                break
-    if valid_number:
-        print("Eswatini number found: ", valid_number)
-        phone = valid_number
-        return phone
+    # Remove all spaces and separators first
+    cleaned = re.sub(r"[\/\\,; ]+", "", phone_number)
+    # Remove any non-digit except leading '+'
+    cleaned = re.sub(r"(?!^\+)\D", "", cleaned)
+    # Remove leading zeros
+    cleaned = re.sub(r"^0+", "", cleaned)
+    # Normalize to +268 format
+    if cleaned.startswith("+268"):
+        num_core = cleaned[4:]
+    elif cleaned.startswith("268"):
+        num_core = cleaned[3:]
     else:
-        print("No valid Eswatini number found.")
-        return None
+        num_core = cleaned
+    # Check for valid Eswatini mobile prefixes
+    if (num_core.startswith("76") or num_core.startswith("79")) and len(num_core) == 8:
+        valid_number = "+268" + num_core
+        print("Eswatini number found: ", valid_number)
+        return valid_number
+    print("No valid Eswatini number found.")
+    return None
