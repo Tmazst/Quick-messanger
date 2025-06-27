@@ -287,6 +287,7 @@ def send_af_sms():
     all_companies = company_info.query.all()
     # if not phone or not message:
     #     return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
+    results = []
     for company in all_companies:
         company_name = company.company_name
 
@@ -302,11 +303,13 @@ def send_af_sms():
                 message = f"Welcome to Quick Messanger {company_name}! Grow your market presence, improve B2B/B2C communication & build networks. Visit: https://qm.techxolutions.com"
                 print("Phone Number to Validate2: ", val_phone)
                 result = send_sms_via_africastalking(val_phone, message)
-                return jsonify(result)
+                results.append({"company": company_name, "status": "success", "response": result})
+                
             except PhoneNumberError as e:
                 flash(f"Invalid phone number: {e}", "danger")
-                return redirect(url_for("company_account"))
-   
+                results.append({"company": company_name, "status": "error", "error": str(e)})
+                continue
+    return jsonify(results)
 
 # import gspread
 # from oauth2client.service_account import ServiceAccountCredentials
