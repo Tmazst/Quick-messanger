@@ -13,6 +13,7 @@ class PhoneValidator:
     def validate(self):
         """Validate and normalize the phone number."""
         valid_number = phone_number_validator(self.phone_number)
+        print("Phone Number PhoneValidator: ", valid_number)
         if not valid_number:
             raise PhoneNumberError("Invalid Eswatini phone number.")
         return valid_number
@@ -41,6 +42,7 @@ def phone_number_validator(phone_number):
                 valid_number = "+268" + num_core
                 break
     if valid_number:
+        print("Eswatini number found: ", valid_number)
         phone = valid_number
         return phone
     else:
