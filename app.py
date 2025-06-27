@@ -13,12 +13,15 @@ from flask_mail import Mail, Message
 from flask_colorpicker import colorpicker
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import or_
 from werkzeug.datastructures import FileStorage
 from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
 import pytz
 from pywebpush import webpush, WebPushException
 import json
+from sqlalchemy import or_
+import re
+from QM_validators import PhoneValidator, PhoneNumberError
+
 
 
 #Did latest commit with the requirement file
@@ -280,12 +283,25 @@ def send_sms_via_africastalking(phone, message,):
 @app.route('/send_sms') #, methods=['POST']
 def send_af_sms():
     # data = request.get_json()sender="20404" 
-    phone = "+26876412255" #data.get('phone')
-    message = "Test"#data.get('message')
-    if not phone or not message:
-        return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
-    result = send_sms_via_africastalking(phone, message)
-    return jsonify(result)
+    techxolutions = company_info.query.filter_by(company_name="Tech Xolutions").first()
+    # if not phone or not message:
+    #     return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
+    
+    phone_validator = PhoneValidator
+    phone = techxolutions.company_contacts
+    try:
+        val_phone = phone_validator(phone)
+        message = (
+            "Welcome to Quick Messanger! We help you grow your market presence, "
+            "improve B2B/B2C communication & build networks easily. "
+            "Download: https://qm.techxolutions.com/install_app"
+        )
+        result = send_sms_via_africastalking(val_phone, message)
+        return jsonify(result)
+    except PhoneNumberError as e:
+        flash(f"Invalid phone number: {e}", "danger")
+        return redirect(url_for("company_account"))
+   
 
 # import gspread
 # from oauth2client.service_account import ServiceAccountCredentials
@@ -382,13 +398,13 @@ def home():
 users = {}  # {username: public_key}
 messages = {}  # {username: [encrypted_messages]}
 
-@app.route('/send_sms', methods=['POST'])
-def send_sms():
-    data = request.get_json()
-    phone = data.get('phone')
-    message = data.get('message')
-    result = send_sms_via_huawei(phone, message)
-    return {"result": result}
+# @app.route('/send_sms', methods=['POST'])
+# def send_sms():
+#     data = request.get_json()
+#     phone = data.get('phone')
+#     message = data.get('message')
+#     result = send_sms_via_huawei(phone, message)
+#     return {"result": result}
 
 @app.route("/recovery_status_reg", methods=['POST','GET'])
 def recovery_register():
@@ -816,6 +832,35 @@ def compose():
 
     return render_template("compose.html", users=users,usr=curr_user,form=message_form, chat_with = chat_with,chat_with_company=chat_with_company )
 
+
+def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
+
+    recipient_sub_info = {
+            "endpoint": recipient_sub .endpoint,
+            "keys": {
+                "p256dh": recipient_sub .p256dh,
+                "auth": recipient_sub .auth
+            }
+        }
+    try:
+        print(f"Updates! {curr_user.name}")
+        webpush(
+            recipient_sub_info,
+            data=json.dumps({
+                "title": title,
+                "body": msg,
+                "url": url,
+                "username": curr_user.name
+            }),
+            vapid_private_key=VAPID_PRIVATE_KEY,
+            vapid_claims=VAPID_CLAIMS,
+            ttl=200
+        )
+        print("Web Push Activated, Update!")
+    except WebPushException as ex:
+        print("Web push failed, update: {}", repr(ex))
+        print(recipient_sub_info)
+
 # Adverts Code 
 # {% for row in adverts|batch(3, '') %}
 #     <div class="masonry-row gen-flex">
@@ -831,6 +876,13 @@ def compose():
 #         {% endfor %}
 #     </div>
 # {% endfor %}
+
+
+
+@app.route('/install_app')
+def install_app():
+    return render_template('download_app.html')
+
 
 @app.route('/about')
 def about():
@@ -1063,6 +1115,7 @@ def user_account_form():
 @login_required
 def company_account():
 
+    company_contacts = None
 
     db.create_all()
     id = current_user.id
@@ -1073,6 +1126,9 @@ def company_account():
     if not cmp_usr:
         print("company_account==No Company Found for User ID: ", id)
         return jsonify({"error": "No Company Found, Please Register"}), 404
+    
+    if cmp_usr.company_contacts: 
+        company_contacts = cmp_usr.company_contacts
 
     if request.method == "POST":
 
@@ -1106,6 +1162,21 @@ def company_account():
         try:
             db.session.commit()
             flash("Account updated!", "success")
+            if not company_contacts and cmp_usr.company_contacts:
+                phone_validator = PhoneValidator
+                phone = cmp_usr.company_contacts
+                try:
+                    val_phone = phone_validator(phone)
+                    message = (
+                        "Welcome to Quick Messanger! We help you grow your market presence, "
+                        "improve B2B/B2C communication & build networks easily. "
+                        "Download: https://qm.techxolutions.com/install_app"
+                    )
+                    send_sms_via_africastalking(val_phone, message)
+                except PhoneNumberError as e:
+                    flash(f"Invalid phone number: {e}", "danger")
+                    return redirect(url_for("company_account"))
+
         except IntegrityError as e:
             db.session.rollback()
             flash("Email address must be unique and not empty.", "danger")
@@ -1396,8 +1467,6 @@ def get_messages():
         
         print("Get Messages ==Username: ", other_usrname)
         print("Get Messages ==MY_Username: ", my_usrname.username)
-
-        from sqlalchemy import or_
 
         # Fetch all messages between the two users
         all_chat_messages = Messages.query.filter(

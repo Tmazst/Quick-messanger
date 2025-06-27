@@ -350,6 +350,51 @@ window.addEventListener('load', () => {
     }
 });
 
+var manualInstall = document.querySelector("manual-install");
+
+manualInstall.addEventListener('click', () => {
+    
+    function isAppInstalled() {
+        return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    }
+
+    const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+
+    if ('serviceWorker' in navigator) {
+        console.log("Service worker supported");
+
+        if (!isAppInstalled()) {
+            if ('BeforeInstallPromptEvent' in window) {
+                window.addEventListener('beforeinstallprompt', (e) => {
+                    console.log('A2HS event fired');
+                    e.preventDefault();
+                    deferredPrompt = e;
+                    
+                    deferredPrompt.prompt();
+                    deferredPrompt.userChoice.then((choiceResult) => {
+                            if (choiceResult.outcome === 'accepted') {
+                                console.log('User accepted A2HS prompt');
+                            } else {
+                                console.log('User dismissed A2HS prompt');
+                            }
+                            deferredPrompt = null;
+                        });
+                    });
+
+                }
+            } else if (isFirefox) {
+                console.log("Firefox detected, showing manual install tip.");
+                container.style.display = "flex";
+                container.innerHTML = `
+                    <div class="firefox-tip">
+                        Click the install icon in the address bar to add this app.
+                    </div>
+                `;
+            }
+        }
+    
+    });
+
 var sections = document.querySelectorAll(".profile-sections");
 var currentSectionIndex = 0;
 var firstSection = sections[0];

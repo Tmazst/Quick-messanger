@@ -32,7 +32,17 @@ class Register(FlaskForm):
 class MessagesForm(FlaskForm):
     receiver = SelectField('To', validators=[Optional()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    subject = StringField('Subject', validators=[Optional()])
+    subject = StringField('Subject',choices=sorted([
+        ('Order', 'Order'),
+        ('Service Enquiry', 'Service Enquiry'),
+        ('Testimonial', 'Testimonial'),
+        ('Message', 'Message'),
+        ('Quote Request', 'Quote Request'),
+        ('Report', 'Report'),
+        ('Complaint', 'Complaint'),
+        ('Partnership', 'Partnership'),
+        (' ', 'Other')
+    ]), validators=[Optional()])
     message = TextAreaField('Message', validators=[DataRequired()])
     submit = SubmitField('Send')
 
@@ -155,10 +165,12 @@ class Company_Register_Form(FlaskForm):
             ("Banking", "Banking"),
             ("Beauty & Wellness", "Beauty & Wellness"),
             ("Biotechnology", "Biotechnology"),
+            ("Boot Camp", "Boot Camp"),
             ("Blockchain and Cryptocurrency", "Blockchain and Cryptocurrency"),
             ("Car Care", "Car Care"),
             ("Chemical Engineering", "Chemical Engineering"),
             ("Cleaning Services", "Cleaning Services"),
+            ("Code Academy", "Code Academy"),
             ("Construction", "Construction"),
             ("Consulting", "Consulting"),
             ("Cooperative Society", "Cooperative Society"),

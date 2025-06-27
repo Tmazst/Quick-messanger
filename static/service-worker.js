@@ -42,6 +42,7 @@ self.addEventListener('push', function(event) {
     if (event.data) {
       data = event.data.json();
     }
+
     const options = {
       body: data.body || 'You have a new message!',
       icon: '/static/icons/512x512.png',
@@ -52,12 +53,14 @@ self.addEventListener('push', function(event) {
         username: data.username
       },
       actions: [
-      {action: 'reply', title: 'Reply'}
+      {action: 'reply', title: 'Open'}
     ]
     };
+
     event.waitUntil(
       self.registration.showNotification(data.title || 'New Message', options)
     );
+
     console.log(">>>>");
     self.clients.matchAll({type: 'window'}).then(function(clients) {
       console.log("Custom PUSH_NOTIFICATION Data: ", data);
@@ -77,7 +80,8 @@ self.addEventListener('notificationclick', function(event) {
   console.log("Username @Push: ",event.notification.data.url);
   // Extract username or other params from notification data
   const username = event.notification.data && event.notification.data.username;
-  const getMessagesUrl = username ? `/get_messages?key=${encodeURIComponent(username)}` : '/';
+  let getMessagesUrl = event.notification.data.url;
+  // = username ? `/get_messages?key=${encodeURIComponent(username)}` : '/';
 
   // Mini window URL for reply unit
   const openPWA = event.notification.data.url;
@@ -85,6 +89,10 @@ self.addEventListener('notificationclick', function(event) {
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList) {
       if (clientList.length > 0) {
+        // Do not open mini window if it is an app update 
+        if(openPWA === "/"){
+          return;
+        }
         // App is open: focus and send message to redirect
         for (var i = 0; i < clientList.length; i++) {
           var client = clientList[i];
