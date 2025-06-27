@@ -287,11 +287,12 @@ def send_af_sms():
     # if not phone or not message:
     #     return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
     
-    phone_validator = PhoneValidator
+    
     phone = techxolutions.company_contacts
+    phone_validator = PhoneValidator
     print("Phone Number to Validate: ", phone)
     try:
-        val_phone = phone_validator(phone)
+        val_phone = phone_validator(phone).validate()
         message = (
             "Welcome to Quick Messanger! We help you grow your market presence, "
             "improve B2B/B2C communication & build networks easily. "
