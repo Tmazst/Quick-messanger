@@ -297,6 +297,7 @@ def send_af_sms():
             "improve B2B/B2C communication & build networks easily. "
             "Download: https://qm.techxolutions.com/install_app"
         )
+        print("Phone Number to Validate2: ", val_phone)
         result = send_sms_via_africastalking(val_phone, message)
         return jsonify(result)
     except PhoneNumberError as e:
