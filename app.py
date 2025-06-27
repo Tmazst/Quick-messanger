@@ -289,6 +289,7 @@ def send_af_sms():
     
     phone_validator = PhoneValidator
     phone = techxolutions.company_contacts
+    print("Phone Number to Validate: ", phone)
     try:
         val_phone = phone_validator(phone)
         message = (
