@@ -33,7 +33,7 @@ def phone_number_validator(phone_number):
     else:
         num_core = cleaned
     # Check for valid Eswatini mobile prefixes
-    if (num_core.startswith("76") or num_core.startswith("79")) and len(num_core) == 8:
+    if (num_core.startswith("76") or num_core.startswith("79") or num_core.startswith("78")) and len(num_core) == 8:
         valid_number = "+268" + num_core
         print("Eswatini number found: ", valid_number)
         return valid_number
