@@ -284,6 +284,7 @@ def send_af_sms():
     #     return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
     results = []
     for company in all_companies:
+        print("Company: ", company, "Company Contacts: ", company.company_contacts)
         company_name = company.company_name
 
         if len(company_name) > 17:
@@ -297,9 +298,8 @@ def send_af_sms():
                 val_phone = phone_validator(phone).validate()
                 message = f"Welcome to Quick Messanger {company_name}! Grow your market presence, improve B2B/B2C communication & build networks. Visit: https://qm.techxolutions.com"
                 
-                result = send_sms_via_africastalking(val_phone, message)
-                results.append({"company": company_name, "status": "success", "response": result})
-
+                # result = send_sms_via_africastalking(val_phone, message)
+                results.append({"company": company_name, "status": "success", "response": val_phone})
             except PhoneNumberError as e:
                 flash(f"Invalid phone number: {e}", "danger")
                 results.append({"company": company_name, "status": "error", "error": str(e)})
