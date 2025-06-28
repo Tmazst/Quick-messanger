@@ -283,13 +283,13 @@ def send_af_sms():
     # if not phone or not message:
     #     return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
     results = []
-    for company in ['78134361','268 7838 7838', '78760497','+26878333111','+268 7842 8212','7865 8885','76320353 / 79808895','78760497']:
+    for company in all_companies:
         company_name = company.company_name
 
         if len(company_name) > 17:
             company_name = company_name[:17] + "..."
     
-        if company.company_contacts and len(company.company_contacts) > 6:
+        if company.company_contacts.strip() in ['78134361','268 7838 7838', '78760497','+26878333111','+268 7842 8212','7865 8885','76320353 / 79808895','78760497']:
             phone = company.company_contacts # techxolutions.company_contacts
             phone_validator = PhoneValidator
             print("Phone Number to Validate: ", phone)
