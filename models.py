@@ -145,6 +145,14 @@ class clientuser(User):
             "polymorphic_identity":'clientuser'
         }
 
+class qm_updates(db.Model):
+
+    id = db.Column(db.Integer, ForeignKey('user.id'), primary_key=True)
+    title = db.Column(db.String(20))
+    content = db.Column(db.String(200))
+    url = db.Column(db.String(200))
+    timestamp = db.Column(db.DateTime)
+
 class company_info(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)

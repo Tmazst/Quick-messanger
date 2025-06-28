@@ -94,7 +94,6 @@ def current_time_wlzone():
 
     return local_time
 
-
 ALLOWED_EXTENSIONS = {"txt", "xlxs",'docx', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 from PIL import Image
@@ -118,11 +117,9 @@ def compress_folder(folder):
                 compress_image(os.path.join(root, file))
 
 
-
 # Function to check if the file has an allowed extension
 def allowed_files(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 
 def process_news(file):
 
@@ -132,11 +129,9 @@ def process_file(file):
 
     return process_and_compress_upload(file, app.config["UPLOADED"])
 
-
 def process_ads(file):
 
     return process_and_compress_upload(file, app.config["ADVERTS_IMAGES"])
-
 
 # Universal function to process and compress uploaded images
 def process_and_compress_upload(file, save_folder, max_size_kb=150, quality=85):
@@ -301,10 +296,10 @@ def send_af_sms():
             try:
                 val_phone = phone_validator(phone).validate()
                 message = f"Welcome to Quick Messanger {company_name}! Grow your market presence, improve B2B/B2C communication & build networks. Visit: https://qm.techxolutions.com"
-                print("Phone Number to Validate2: ", val_phone)
+                
                 result = send_sms_via_africastalking(val_phone, message)
                 results.append({"company": company_name, "status": "success", "response": result})
-                
+
             except PhoneNumberError as e:
                 flash(f"Invalid phone number: {e}", "danger")
                 results.append({"company": company_name, "status": "error", "error": str(e)})
@@ -851,14 +846,14 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
             }
         }
     try:
-        print(f"Updates! {curr_user.name}")
+        print(f"Updates! {curr_user}")
         webpush(
             recipient_sub_info,
             data=json.dumps({
                 "title": title,
                 "body": msg,
-                "url": url,
-                "username": curr_user.name
+                "url": url if url else "https://qm.techxolutions.com",
+                "username": curr_user
             }),
             vapid_private_key=VAPID_PRIVATE_KEY,
             vapid_claims=VAPID_CLAIMS,
@@ -1171,19 +1166,22 @@ def company_account():
             db.session.commit()
             flash("Account updated!", "success")
             if not company_contacts and cmp_usr.company_contacts:
-                phone_validator = PhoneValidator
+                company_name = cmp_usr.company_name
+                if len(company_name) > 17:
+                    company_name = company_name[:17] + "..."
                 phone = cmp_usr.company_contacts
+                phone_validator = PhoneValidator
+                print("Phone Number to Validate: ", phone)
                 try:
-                    val_phone = phone_validator(phone)
-                    message = (
-                        "Welcome to Quick Messanger! We help you grow your market presence, "
-                        "improve B2B/B2C communication & build networks easily. "
-                        "Download: https://qm.techxolutions.com/install_app"
-                    )
-                    send_sms_via_africastalking(val_phone, message)
+                    val_phone = phone_validator(phone).validate()
+                    message = f"Welcome to Quick Messanger {company_name}! Grow your market presence, improve B2B/B2C communication & build networks. Visit: https://qm.techxolutions.com"
+                    print("Phone Number to Validate2: ", val_phone)
+                    result = send_sms_via_africastalking(val_phone, message)
+                    print(f"company: {company_name}, status: success, response: {result}")
+                    
                 except PhoneNumberError as e:
-                    flash(f"Invalid phone number: {e}", "danger")
-                    return redirect(url_for("company_account"))
+                    print(f"company: {company_name}, No: {phone}; Invalid phone number: {e}", "danger")
+                    
 
         except IntegrityError as e:
             db.session.rollback()
@@ -1207,7 +1205,6 @@ def get_public_key(usrname):
     except Exception as e:
         print("get_public_key==Error fetching public key:", str(e))
         return jsonify({'error': 'Internal server error'}), 500
-
 
 @app.route('/send_message', methods=['POST'])
 @login_required
@@ -1351,7 +1348,6 @@ def news_pinned():
 
     return render_template("news_pinned.html",story=news,news_imgs=news_imgs,company=company)
 
-
 @app.route('/update_news_views/<int:news_id>', methods=['GET'])
 def news_views(news_id):
    
@@ -1420,6 +1416,30 @@ def news_form():
 
     return render_template("news_updates_form.html",form=form)
 
+@app.route('/push_notif_form', methods=['POST',"GET"])
+@login_required 
+def push_notif_form():
+    form = QMUpdatesForm()
+    if request.method =="POST":
+        notify = qm_updates(
+            title = form.title.data,
+            content = form.content.data,
+            url = form.url.data,
+            timestamp = current_time_wlzone()
+        )
+
+        db.session.add(notify)
+        db.session.commit()
+
+        title = form.title.data
+        content = form.content.data
+        url = form.url.data
+
+        recipient_sub = NotificationsAccess.query.filter_by(usr_id=current_user.id).order_by(NotificationsAccess.timestamp.desc()).first()
+
+        app_notification(recipient_sub,current_user.name,content,title=title,url=url)
+
+    return render_template("marketing_updates_form.html",form=form)
 
 class CompanyObj:
     def __init__(self, **kwargs):

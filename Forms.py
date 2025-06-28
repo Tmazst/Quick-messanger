@@ -134,6 +134,13 @@ class StoryForm(FlaskForm):
     )
     submit = SubmitField('Send')
 
+class QMUpdatesForm(FlaskForm):
+
+    title = StringField('Update Title', validators=[DataRequired(), Length(min=4, max=20)])
+    content = TextAreaField('Content', validators=[DataRequired(), Length(min=10, max=200)])
+    url = URLField('Link')
+    submit = SubmitField('Send')
+
 class AdvertForm(FlaskForm):
     
     advert_image = FileField('Upload Advert', validators=[FileAllowed(['jpg', 'png'])])
