@@ -387,9 +387,11 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
 <!-- Grid View  -->
 <div style="display: none;" class="grid-view gen-flex">
     {%for company in companies%}
+        {%if  company.category%}
         <div data-cid="{{ser.dumps({'cid':company.id})}}" class="company-logos-cards"> 
             <img src="static/uploads/{{company.logo}}" class="comp-logos" />
         </div>
+        {%endif%}
     {%endfor%}
 </div>
 <!-- List View  -->
@@ -410,7 +412,12 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                             <img style="height:80px !important" src="static/uploads/{{company.logo}}" class="comp-logos" />
                             <div class="gen-flex-col">
                                 <div class="comp_name">{{company.company_name}}</div>
-                                <small class="comp_services">{{company.tagline}}</small>
+                                {%if company.tagline | length >= 103 %}
+                                    <small class="comp_services">{{company.tagline[:103]}}...</small>
+                                {%else%}
+                                    <small class="comp_services">{{company.tagline}}</small>
+                                {%endif%}
+                                <small style="color:#1e293b" class="category">{{company.category}}</small>
                             </div>
                         </div>
                     </div>
@@ -880,11 +887,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderCompanyDetails(company) {
         let tagline = company.tagline || '';
-        console.log("TAG LENGTH: ", tagline.length);
-        if (tagline.length > 103) {
-            tagline = company.tagline.substring(0, 103) + '...'; // Truncate long taglines
-            console.log("TAG LENGTH: ", tagline.length);
-        };
+        
         return `
         <div class="company-modal-body-content">
             <div style="text-align:center;">
