@@ -402,6 +402,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
             <img src="static/icons/category-icon.png" class="cat-icon" />
             <div class="btns">{{ category }}</div>
         </div><br>
+        <div class="list-view gen-flex">
             {%for company in companies%}
                 {%if category == company.category%}
                     <div class="company-logos-cards"> 
@@ -420,6 +421,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                     </div>
                 {%endif%}
             {%endfor%}
+        </div>
         {%endif%}
     {%endfor%}
 </div>
