@@ -389,7 +389,7 @@ html, body {
                 let suffix = '';
                 if (cell.textContent.includes('/day')) suffix = '/day';
                 if (cell.textContent.includes('/mo')) suffix = '/mo';
-                if (cell.textContent.includes('free ads')) suffix = 'free ad for 7days, then ' + formatCurrency(local, currency) + '/day';
+                if (cell.textContent.includes('free ads')) suffix = 'free ad for 7 days, then ' + formatCurrency(local, currency) + '/day';
                 else if (!suffix) suffix = '';
                 if (cell.textContent.includes('3 free ads')) {
                     // Special case for "3 free ads per month, then $3/ad/day"
