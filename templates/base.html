@@ -67,6 +67,10 @@
     {% block about%}
     {%endblock%} 
     <button style="z-index:1900;display:none" onclick="openQMenu()" id="quick-menu-btn">Quick Menu</button>
+    <div style="display: flex;z-index:1900" id="download-icon-3" class="app-nav-icons gen-flex">
+        <img src="{{ url_for('static', filename='icons/download-pwa-icon.png') }}" alt="Logo" class="app-nav-icon">
+        <div class="nav-label">Install App</div>
+    </div>
     <!-- <div style="z-index:1900;display:none;top:85px" id="quick-menu-btn" onclick="openQMenu()" class="menu-icon">
         <div style="z-index:1905;" class="stroke"></div>
         <div style="z-index:1905;" class="stroke"></div>
