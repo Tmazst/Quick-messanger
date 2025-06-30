@@ -396,7 +396,7 @@ html, body {
                     cell.textContent = '3 free ads per month';
                 } else if(cell.textContent.includes('free ad per month, then')) {
                     // Special case for "3 free ads per month, then $3/ad/day"
-                    cell.textContent = '1 free ad per month, then ' + formatCurrency(local, currency) + '/day';
+                    cell.textContent = '1 free ad for 7 days, then ' + formatCurrency(local, currency) + '/day';
                 } else {
                     cell.textContent = formatCurrency(local, currency) + suffix;
                 }
