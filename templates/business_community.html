@@ -881,7 +881,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderCompanyDetails(company) {
         let tagline = company.tagline || '';
         if (company.tagline && company.tagline.length > 103) {
-            company.tagline = company.tagline.slice(0, 103) + '...'; // Truncate long taglines
+            tagline = company.tagline.slice(0, 103) + '...'; // Truncate long taglines
         }
         return `
         <div class="company-modal-body-content">
