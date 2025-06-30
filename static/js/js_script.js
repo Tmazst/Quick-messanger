@@ -277,7 +277,7 @@ paragraph.forEach(function(pTag){
 //}
 var container = document.querySelector(".app-dowload-container");
 var containerTwo = document.querySelector("#download-icon-2");
-var containerThree = document.querySelector("#download-icon-3");
+// var containerThree = document.querySelector("#download-icon-3");
 // var noBgBtn = document.querySelector(".no-bg-btn");
 // var installBtn = document.querySelector("#pwa-install-btn");
 // Check if the browser supports service workers and PWA installation
@@ -306,11 +306,11 @@ window.addEventListener('load', () => {
                     deferredPrompt = e;
                     container.style.display = "flex";
                     containerTwo.style.display = "flex";
-                    containerThree.style.display = "flex";
+                    // containerThree.style.display = "flex";
                     // containerTwo.style.display = "flex";
                     const installBtn = document.getElementById('pwa-install-btn');
                     var sidenavBgBtn = document.getElementById("download-icon-2");
-                    var sidenavBgBtnP = document.getElementById("download-icon-3");
+                    // var sidenavBgBtnP = document.getElementById("download-icon-3");
                     
                     if (installBtn) {
                         installBtn.addEventListener('click', () => {
@@ -338,19 +338,19 @@ window.addEventListener('load', () => {
                             });
                         });
                     }
-                    if (sidenavBgBtnP) {
-                        noBgBtn.addEventListener('click', () => {
-                            deferredPrompt.prompt();
-                            deferredPrompt.userChoice.then((choiceResult) => {
-                                if (choiceResult.outcome === 'accepted') {
-                                    console.log('User accepted A2HS prompt');
-                                } else {
-                                    console.log('User dismissed A2HS prompt');
-                                }
-                                deferredPrompt = null;
-                            });
-                        });
-                    }
+                    // if (sidenavBgBtnP) {
+                    //     noBgBtn.addEventListener('click', () => {
+                    //         deferredPrompt.prompt();
+                    //         deferredPrompt.userChoice.then((choiceResult) => {
+                    //             if (choiceResult.outcome === 'accepted') {
+                    //                 console.log('User accepted A2HS prompt');
+                    //             } else {
+                    //                 console.log('User dismissed A2HS prompt');
+                    //             }
+                    //             deferredPrompt = null;
+                    //         });
+                    //     });
+                    // }
 
                 });
             } else if (isFirefox) {
