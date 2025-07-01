@@ -207,6 +207,7 @@ class Company_Register_Form(FlaskForm):
             ("Human Resources", "Human Resources"),
             ("Innovation & Startups", "Innovation & Startups"),
             ("Insurance", "Insurance"),
+            ("Job Boards", "Job Boards"),
             ("Legal", "Legal"),
             ("Loans & Financial Services", "Loans & Financial Services"),
             ("Logistics & Supply Chain", "Logistics & Supply Chain"),
@@ -222,6 +223,7 @@ class Company_Register_Form(FlaskForm):
             ("Pharmaceutical", "Pharmaceutical"),
             ("Plumbing", "Plumbing"),
             ("Professional Services", "Professional Services"),
+            ("Photography & Filming", "Photography & Filming"),
             ("Public Relations", "Public Relations"),
             ("Real Estate", "Real Estate"),
             ("Retail", "Retail"),
@@ -249,6 +251,7 @@ class Company_Register_Form(FlaskForm):
                                           ("pay_plan_2", "Pay Per Advert"), ("pay_plan_3", "Free For Now")])
 
     submit = SubmitField('Submit')
+
 
 class Company_UpdateAcc_Form(FlaskForm):
 
