@@ -99,6 +99,48 @@ async function showRecoveryModal(userObj) {
     };
 }
 
+
+
+// Call this function after successful registration
+async function AutoSaveKeys(userObj,password){
+    // userObj = {username, publicKey, privateKey}
+    // Generate a random recovery key
+    // const recoveryKey = Array.from(crypto.getRandomValues(new Uint8Array(16)))
+    //     .map(b => b.toString(16).padStart(2, '0')).join('');
+    // Send encrypted JSON and recovery key to backend
+
+    // Get Key using Password and salt (in Backend)
+    const response = await fetch('/get_key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: userObj.myUsrname,
+            password: password
+        })
+    });
+
+    const data = await response.json();
+
+    // Encrypt user data
+    if (!data.key) {
+        console.error('Failed to get key:', data.key);
+        return;
+    }
+
+    const encrypted = await encryptData(userObj, data.key);
+
+    // Send encrypted JSON and recovery key to backend
+    await fetch('/save_recovery_data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: userObj.myUsrname,
+            encrypted_json: encrypted
+        })
+    });
+
+}
+
 async function updateRecoveryStatus(usrname){
     console.log("1. Recovery Status Username", usrname);
     var response = await fetch("/recovery_status_update",{
@@ -112,7 +154,7 @@ async function updateRecoveryStatus(usrname){
     console.log("2. Recovery Status", data.res);
     };
 
-  
+
 // Example usage after registration:
 // showRecoveryModal({username: 'alice', publicKey: '...', privateKey: '...'});
 
@@ -165,4 +207,38 @@ async function saveCredentialsToIndexedDB(userObj) {
     // For custom logic, use indexedDB API to store userObj
     // ...
     console.log('Saving to IndexedDB:', userObj);
+}
+
+
+// Auto Recovery 
+async function autoRecoverKeys(username, password) {
+
+    // Get Key using Password and salt (in Backend)
+    const res = await fetch('/get_key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: userObj.myUsrname,
+            password: password
+        })
+    });
+
+    const dat = await res.json();
+    recovery_key = dat.key;
+
+    // Fetch recovery key and encrypted JSON from backend
+    const response = await fetch('/get_recovery_data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+    });
+    const data = await response.json();
+    if (data.status !== 'success') {
+        alert('Could not recover account.');
+        return;
+    }
+    const encryptedJson = data.encrypted_json;
+    const userObj = await decryptData(encryptedJson, recovery_key);
+    await saveCredentialsToIndexedDB(userObj);
+    // Optionally, auto-login or reload
 }

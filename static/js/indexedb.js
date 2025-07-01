@@ -525,6 +525,7 @@ async function preRegister(){
 
             var data = await response.json();
             console.log("Rec_Status_Check: ",data.res);
+            // AutoSaveKeys(userObj);
 
             // check creds saved 
             // var recCredInfo = sessionStorage.getItem("recCredInfo");
@@ -547,6 +548,23 @@ async function preRegister(){
     // console.log("preRegister Called");
 };
 
+
+function saveKeysinCloud(){
+    password = document.querySelector("#password_rec").value;
+
+    const tx = db.transaction("keys","readwrite");
+    const store = tx.objectStore("keys");
+    const request = store.getAll();
+
+    request.onsuccess = async function() {
+        if (request.result && request.result.length > 0) {
+            const myUsrname = request.result[0].Usernames;// Get the username from the first record
+            const Pkey = request.result[0].publicKey;
+            const Prkey = request.result[0].privateKey;
+            AutoSaveKeys({myUsrname,Pkey,Prkey},password);
+        }
+    };
+};
 
 function closeRecModal(){
     document.getElementById('restore-modal').style.display='none';

@@ -21,6 +21,8 @@ import json
 from sqlalchemy import or_
 import re
 from QM_validators import PhoneValidator, PhoneNumberError
+from hashlib import pbkdf2_hmac
+import base64
 
 
 
@@ -337,11 +339,11 @@ def send_af_one():
 # import gspread
 # from oauth2client.service_account import ServiceAccountCredentials
 
-# Google Sheets setup (do this once at the top of your file)
+# # Google Sheets setup (do this once at the top of your file)
 # SCOPE = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
 # CREDS = ServiceAccountCredentials.from_json_keyfile_name('appenda-d102d5f024d6.json', SCOPE)
 # gc = gspread.authorize(CREDS)
-# SHEET = gc.open('via').sheet1  # Replace with your sheet name
+# SHEET = gc.open('qm_jsons').sheet1  # Replace with your sheet name
 
 # @app.route('/queue_sms', methods=['POST'])
 # def queue_sms():
@@ -424,6 +426,79 @@ def home():
             print("Home==Deleted Messages: ", msg)
 
     return render_template("index.html", qm_bs_obj=qm_bs_obj,latest_req=latest_req,all_logos=all_logos)
+
+# Key saved in DB, file encrypted and saved in cloud or server
+@app.route('/save_recovery_data', methods=['POST'])
+def save_recovery_data1():
+    data = request.get_json()
+    username = data.get('username')
+    encrypted_json = data.get('encrypted_json')
+
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({'status': 'error', 'msg': 'User not found'}), 404
+
+    # Save encrypted JSON to cloud or server (example: local file, S3, or Google Drive)
+    # For demo, save to a file named after the user
+    SHEET.append_row([username, json.dumps(encrypted_json)])
+
+    print("Recovery Data Saved: ", username, encrypted_json)
+    flash("Recovery Data Saved Successfully", "success")
+
+    return jsonify({'status': 'success'})
+
+
+# Get salt from db and derive key using password 
+@app.route('/get_key', methods=['POST'])
+def save_recovery_data():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+
+    user = User.query.filter_by(username=username).first()
+
+    def derive_key_from_password(password, salt):
+        # salt should be random and stored alongside the encrypted data
+        key = pbkdf2_hmac('sha256', password.encode(), salt, 100_000)
+        return base64.urlsafe_b64encode(key)
+    
+    salt = UserKey.query.filter_by(user_id=user.id).first().salt if UserKey.query.filter_by(user_id=user.id).first() else os.urandom(16)
+    
+    key_ = derive_key_from_password(password, salt)
+
+    if not key_:
+        return jsonify({'status': 'error', 'msg': 'Key not found'}), 404
+
+    return jsonify({'key': key_}), 200
+
+
+def get_encrypted_json_from_sheet(username):
+    records = SHEET.get_all_records()
+    for row in records:
+        if row['username'] == username:
+            return json.loads(row['encrypted_json'])
+    return None
+
+@app.route('/get_recovery_data', methods=['POST'])
+def get_recovery_data():
+    data = request.get_json()
+    username = data.get('username')
+
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({'status': 'error', 'msg': 'User not found'}), 404
+
+
+    encrypted_json = get_encrypted_json_from_sheet(username)
+
+    if not encrypted_json:
+        return jsonify({'status': 'error', 'msg': 'Encrypted JSON not found'}), 404
+    
+    return jsonify({
+        'status': 'success',
+        'encrypted_json': encrypted_json,
+    })
+
 
 # In-memory storage for keys and messages
 users = {}  # {username: public_key}
@@ -993,6 +1068,7 @@ def register():
             flash("❌ Email already exists, please use a different Email","warning")
             return redirect(url_for('register'))
         
+        
         reg_usr_db = chat_user(
             username=form['username'],
             pkey=form['pKey']
@@ -1010,6 +1086,19 @@ def register():
         get_user = chat_user.query.filter_by(username=form['username']).first()
 
         print("register==DEBUG USERNAME IN DB: ",get_user )
+
+        salt = os.urandom(16) # Generate a random salt
+        salt_b64 = base64.b64encode(salt).decode('utf-8')
+
+        # save salt 
+        salt_obj = UserKey(
+            user_id = get_user.id,
+            salt = salt_b64
+        )
+
+        print("register==DEBUG SALT: ",salt_obj)
+        db.session.add(salt_obj)
+        db.session.commit()
 
         if get_user:
             hashd_pwd = encrypt_password.generate_password_hash(form['password']).decode('utf-8')

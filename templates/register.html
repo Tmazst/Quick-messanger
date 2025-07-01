@@ -5,6 +5,8 @@
 <div style="position: relative;" class="container form-container">
   <label>Welcome to Quick Messanger</label><br>
   <h2 style="color:#EF4036">Register</h2>
+  <div class="register-company"><input type="checkbox" id="register-company" name="register-company" />
+<label for="register-company">Register a Company?</label></div><br>
   <form class="form" method="post" action="">
     <input type="hidden"  class="form-control" id="username" name="username" autocomplete="off" placeholder="username" required />
     <input class="form-control" id="name" name="name" placeholder="name" required />
@@ -56,11 +58,25 @@
 
 let db_ind;
 window.addEventListener("DOMContentLoaded", async function(){
+  var companyInput = document.querySelector("#company_name");
+  var companyChoice = document.getElementById("register-company");
+
     if(window.innerWidth <= "700"){
-      var companyInput = document.querySelector("#company_name");
-      companyInput.required = false;
-      companyInput.style.display = "none";
+        companyInput.required = false;
+        companyInput.style.display = "none";
+
+        companyChoice.addEventListener("change", function() {
+            if (companyChoice.checked) {
+                companyInput.required = true;
+                companyInput.style.display = "block";
+            } else {
+                companyInput.required = false;
+                companyInput.style.display = "none";
+            }
+        });
+
     };
+    
 });
 window.addEventListener('load', async function(){
 

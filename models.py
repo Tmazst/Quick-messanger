@@ -28,6 +28,9 @@ class chat_user(db.Model,UserMixin):
     user_details = relationship("User", backref='chat_user', lazy=True)
     visitors_id = relationship("Visitors", backref='chat_user', lazy=True)
     
+
+
+
 #Users class, The class table name 'h1t_users_cvs'
 class User(db.Model,UserMixin):
 
@@ -48,6 +51,7 @@ class User(db.Model,UserMixin):
     role = db.Column(db.String(120))
     company_id = relationship("company_info", backref='user', lazy=True)
     notification_access = relationship("NotificationsAccess", backref='chat_user', lazy=True)
+    key_id = relationship("UserKey", backref='user.id', lazy=True)
 
     def to_dict(self):
         return {
@@ -63,6 +67,12 @@ class User(db.Model,UserMixin):
         "polymorphic_identity":'user',
         'polymorphic_on':role
     }
+
+
+class UserKey(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey('user.id'))
+    salt = db.Column(db.String(2048))
 
 
 class Advert(db.Model):
@@ -200,6 +210,7 @@ class company_info(db.Model):
             "youtube": clean(self.youtube),
             "country": clean(self.country),
         }
+
 
 class recovery_check(db.Model):
     id = db.Column(db.Integer, primary_key=True)
