@@ -366,6 +366,16 @@ window.addEventListener('load', () => {
     }
 });
 
+function openQMenu(){
+    var menu = document.querySelector(".mobile-quick-menu");
+    menu.classList.toggle("drop-menu");
+};
+
+function closeQMenu(){
+    var menu = document.querySelector(".mobile-quick-menu");
+    menu.classList.toggle("drop-menu");
+};
+
 var manualInstall = document.querySelector("manual-install");
 
 manualInstall.addEventListener('click', () => {
@@ -410,6 +420,8 @@ manualInstall.addEventListener('click', () => {
         }
     
     });
+
+
 
 var sections = document.querySelectorAll(".profile-sections");
 var currentSectionIndex = 0;
