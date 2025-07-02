@@ -602,13 +602,28 @@ function skipRecovery(){
 
 let deferredPrompt = null;
 
+function isPWAInstalled() {
+    // For most browsers
+    if (window.matchMedia('(display-mode: standalone)').matches) return true;
+    // For iOS Safari
+    if (window.navigator.standalone) return true;
+    return false;
+}
+
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
     // Only show if not already installed or dismissed
-    if (!localStorage.getItem('pwaPromptDismissed') && !window.matchMedia('(display-mode: standalone)').matches) {
+    // Only show if not already installed or dismissed
+    if (!localStorage.getItem('pwaPromptDismissed') && !isPWAInstalled()) {
         document.getElementById('pwa-install-modal').style.display = 'block';
     }
+});
+
+// Also hide the modal if the app is installed after the fact
+window.addEventListener('appinstalled', () => {
+    document.getElementById('pwa-install-modal').style.display = 'none';
+    localStorage.setItem('pwaPromptDismissed', '1');
 });
 
 document.getElementById('pwa-install-btn').addEventListener('click', async () => {
