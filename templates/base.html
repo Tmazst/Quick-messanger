@@ -447,6 +447,61 @@
 <script>
 
 
+let deferredPromptTwo = null;
+
+function isPWAInstalled() {
+    if (window.matchMedia('(display-mode: standalone)').matches) return true;
+    if (window.navigator.standalone) return true;
+    return false;
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPromptTwo = e;
+    if (!localStorage.getItem('pwaPromptDismissed') && !isPWAInstalled()) {
+        document.getElementById('pwa-install-modal').style.display = 'block';
+    }
+});
+
+window.addEventListener('appinstalled', () => {
+    document.getElementById('pwa-install-modal').style.display = 'none';
+    localStorage.setItem('pwaPromptDismissed', '1');
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const installBtn = document.getElementById('pwa-install-btn2');
+    const dismissBtn = document.getElementById('pwa-dismiss-btn');
+
+    if (installBtn) {
+        installBtn.addEventListener('click', async () => {
+            console.log('PWA install prompt');
+            if (deferredPromptTwo) {
+                deferredPromptTwo.prompt();
+                const { outcome } = await deferredPromptTwo.userChoice;
+                if (outcome === 'accepted') {
+                    document.getElementById('pwa-install-modal').style.display = 'none';
+                    localStorage.setItem('pwaPromptDismissed', '1');
+                }
+                deferredPromptTwo = null;
+            }
+        });
+    }
+
+    if (dismissBtn) {
+        dismissBtn.addEventListener('click', () => {
+            console.log('PWA install prompt dismissed');
+            document.getElementById('pwa-install-modal').style.display = 'none';
+            localStorage.setItem('pwaPromptDismissed', '1');
+        });
+    }
+
+    // Optionally, remind again after a day
+    if (localStorage.getItem('pwaPromptDismissed')) {
+        setTimeout(() => {
+            localStorage.removeItem('pwaPromptDismissed');
+        }, 24 * 60 * 60 * 1000); // 24 hours
+    }
+});
 
 function skipRecovery(){
     var recoveryModal = document.getElementById("auto-recovery-modal");
@@ -594,61 +649,6 @@ function skipRecovery(){
 })();
 
 
-let deferredPrompt = null;
-
-function isPWAInstalled() {
-    if (window.matchMedia('(display-mode: standalone)').matches) return true;
-    if (window.navigator.standalone) return true;
-    return false;
-}
-
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    if (!localStorage.getItem('pwaPromptDismissed') && !isPWAInstalled()) {
-        document.getElementById('pwa-install-modal').style.display = 'block';
-    }
-});
-
-window.addEventListener('appinstalled', () => {
-    document.getElementById('pwa-install-modal').style.display = 'none';
-    localStorage.setItem('pwaPromptDismissed', '1');
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const installBtn = document.getElementById('pwa-install-btn2');
-    const dismissBtn = document.getElementById('pwa-dismiss-btn');
-
-    if (installBtn) {
-        installBtn.addEventListener('click', async () => {
-            console.log('PWA install prompt');
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    document.getElementById('pwa-install-modal').style.display = 'none';
-                    localStorage.setItem('pwaPromptDismissed', '1');
-                }
-                deferredPrompt = null;
-            }
-        });
-    }
-
-    if (dismissBtn) {
-        dismissBtn.addEventListener('click', () => {
-            console.log('PWA install prompt dismissed');
-            document.getElementById('pwa-install-modal').style.display = 'none';
-            localStorage.setItem('pwaPromptDismissed', '1');
-        });
-    }
-
-    // Optionally, remind again after a day
-    if (localStorage.getItem('pwaPromptDismissed')) {
-        setTimeout(() => {
-            localStorage.removeItem('pwaPromptDismissed');
-        }, 24 * 60 * 60 * 1000); // 24 hours
-    }
-});
 
  </script>
 

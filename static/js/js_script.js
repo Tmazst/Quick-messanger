@@ -376,6 +376,7 @@ function closeQMenu(){
     menu.classList.toggle("drop-menu");
 };
 
+document.addEventListener('DOMContentLoaded', () => {
 var manualInstall = document.querySelector("manual-install");
 
 manualInstall.addEventListener('click', () => {
@@ -420,7 +421,7 @@ manualInstall.addEventListener('click', () => {
         }
     
     });
-
+});
 
 
 var sections = document.querySelectorAll(".profile-sections");
