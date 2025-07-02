@@ -382,9 +382,6 @@ def home():
     chk_if_reg = Visitors.query.filter_by(ip=visitor_ip).first()
 
     if current_user and current_user.is_authenticated:
-        chk_if_reg.last_visit = current_time_wlzone()
-        chk_if_reg.n_visits += 1
-        db.session.commit()
         company = company_info.query.filter_by(usr_id=current_user.id).first()
         if company and company.company_name:
             if company.image == "logo-avator.png" or not company.email:

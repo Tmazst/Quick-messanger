@@ -168,6 +168,7 @@ class Company_Register_Form(FlaskForm):
             ("Aerospace", "Aerospace"),
             ("Agriculture", "Agriculture"),
             ("Artificial Intelligence", "Artificial Intelligence"),
+            ("Auto Parts & Accessories", "Auto Parts & Accessories"),
             ("Automotive", "Automotive"),
             ("Banking", "Banking"),
             ("Beauty & Wellness", "Beauty & Wellness"),
@@ -242,7 +243,7 @@ class Company_Register_Form(FlaskForm):
         ], key=lambda x: x[1]),
         validators=[DataRequired(), Length(min=2, max=100)]
     )
-    tagline=StringField('Selling Tagline (Briefly describe your product or service offering)', validators=[Optional(), Length(min=4, max=100)])
+    tagline=StringField('Selling Tagline (Briefly describe your product or service offering)', validators=[Optional(), Length(min=4, max=150)])
     company_logo = FileField('Company Logo', validators=[FileAllowed(['jpg', 'png'])])
     website_link = URLField('Company Website Link')
     facebook_link = URLField('Facebook Link')

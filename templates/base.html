@@ -171,7 +171,7 @@
 
             <br><br>
             <small id="error-field-sv" style="color:red"></small>
-            <div><button onclick="AutoSaveKeys()" class="btns" id="download-recovery-file">Create Backup</button></div>
+            <div><button onclick="AutoSaveKeys()" class="btns call-loader" id="download-recovery-file">Create Backup</button></div>
             <br><br>
         </div>
     </div>
@@ -198,7 +198,7 @@
             <div style="margin-top:10px;">
                 <small style="color:#EF4036">If you do not remember your password, please contact support or create new keys.</small>
             </div>
-            <div><button onclick="registerNewKeys()" style="background-color: #5a5a5a;" class="btns" id="download-recovery-file">Create News Keys</button></div><br>
+            <div><button onclick="registerNewKeys()" style="background-color: #5a5a5a;" class="btns call-loader" id="download-recovery-file">Create News Keys</button></div><br>
             <br><br>
         </div>
     </div>
@@ -567,6 +567,13 @@ function skipRecovery(){
         // Intercept all .side-nav-item clicks
         var navItems = document.querySelectorAll('.side-nav-item.gen-flex');
         navItems.forEach(function(item) {
+            item.addEventListener('click', function(e) {
+                showLoader();
+            });
+        });
+        
+        var recItems = document.querySelectorAll('call-loader');
+        recItems.forEach(function(item) {
             item.addEventListener('click', function(e) {
                 showLoader();
             });
