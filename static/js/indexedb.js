@@ -463,6 +463,8 @@ async function preRegister(){
     var userNameField = document.querySelector("#user-name");
     var loginId = document.querySelector("#login");
     var goRegister = document.querySelector("#go-register");
+    var currentFromServ = document.querySelector("#cuser-ref");
+    console.log("CURRENT FROM SERVER: ", currentFromServ.textContent);
 
     if (modal.style.display === "flex") {
         modal.style.display = "none";
@@ -475,75 +477,59 @@ async function preRegister(){
     const request = store.getAll();
 
     request.onsuccess = async function() {
+        console.log("Request Success: ", store);
         if (request.result && request.result.length > 0) {
-            const myUsrname = request.result[0].Usernames;// Get the username from the first record
-            const Pkey = request.result[0].publicKey;
-            const Prkey = request.result[0].privateKey;
-            // userName = myUsrname;
+            const { Usernames: myUsrname, publicKey: Pkey, privateKey: Prkey } = request.result[0];
+            console.log("CURRENT FROM BROWSER: ", myUsrname);
 
-            // If usernamenot found in DB 
-            if(!myUsrname){
-                console.log("Username Not Found");
-                goRegister.style.display = 'block';
-                window.location.href = '/register';
-                // modal.style.display = "none";
+            if (!myUsrname) {
+                console.log("Username Not Found from Browser");
+                return;
+            }
+
+            if (myUsrname !== currentFromServ.textContent) {
+                if (currentFromServ.textContent === "") {
+                    console.log("No Username Found on Server");
+                    // proceed to open login modal 
+                } else {
+                    console.log("Alert!! Username Mismatch");
+                    autoRecoverKeysModal();
+                    return;
+                }
                 
-                return;
-                // loginId.style.display = 'none';
-                // goRegister.href = "/register" ;
-                // window.location.href = "/register";
-            };
+            }
 
-            //create a post fetch request to check if the user exists on the server
-            // const response = await fetch("/checkUser", {
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json"
-            //     },
-            //     body: JSON.stringify({ username: myUsrname })
-            // });
+            // Username matches
+            console.log("Username matching: ", myUsrname, currentFromServ.textContent);
 
-            // if (response && response.exists === true) {
-            //     userNameField.innerHTML = response.user;
-            //     console.log("User Found: ", response.user);
-            // }else{
-            //     modal.style.display = "none";
-            //     return;
-            // }
-            // console.log("Turn ON Alert Box");
-            // modal.style.display = "flex";
-            // loginId.href = "/login?id=" + myUsrname;
-            // return;
-
-            var response = await fetch("/recovery_status_check",{
+            // Check recovery status from server
+            const response = await fetch("/auto_recovery_checker", {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username: myUsrname })
-                });
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: myUsrname })
+            });
 
-            var data = await response.json();
-            console.log("Rec_Status_Check: ",data.res);
-            // AutoSaveKeys(userObj);
+            const data = await response.json();
+            console.log("---Rec_Status_Check: ", data.status);
 
-            // check creds saved 
-            // var recCredInfo = sessionStorage.getItem("recCredInfo");
-            // console.log("recCredInfo: ",recCredInfo );
-            if (data.res === "False"){
-                var userObj = {myUsrname,Pkey,Prkey};
-                showRecoveryModal(userObj);
-            }else{
-                // userNameField.innerHTML = response.user;
-                console.log("Turn ON Alert Box");
-                modal.style.display = "flex";
-                loginId.href = "/login?id=" + myUsrname;
+            if (data.status === "False") {
+                autoRecoverCheck({ myUsrname, Pkey, Prkey });
+            } else {
+                if(currentFromServ.textContent===""){
+                    console.log("Turn ON Alert Box");
+                    modal.style.display = "flex";
+                    loginId.href = "/login?id=" + myUsrname;
+                }
+            }
+        } else {
+            if (currentFromServ.textContent === "") {
+                    console.log("No Username Found on Server");
+                } else {
+                    console.log("Alert!! Username Mismatch");
+                    autoRecoverKeysModal();
+                }
                 return;
-            };
-
-
-
-        };
+        }
     };
     // console.log("preRegister Called");
 };
@@ -570,6 +556,88 @@ function closeRecModal(){
     document.getElementById('restore-modal').style.display='none';
     window.location.href = "/";
 }
+
+
+async function registerNewKeys(){
+
+    var currentFromServ = document.querySelector("#cuser-ref");
+
+    if( currentFromServ.textContent === "") {
+        console.log("Your username is not set on the server");
+        alert("Your username is not set on the server. Please contact support.");
+        return;
+    };
+
+    // Example usage
+    const myUsername = currentFromServ.textContent; // Generate a 10-character base32 string
+    console.log("Random Base32 String:", myUsername);
+
+    // Open the IndexedDB database
+    const request = indexedDB.open("QMessangerDB4", 4);
+
+    request.onsuccess = async function (event) {
+            db = event.target.result;
+            console.log("Database opened @register");
+
+            // Step 1: Generate RSA key pair
+            const keyPair = await window.crypto.subtle.generateKey(
+                {
+                name: "RSA-OAEP",
+                modulusLength: 2048,
+                publicExponent: new Uint8Array([1, 0, 1]), // 65537
+                hash: "SHA-256",
+                },
+                true, // extractable: true (allows export)
+                ["encrypt", "decrypt"]
+            );
+
+            Keys.publicKey = keyPair.publicKey;
+            // Keys.privateKey = keyPair.privateKey;
+
+            // Step 2: Export the public key as JWK
+            const exportedPublicKey = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey);
+            const exportedPrivateKey = await crypto.subtle.exportKey("jwk", keyPair.privateKey);
+            console.log("Exported public key JWK: @register", exportedPublicKey);
+
+            // Step 3: Save it
+            savePublicKey(myUsername, exportedPublicKey, exportedPrivateKey);
+
+            // Prepare to send to server 
+        
+            function toBase64(str) {
+            const bytes = new TextEncoder().encode(str);
+            let binary = '';
+            for (let b of bytes) {
+                binary += String.fromCharCode(b);
+            }
+            return btoa(binary);
+            }
+
+            const pubJson = JSON.stringify(exportedPublicKey);
+            const pubBase64 = toBase64(pubJson); // Convert the public key to a base64 string for transmission
+            
+            fetch("/register_new_keys", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    username: myUsername, 
+                    newPkey: pubBase64
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Server Response:", data);
+                if (data.success) {
+                    alert("Keys registered successfully!");
+                    window.location.href = "/login?id=" + myUsername;
+                } else {
+                    alert("Failed to register keys: " + data.message);
+                }
+            })
+        }
+};
 
 // Register 
 async function register() {
@@ -652,15 +720,15 @@ async function register() {
 
         var username = myUsername;
 
-        var response = await fetch("/recovery_status_reg",{
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ username: username })
-        });
-        var data = await response.json();
-        console.log("Rec_Status_Rec: ",data.res);
+        // var response = await fetch("/recovery_status_reg",{
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({ username: username })
+        // });
+        // var data = await response.json();
+        // console.log("Rec_Status_Rec: ",data.res);
 
         // Optional: Use MutationObserver to monitor changes and override them
         // const observer = new MutationObserver(() => {

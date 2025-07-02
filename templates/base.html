@@ -157,6 +157,52 @@
             <button style="padding:7px;border-radius: 15px;background: rgb(50, 50, 250);" class="btns"  onclick="closeRefresh()">Continue</button>
         </div>
     </div>
+
+    <!--Auto Recovery Modal Save (hidden by default) -->
+    <div id="auto-recovery-modal-sv" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:2em; border-radius:10px; max-width:400px; margin:auto;">
+            <h2 style="color:#EF4036">Backup Your Account</h2>
+            <p>We are creating a backup of your encryption keys incase you lose your account or change devices.</p>
+            <div><br>
+            <b>1. Enter Password:</b>
+            <div id="recovery-key" style="font-family:monospace; font-size:1.2em; margin:0.5em 0;"></div>
+                <input type="password" class="form-control" name="password-rec" id="password-rec-id-sv" />
+            </div>
+
+            <br><br>
+            <small id="error-field-sv" style="color:red"></small>
+            <div><button onclick="AutoSaveKeys()" class="btns" id="download-recovery-file">Create Backup</button></div>
+            <br><br>
+        </div>
+    </div>
+
+    <!--Auto Recovery Modal (hidden by default) -->
+    <div id="auto-recovery-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:2em; border-radius:10px; max-width:400px; margin:auto;">
+            <h2 style="color:#EF4036;font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Recover Account Keys</h2>
+            <p style="font-size:13px;font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Your account is found but your security keys were not found from the database. 
+                This means that you will not be able to read messages sent by your customers and partners. <br> Enter password to restore your keys automatically or skip and do it later.</p>
+            <div><br>
+            <b>Enter Password:</b>
+            <div id="recovery-key" style="font-family:monospace; font-size:1.2em; margin:0.5em 0;"></div>
+                <input type="hidden" name="username-rec" id="username-rec-id" value="{{current}}" />
+                <input type="password" class="form-control" name="password-rec" id="password-rec-id" />
+            </div>
+            <small id="error-field" style="color:red"></small>
+            <br><br>
+            <small id="error-field" style="color:red"></small>
+            <div class="gen-flex" style="justify-content: space-between;">
+                <div><button onclick="autoRecoverKeys()" class="btns" id="download-recovery-file">Restore</button></div>
+                <div style="cursor: pointer;margin-top: 4px;color: rgb(4, 137, 214);" onclick="skipRecovery()" id="skip-now">Skip for now</div>
+            </div><br>
+            <div style="margin-top:10px;">
+                <small style="color:#EF4036">If you do not remember your password, please contact support or create new keys.</small>
+            </div>
+            <div><button onclick="registerNewKeys()" style="background-color: #5a5a5a;" class="btns" id="download-recovery-file">Create News Keys</button></div><br>
+            <br><br>
+        </div>
+    </div>
+
     
     <div style="width:100%  !important;gap:0" class="gen-flex navigation-main">
         <!-- Main App Navigation Bar  -->
@@ -360,6 +406,7 @@
                             {%endif%}
                         </div>
                         <span id="username-label">{{usr_obj.name}}</span>
+                        <div style="position: absolute;visibility: hidden;z-index: -2;" id="cuser-ref">{{current}}</div>
                     </div>
                     {%else%}
                     <div onclick="window.location.href='/register'" class="username gen-flex btns">
@@ -379,8 +426,12 @@
             </div>
         </div>
     </div>
+
+    <script>
+        var currentFromServ = "{{ current|tojson|safe }}";
+    </script>
     <!-- <script src="static/js/tempkeys.js" ></script> -->
-    <script src="static/js/indexedb.js" ></script>
+    <script src="{{ url_for('static', filename='js/indexedb.js') }}"></script>
     <script src="static/js/js_script.js" ></script>
     <script src="static/js/bus_cht.js" ></script>
     <script src="static/js/tempkeys.js" ></script>
@@ -396,6 +447,11 @@ function openQMenu(){
 function closeQMenu(){
     var menu = document.querySelector(".mobile-quick-menu");
     menu.classList.toggle("drop-menu");
+}
+
+function skipRecovery(){
+    var recoveryModal = document.getElementById("auto-recovery-modal");
+    recoveryModal.style.display = "none";
 }
 
  document.addEventListener('DOMContentLoaded', function() {
@@ -426,16 +482,17 @@ function closeQMenu(){
                 console.log("Selected Item: ", span ? span.textContent : '');
             }
         });
-    });
+    
 
     console.log("Check Notification Permission: ",Notification.permission);
     // console.log("SaveIs Called: ");
     var userLabel =document.querySelector("#username-label");
     var goBtn = document.querySelector("#login");
-
+    // var currentFromServ = "{{ current|tojson|safe }}";
     if (userLabel){
+        console.log("User Label",userLabel.textContent);
         initDB().then((db) =>{
-            // preRegister();
+            preRegister();
             console.log("db", db.objectStoreNames.contains("keys"));
             console.log("User Found");
             var regMobile = document.querySelector('#register-mobile');
@@ -453,6 +510,7 @@ function closeQMenu(){
                 // sessionStorage.setItem("recCredInfo", "NA");
             });
         }
+});
 
     // Register Service Worker
     if ('serviceWorker' in navigator) {

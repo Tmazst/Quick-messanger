@@ -382,6 +382,9 @@ def home():
     chk_if_reg = Visitors.query.filter_by(ip=visitor_ip).first()
 
     if current_user and current_user.is_authenticated:
+        chk_if_reg.last_visit = current_time_wlzone()
+        chk_if_reg.n_visits += 1
+        db.session.commit()
         company = company_info.query.filter_by(usr_id=current_user.id).first()
         if company and company.company_name:
             if company.image == "logo-avator.png" or not company.email:
@@ -433,43 +436,81 @@ def save_recovery_data1():
     data = request.get_json()
     username = data.get('username')
     encrypted_json = data.get('encrypted_json')
+    
+    cuser = chat_user.query.filter_by(username=username).first()
+    if not cuser:
+        return jsonify({'status': 'error', 'msg': 'User not found'}), 404
+    
+    user = User.query.get(cuser.id)
 
-    user = User.query.filter_by(username=username).first()
     if not user:
         return jsonify({'status': 'error', 'msg': 'User not found'}), 404
 
     # Save encrypted JSON to cloud or server (example: local file, S3, or Google Drive)
     # For demo, save to a file named after the user
-    SHEET.append_row([username, json.dumps(encrypted_json)])
+
+    with open(f'working_files/{username}_working_file.json', 'w') as f:
+        json.dump(encrypted_json, f)
+    # SHEET.append_row([username, json.dumps(encrypted_json)])
+
+    update_urecov_status = recovery_check_v2.query.filter_by(username=username).first()
+    update_urecov_status.status = True
+    db.session.commit()
 
     print("Recovery Data Saved: ", username, encrypted_json)
     flash("Recovery Data Saved Successfully", "success")
 
-    return jsonify({'status': 'success'})
+    return jsonify({'status': 'success'}),201
 
 
 # Get salt from db and derive key using password 
 @app.route('/get_key', methods=['POST'])
 def save_recovery_data():
     data = request.get_json()
+    if not data or 'username' not in data or 'password' not in data:
+        return jsonify({'status': 'error', 'msg': 'Username and password required'}), 400
+    if not data.get('username') or not data.get('password'):
+        return jsonify({'status': 'error', 'msg': 'Username and password cannot be empty'}), 400
+    
+    print("Data Received: ", data)
+
     username = data.get('username')
     password = data.get('password')
 
-    user = User.query.filter_by(username=username).first()
-
-    def derive_key_from_password(password, salt):
-        # salt should be random and stored alongside the encrypted data
-        key = pbkdf2_hmac('sha256', password.encode(), salt, 100_000)
-        return base64.urlsafe_b64encode(key)
+    cuser = chat_user.query.filter_by(username=username).first()
+    if not cuser:
+        return jsonify({'status': 'error', 'msg': 'User not found'}), 404
     
-    salt = UserKey.query.filter_by(user_id=user.id).first().salt if UserKey.query.filter_by(user_id=user.id).first() else os.urandom(16)
-    
-    key_ = derive_key_from_password(password, salt)
+    user = User.query.get(cuser.id)
 
-    if not key_:
-        return jsonify({'status': 'error', 'msg': 'Key not found'}), 404
+    if user and encry_pw.check_password_hash(user.password, password):
+        def derive_key_from_password(password, salt):
+            # salt should be random and stored alongside the encrypted data
+            key = pbkdf2_hmac('sha256', password.encode(), salt, 100_000)
+            return base64.urlsafe_b64encode(key)
+        
+        # Fetch salt as base64 string from DB
+        salt_obj = UserKey.query.filter_by(user_id=user.id).first()
+        salt = base64.b64decode(salt_obj.salt) if salt_obj else None
 
-    return jsonify({'key': key_}), 200
+
+        print("Salt Retrieved: ", salt)
+        # salt_b64 = base64.b64encode(salt).decode('utf-8')
+        key_ = derive_key_from_password(password, salt)
+
+        # if not UserKey.query.filter_by(user_id=user.id).first():
+        #     # If no key exists, create a new one
+        #     salt = os.urandom(16)
+        #     new_key = UserKey(user_id=user.id, salt=salt_b64)
+        #     db.session.add(new_key)
+        #     db.session.commit()
+
+        if not key_:
+            return jsonify({'status': 'error', 'msg': 'Key not found'}), 404
+
+        return jsonify({'key': key_.decode('utf-8')}), 200
+    else:
+        return jsonify({'status': 'error', 'msg': 'Invalid username or password'}), 401
 
 
 def get_encrypted_json_from_sheet(username):
@@ -483,16 +524,26 @@ def get_encrypted_json_from_sheet(username):
 def get_recovery_data():
     data = request.get_json()
     username = data.get('username')
+    print("Username Received: ", username)
+    cuser = chat_user.query.filter_by(username=username).first()
+    if not cuser:
+        return jsonify({'status': 'error', 'msg': 'User not found'}), 404
+    
+    user = User.query.get(cuser.id)
 
-    user = User.query.filter_by(username=username).first()
     if not user:
         return jsonify({'status': 'error', 'msg': 'User not found'}), 404
 
-
-    encrypted_json = get_encrypted_json_from_sheet(username)
+    # From Google sheets 
+    # encrypted_json = get_encrypted_json_from_sheet(username)
+    try:
+        with open(f'working_files/{username}_working_file.json', 'r') as f:
+            encrypted_json = json.load(f)
+    except FileNotFoundError:
+        return jsonify({'status': 'error', 'msg': 'Your keys not found, Please create new keys'}), 404
 
     if not encrypted_json:
-        return jsonify({'status': 'error', 'msg': 'Encrypted JSON not found'}), 404
+        return jsonify({'status': 'error', 'msg': 'Your keys not found, Please create new keys'}), 404
     
     return jsonify({
         'status': 'success',
@@ -983,7 +1034,18 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
 #     </div>
 # {% endfor %}
 
+@app.route('/auto_recovery_checker', methods=['POST',"GET"])
+def auto_recovery_checker():
 
+    data = request.get_json()
+    if not data:
+        return jsonify({"Error":"No User Submitted"}),400
+
+    print("Auto Recovery Check Data: ", data)
+    get_rec_status = recovery_check_v2.query.filter_by(username=data["username"]).first()
+    # print("Auto Recovery Check Data: ", data)
+
+    return jsonify({"status":get_rec_status.status})
 
 @app.route('/install')
 def install_app():
@@ -1011,6 +1073,7 @@ def get_email():
 
     return jsonify({"email":user.email,'rec_pKey':usr.pkey}),200
 
+# Login using indexedDB's Username'
 @app.route('/login', methods=['GET'])
 def login(id=None):
     print("Check Id: ",id)
@@ -1037,6 +1100,64 @@ def login(id=None):
                 # return redirect(url_for("home"))
 
     return jsonify({"message":"User Logged in"}),200
+
+# Login using indexedDB's Username'
+@app.route('/manual_login', methods=['GET',"POST"])
+def manual_login(id=None):
+    form = Login()
+    print("Check Id: ",id)
+
+    if request.method == "POST":
+        
+        user_login = User.query.filter_by(email=form.email.data).first()
+        
+
+        if user_login and encry_pw.check_password_hash(user_login.password, form.password.data):
+            login_user(user_login)
+            username = chat_user.query.get(user_login.cht_usr_fKey)
+
+            flash(f"Welcome, {user_login.name}","success")
+            session['username'] = username.username
+            session['pubKey']=username.pkey
+            return redirect(url_for('home'))
+        else:
+            flash("Wrong credentials please re-check email or password",'error')
+            return redirect(url_for('manual_login'))
+            # return redirect(url_for("home"))
+
+    return render_template("manual_login.html",form=form)
+
+
+@app.route('/register_new_keys', methods=['POST','GET'])
+@login_required
+def register_new_keys():
+    data = request.get_json()
+    if not data:
+        return jsonify({"message":"No User Submitted"}),400
+    
+    username_ss = session.get('username')
+    if not username_ss == data.get('username'):
+        return jsonify({"message":"Username Mismatch"}), 401
+    
+    if request.method == 'POST':
+        
+        if not username:
+            flash("You must be logged in to register new keys","warning")
+            return jsonify({"message":"User not logged in"}), 401
+
+        usr = chat_user.query.filter_by(username=username_ss).first()
+        if not usr:
+            flash("User not found, please register first","warning")
+            return redirect(url_for('register'))
+
+        # Update the user's public key
+        usr.pkey = data['newPkey']
+        db.session.commit()
+        
+        flash("Public Key Updated Successfully","success")
+
+        return jsonify({"success": True, "message": "Key update successful"}), 201
+    
 
 @app.route('/logout')
 @login_required
@@ -1068,7 +1189,7 @@ def register():
             flash("❌ Email already exists, please use a different Email","warning")
             return redirect(url_for('register'))
         
-        
+        # Register Chat User 
         reg_usr_db = chat_user(
             username=form['username'],
             pkey=form['pKey']
@@ -1087,19 +1208,25 @@ def register():
 
         print("register==DEBUG USERNAME IN DB: ",get_user )
 
-        salt = os.urandom(16) # Generate a random salt
-        salt_b64 = base64.b64encode(salt).decode('utf-8')
+        # IF Chat user 
+        if get_user:
 
-        # save salt 
-        salt_obj = UserKey(
-            user_id = get_user.id,
-            salt = salt_b64
-        )
+            # Generate and Save User Salt 
+            salt = os.urandom(16) # Generate a random salt
+            salt_b64 = base64.b64encode(salt).decode('utf-8')
 
-        print("register==DEBUG SALT: ",salt_obj)
-        db.session.add(salt_obj)
-        db.session.commit()
+            # save salt 
+            #Note: Its chat_user.id not user.id
+            salt_obj = UserKey(
+                user_id = get_user.id,
+                salt = salt_b64
+            )
 
+            print("register==DEBUG SALT: ",salt_obj)
+            db.session.add(salt_obj)
+            db.session.commit()
+
+        # Register User and Company info 
         if get_user:
             hashd_pwd = encrypt_password.generate_password_hash(form['password']).decode('utf-8')
             user_details = User(
@@ -1112,6 +1239,9 @@ def register():
             )
             db.session.add(user_details)
             db.session.commit()
+
+            session['username'] =get_user.username
+            session['pubKey']=get_user.pkey
 
             user = User.query.filter_by(cht_usr_fKey=get_user.id).first()
 
@@ -1132,13 +1262,26 @@ def register():
             id_ser = ser.dumps({"form": uid})
             print("UID_SER: ", id_ser)
 
-            data_json = {
-                        'id': id_ser,
-                        'username': get_user.username
-                    }
+            # data_json = {
+            #             'id': id_ser,
+            #             'username': get_user.username
+            #         }
             
             try:
                 db.session.commit()
+
+                if company_details.id:
+                    # Create Recovery Entry for this User
+                    create_recovery_entry = recovery_check_v2(
+                        cht_usr_id = get_user.id,
+                        comp_id = company_details.id,
+                        username = get_user.username,
+                        timestamp = current_time_wlzone()
+                    )
+                    db.session.add(create_recovery_entry)
+                    db.session.commit()
+                    print("Registration - Recovery Entry Created")
+
                 print("register==Registration Successful")
                 flash("✔ Registration Successful","success")
                 # session['username'] = get_user.username
@@ -1149,7 +1292,11 @@ def register():
                 db.session.rollback()  # Rollback the session to clear the pending state
                 print("register==User Registration Evoked because of Integrity Error: ", get_user.username)
                 db.session.commit()
-
+        else:
+            flash("❌ User Registration Failed, Please try again","warning")
+            print("register==User Registration Failed, Please try again")
+            return redirect(url_for('register'))
+        
         print("Registration Successful")
 
         print("USER DATA: ",reg_usr_db)
@@ -1299,7 +1446,8 @@ def company_account():
                 except PhoneNumberError as e:
                     print(f"company: {company_name}, No: {phone}; Invalid phone number: {e}", "danger")
                     
-
+            return redirect(url_for('home'))
+        
         except IntegrityError as e:
             db.session.rollback()
             flash("Email address must be unique and not empty.", "danger")
@@ -1744,6 +1892,6 @@ if __name__ == '__main__':
         db.create_all()
         db.session.commit()
 
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

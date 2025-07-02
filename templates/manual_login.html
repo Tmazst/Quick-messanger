@@ -1,0 +1,88 @@
+
+
+{% extends "base.html" %}
+{% block content %}
+<div style="position: relative;" class="container form-container">
+  <label>Login</label><br>
+  <h2 style="color:#EF4036">Login Details</h2>
+    {{form.hidden_tag()}}<br>
+  <form class="form" method="post" action="">
+    <input type="hidden"  class="form-control" id="username" name="username" autocomplete="off" placeholder="username" required />
+     <div class="group">
+        <div class="acc-labels">{{ form.email.label(class="labels")}}</div>
+        {{ form.email(class="form-control",placeholder="Your email")}}
+        {% if form.email.errors %}
+        {% for error in form.email.errors %}
+            <span class="span-error" >*{{error}}</span>
+        {% endfor %}
+        {% endif %}
+    </div>
+    <div class="group">
+        <div class="acc-labels">{{ form.password.label(class="labels")}}</div>
+        {{ form.password(class="form-control",placeholder="Password")}}
+        {% if form.password.errors %}
+        {% for error in form.password.errors %}
+            <span class="span-error" >*{{error}}</span>
+        {% endfor %}
+        {% endif %}
+    </div>
+    
+    <div style="width:100% !important;" class="flex d-flex flex-row align-items-center justify-content-between">
+        {{ form.submit(class="btns") }}<a href="/register" style="color:#3667ef;font-weight: 600;margin-left:20px;">Signup instead?</a>
+    </div>
+    <br>
+    
+</form>
+<img style="position: absolute;right:15px;top:25px;height:90px" src="static/icons/imbc-icon.png" />
+</div>
+
+<script>
+
+
+let db_ind;
+window.addEventListener("DOMContentLoaded", async function(){
+  var companyInput = document.querySelector("#company_name");
+  var companyChoice = document.getElementById("register-company");
+
+    if(window.innerWidth <= "700"){
+        companyInput.required = false;
+        companyInput.style.display = "none";
+
+        companyChoice.addEventListener("change", function() {
+            if (companyChoice.checked) {
+                companyInput.required = true;
+                companyInput.style.display = "block";
+            } else {
+                companyInput.required = false;
+                companyInput.style.display = "none";
+            }
+        });
+
+    };
+    
+});
+window.addEventListener('load', async function(){
+
+    // console.log("SaveIs Called: ");
+    var userLabel =document.querySelector("#username-label");
+
+    if (userLabel){
+        initDB().then((db) =>{
+            console.log("db", db.objectStoreNames.contains("keys"));
+        });
+        // window.location.href = "/";
+    }else{
+        // initialise DB 
+        initDB().then((db) =>{
+            console.log("db", db.objectStoreNames.contains("keys"));
+           register();
+        });
+    }
+    
+
+    
+});
+
+
+</script>
+{% endblock %}

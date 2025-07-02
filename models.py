@@ -212,6 +212,15 @@ class company_info(db.Model):
         }
 
 
+class recovery_check_v2(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    cht_usr_id = db.Column(db.Integer)
+    comp_id = db.Column(db.Integer)
+    username =  db.Column(db.String(20))
+    status = db.Column(db.String(20),default="False")
+    timestamp = db.Column(db.DateTime)
+    reg_timestamp = db.Column(db.DateTime)
+
 class recovery_check(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cht_usr_id = db.Column(db.Integer)
