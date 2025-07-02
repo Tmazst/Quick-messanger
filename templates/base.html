@@ -159,12 +159,12 @@
     </div>
 
     <!--Auto Recovery Modal Save (hidden by default) -->
-    <div id="auto-recovery-modal-sv" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+    <div id="auto-recovery-modal-sv" style="display:none; position:fixed; top:20px; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
         <div style="background:#fff; padding:2em; border-radius:10px; max-width:400px; margin:auto;">
             <h2 style="color:#EF4036">Backup Your Account</h2>
             <p>We are creating a backup of your encryption keys incase you lose your account or change devices.</p>
             <div><br>
-            <b>1. Enter Password:</b>
+            <b>Enter Password:</b>
             <div id="recovery-key" style="font-family:monospace; font-size:1.2em; margin:0.5em 0;"></div>
                 <input type="password" class="form-control" name="password-rec" id="password-rec-id-sv" />
             </div>
@@ -177,7 +177,7 @@
     </div>
 
     <!--Auto Recovery Modal (hidden by default) -->
-    <div id="auto-recovery-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+    <div id="auto-recovery-modal" style="display:none; position:fixed; top:20px; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
         <div style="background:#fff; padding:2em; border-radius:10px; max-width:400px; margin:auto;">
             <h2 style="color:#EF4036;font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Recover Account Keys</h2>
             <p style="font-size:13px;font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">Your account is found but your security keys were not found from the database. 
@@ -203,7 +203,13 @@
         </div>
     </div>
 
-    
+    <div id="pwa-install-modal" style="display:block; position:fixed; bottom:20px; left:0; right:0; margin:auto; max-width:320px; background:#fdf4f4; border-radius:10px; box-shadow:0 2px 10px #0002; z-index:9999; padding:20px; text-align:center;border:1px solid #EF4036">
+        <h3 style="color:#EF4036">Install Quick Messanger App</h3>
+        <p style="color:#3f3f3f">Get a faster, app-like experience on your phone. Install now!</p>
+        <button class="btns" id="pwa-install-btn" style="margin:10px 0;">Install App</button>
+        <button id="pwa-dismiss-btn" style="background:none; border:none; color:#888; font-size:1.2em;">Dismiss</button>
+    </div>
+
     <div style="width:100%  !important;gap:0" class="gen-flex navigation-main">
         <!-- Main App Navigation Bar  -->
         <div style="padding-top:60px" class="app-nav-bar-left">
@@ -452,6 +458,8 @@ function closeQMenu(){
 function skipRecovery(){
     var recoveryModal = document.getElementById("auto-recovery-modal");
     recoveryModal.style.display = "none";
+    // Store the current time in localStorage
+    localStorage.setItem('autoRecoveryModalDismissed', Date.now().toString());
 }
 
  document.addEventListener('DOMContentLoaded', function() {
@@ -591,6 +599,42 @@ function skipRecovery(){
 
     window.addEventListener('popstate', hideLoader);
 })();
+
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    // Only show if not already installed or dismissed
+    if (!localStorage.getItem('pwaPromptDismissed') && !window.matchMedia('(display-mode: standalone)').matches) {
+        document.getElementById('pwa-install-modal').style.display = 'block';
+    }
+});
+
+document.getElementById('pwa-install-btn').addEventListener('click', async () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            document.getElementById('pwa-install-modal').style.display = 'none';
+            localStorage.setItem('pwaPromptDismissed', '1');
+        }
+        deferredPrompt = null;
+    }
+});
+
+document.getElementById('pwa-dismiss-btn').addEventListener('click', () => {
+    document.getElementById('pwa-install-modal').style.display = 'none';
+    // Optionally, remind again after some time
+    localStorage.setItem('pwaPromptDismissed', '1');
+});
+
+// Optionally, remind again after a day
+if (localStorage.getItem('pwaPromptDismissed')) {
+    setTimeout(() => {
+        localStorage.removeItem('pwaPromptDismissed');
+    }, 24 * 60 * 60 * 1000); // 24 hours
+}
 
 
  </script>

@@ -239,10 +239,19 @@ async function saveCredentialsToIndexedDB(userObj) {
     console.log('Saving to IndexedDB:', userObj);
 }
 
+function shouldShowAutoRecoveryModal() {
+    const lastDismissed = localStorage.getItem('autoRecoveryModalDismissed');
+    if (!lastDismissed) return true;
+    const now = Date.now();
+    // 24 hours = 86,400,000 ms
+    return (now - parseInt(lastDismissed, 10)) > 86400000;
+}
 
 function autoRecoverKeysModal(){
-    const autoRecModal =document.querySelector("#auto-recovery-modal");
-    autoRecModal.style.display = "block";
+    if (shouldShowAutoRecoveryModal()) {
+        const autoRecModal =document.querySelector("#auto-recovery-modal");
+        autoRecModal.style.display = "block";
+    }
 };
 
 // Auto Recovery 
