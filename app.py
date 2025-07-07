@@ -2028,9 +2028,11 @@ def reg_confirmation(email, company_name):
         try:
             mail.send(msg)
             flash(f'We have sent you an email to confirm your registration', 'success')
+            print(f"reg_confirmation==Email sent to {email} for company {company_name}")
             return "Email Sent"
         except Exception as e:
             flash(f'Email not sent here', 'error')
+            print(f"reg_confirmation==Error sending email: {str(e)}")
             return "The mail was not sent"
 
     # try:
