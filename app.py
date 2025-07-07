@@ -1482,7 +1482,7 @@ def company_account():
                     tagline = tagline[:77] + "..."
                 notify_all_subscribers_async(
                     curr_user=current_user.name,
-                    msg=f"{tagline}- Discover {cmp_usr.company_name} on Quick Messenger!",
+                    msg=f"{tagline}. Discover {cmp_usr.company_name} on Quick Messenger Today!",
                     title=cmp_usr.company_name + " is now on Quick Messenger!",
                     url="/business_community"
                 )
