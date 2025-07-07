@@ -1065,7 +1065,7 @@ def auto_recovery_checker():
     get_rec_status = recovery_check_v2.query.filter_by(username=data["username"]).first()
     # print("Auto Recovery Check Data: ", data)
 
-    return jsonify({"status":get_rec_status.status})
+    return jsonify({"status":'auto_recovery_checker'})
 
 @app.route('/install')
 def install_app():
@@ -1484,6 +1484,8 @@ def company_account():
                     title=cmp_usr.company_name + " is now on Quick Messenger!",
                     url="/business_community"
                 )
+            else:
+                print(f"company_account== Company Contacts Provided {cmp_usr.company_name}, SMS not sent")
             
             # Send email confirmation
             if not cmp_usr.email:
