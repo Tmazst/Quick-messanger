@@ -1187,12 +1187,13 @@ def logout():
 
 def notify_all_subscribers_async(curr_user, msg, title="Q-Messanger", url="/"):
     def notify():
-        all_subs = NotificationsAccess.query.all()
-        for sub in all_subs:
-            try:
-                app_notification(sub, curr_user, msg, title, url)
-            except Exception as e:
-                print(f"Notification failed for {sub.id}: {e}")
+        with app.app_context():
+            all_subs = NotificationsAccess.query.all()
+            for sub in all_subs:
+                try:
+                    app_notification(sub, curr_user, msg, title, url)
+                except Exception as e:
+                    print(f"Notification failed for {sub.id}: {e}")
     threading.Thread(target=notify).start()
 
 @app.route('/register', methods=['POST','GET'])
