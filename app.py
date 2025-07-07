@@ -1467,7 +1467,7 @@ def company_account():
                 try:
                     val_phone = phone_validator(phone).validate()
                     message = f"Welcome to Quick Messanger {company_name}! Grow your market presence, improve B2B/B2C communication & build networks. Visit: https://qm.techxolutions.com"
-                    print("Phone Number to Validate2: ", val_phone)
+                    # print("Phone Number to Validate2: ", val_phone)
                     result = send_sms_via_africastalking(val_phone, message)
                     print(f"company: {company_name}, status: success, response: {result}")
                     
@@ -1484,11 +1484,13 @@ def company_account():
                     title=cmp_usr.company_name + " is now on Quick Messenger!",
                     url="/business_community"
                 )
+                print("{cmp_usr.company_name} sending Notification to all subscribers")
             else:
                 print(f"company_account== Company Contacts Provided {cmp_usr.company_name}, SMS not sent")
             
             # Send email confirmation
             if not cmp_usr.email:
+                print(f"company_account== Preparing to send email to {cmp_usr.company_name}")
                 reg_confirmation(cmp_usr.email, cmp_usr.company_name)
                     
             return redirect(url_for('home'))
@@ -1931,7 +1933,10 @@ def update_company():
 
 
 def reg_confirmation(email, company_name):
-    
+    """Send registration confirmation email."""
+    if not email:
+        print("reg_confirmation==No Email Provided")
+        return jsonify({"error": "Email not sent, No email provided"}), 400
 
     def send_veri_mail():
 
@@ -2014,7 +2019,7 @@ def reg_confirmation(email, company_name):
 
         try:
             mail.send(msg)
-            flash(f'We have sent you an email with Registration Details', 'success')
+            flash(f'We have sent you an email to confirm your registration', 'success')
             return "Email Sent"
         except Exception as e:
             flash(f'Email not sent here', 'error')
