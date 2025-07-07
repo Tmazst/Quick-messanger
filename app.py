@@ -1191,6 +1191,7 @@ def notify_all_subscribers_async(curr_user, msg, title="Q-Messanger", url="/"):
             all_subs = NotificationsAccess.query.all()
             for sub in all_subs:
                 try:
+                    print(f"Sending Notification to failed for {curr_user} Message{msg}")
                     app_notification(sub, curr_user, msg, title, url)
                 except Exception as e:
                     print(f"Notification failed for {sub.id}: {e}")
@@ -1485,12 +1486,12 @@ def company_account():
                     title=cmp_usr.company_name + " is now on Quick Messenger!",
                     url="/business_community"
                 )
-                print("{cmp_usr.company_name} sending Notification to all subscribers")
+                print(f"{cmp_usr.company_name} sending Notification to all subscribers")
             else:
                 print(f"company_account== Company Contacts Provided {cmp_usr.company_name}, SMS not sent")
             
             # Send email confirmation
-            if not cmp_usr.email:
+            if cmp_usr.email:
                 print(f"company_account== Preparing to send email to {cmp_usr.company_name}")
                 reg_confirmation(cmp_usr.email, cmp_usr.company_name)
                     
