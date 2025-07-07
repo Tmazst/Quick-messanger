@@ -1034,9 +1034,15 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
             ttl=200
         )
         print("Web Push Activated, Update!")
+
     except WebPushException as ex:
-        print("Web push failed, update: {}", repr(ex))
-        print(recipient_sub_info)
+        if '410' in str(ex) or 'unsubscribed or expired' in str(ex):
+            # Remove subscription from DB
+            db.session.delete(recipient_sub)
+            db.session.commit()
+            print(f"Removed expired subscription uid: {recipient_sub.usr_id}")
+        else:
+            print("Web push failed, update: {}", repr(ex))
 
 # Adverts Code 
 # {% for row in adverts|batch(3, '') %}

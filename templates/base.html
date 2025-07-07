@@ -207,12 +207,21 @@
             <br><br>
         </div>
     </div>
-
+    <!-- Install PWA Modal Prompt  -->
     <div id="pwa-install-modal" style="display:none; position:fixed; bottom:20px; left:0; right:0; margin:auto; max-width:320px; background:#fdf4f4; border-radius:10px; box-shadow:0 2px 10px #0002; z-index:9999; padding:20px; text-align:center;border:1px solid #EF4036">
         <h3 style="color:#EF4036">Install Quick Messanger App</h3>
         <p style="color:#3f3f3f">Get a faster, app-like experience on your phone. Install now!</p>
         <button class="btns" id="pwa-install-btn2" style="margin:10px 0;">Install App</button>
         <button id="pwa-dismiss-btn" style="background:none; border:none; color:#888; font-size:1.2em;">Dismiss</button>
+    </div>
+    <!-- Push Notification Subscription Modal -->
+    <div id="push-subscribe-modal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:2em; border-radius:10px; max-width:400px; margin:auto; text-align:center;">
+            <h3 style="color:#EF4036">Enable Notifications</h3>
+            <p style="color:#3f3f3f">Stay updated about Businesses in Eswatini! Allow notifications from Quick Messenger.</p>
+            <button class="btns" onclick="subscribeToPush()">Allow Notifications</button>
+            <button onclick="document.getElementById('push-subscribe-modal').style.display='none'">Dismiss</button>
+        </div>
     </div>
 
     <div style="width:100%  !important;gap:0" class="gen-flex navigation-main">
@@ -670,6 +679,29 @@ function skipRecovery(){
     window.addEventListener('popstate', hideLoader);
 })();
 
+// Check if service worker and push manager are supported
+document.addEventListener('DOMContentLoaded', async function() {
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration) {
+            const subscription = await registration.pushManager.getSubscription();
+            if (!subscription) {
+                    // Service worker not registered yet
+                if(isPWAInstalled()) {
+                    // If PWA is installed, show the notification-container
+                    document.getElementById('push-subscribe-modal').style.display = 'block';   
+                } 
+            }
+        } else {
+            // Service worker not registered yet
+            if(isPWAInstalled()) {
+                // If PWA is installed, show the notification-container
+                document.getElementById('push-subscribe-modal').style.display = 'block';  
+            } 
+            
+        }
+    }
+});
 
  </script>
 

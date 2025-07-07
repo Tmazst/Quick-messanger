@@ -231,6 +231,25 @@ function showNotification({ id, title, message }) {
     container.appendChild(notif);
 }
 
+// Function to subscribe to push notifications
+async function subscribeToPush() {
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: 'BF-IKMwncA7cR08RWECfzfmYHFCeXFx97-P2_ZFxd5DDHHryXyjBC6bzKa5oYkmN-DhjNYtyoEP4yYCQ38aIVjI'
+        });
+        // Send subscription to your server via fetch/AJAX
+        await fetch('/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(subscription)
+        });
+        document.getElementById('push-subscribe-modal').style.display = 'none';
+        alert('Notifications enabled!');
+    }
+}
+
 navigator.serviceWorker.addEventListener('message', function(event) {
   if (event.data && event.data.type === 'OPEN_REPLY_UI') {
     // Show your custom reply modal/sidebar
