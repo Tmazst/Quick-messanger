@@ -23,6 +23,7 @@ import re
 from QM_validators import PhoneValidator, PhoneNumberError
 from hashlib import pbkdf2_hmac
 import base64
+import threading
 
 
 
@@ -79,6 +80,12 @@ def load_user(user_id):
 
 application = app
 
+# email credentials 
+if os.path.exists('client.json'):
+    # Load secrets from JSON file
+    with open('client.json') as f:
+        creds = json.load(f)
+
 def current_time_wlzone():
     # Get the current UTC time
     timestamp = datetime.now(pytz.utc)
@@ -92,9 +99,8 @@ def current_time_wlzone():
     # Convert UTC time to user's local tim
     local_time = timestamp.astimezone(local_tz)
 
-
-
     return local_time
+
 
 ALLOWED_EXTENSIONS = {"txt", "xlxs",'docx', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
@@ -230,7 +236,6 @@ def inject_ser():
 
     return dict(current=current,messages=messages, company=company,usr_obj =usr_obj,ser=ser,companies=companies,usrn = chat_user )
 
-
 @app.route("/username/<username>/<id>", methods=['POST','GET'])
 def username(username,id):
     print("username== Ran Late; User", username)
@@ -335,6 +340,29 @@ def send_af_one():
             results.append({"company": company_name, "status": "error", "error": str(e)})
             
     return jsonify(results)
+
+
+@app.route('/follow_company', methods=['POST', 'GET'])
+@login_required
+def follow_company():
+    data = request.get_json()
+    company_id = data.get('cid_serialized')
+    cid = ser.loads(company_id)['cid']
+    if not company_id:
+        return jsonify({'status': 'error', 'msg': 'Company name required'}), 400
+
+    # Check if the company exists
+    company = company_info.query.get(cid)
+    if not company:
+        return jsonify({'status': 'error', 'msg': 'Company not found'}), 404
+
+    # Add the user to the company's followers
+    if current_user.is_authenticated:
+        company.followers.append(current_user)
+        db.session.commit()
+        return jsonify({'status': 'success', 'msg': f'You are now following {company.company_name}'}), 200
+    else:
+        return jsonify({'status': 'error', 'msg': 'User not authenticated'}), 401
 
 # import gspread
 # from oauth2client.service_account import ServiceAccountCredentials
@@ -582,7 +610,6 @@ def recovery_register():
 
     return jsonify({"res":"success"}),201
 
-
 @app.route("/recovery_status_check", methods=['POST','GET'])
 def recovery_check_func():
 
@@ -614,7 +641,6 @@ def recovery_check_func():
 
     return jsonify({"res":"checking status"}),200
 
-
 @app.route("/recovery_status_update", methods=['POST','GET'])
 def recovery_update():
 
@@ -634,7 +660,6 @@ def recovery_update():
             db.session.commit()
 
     return jsonify({"res":"success"}),201
-
 
 @app.route('/service-worker.js')
 def service_worker():
@@ -758,8 +783,8 @@ def public_key():
 subscriptions = []
 
 @app.route('/subscribe', methods=['POST'])
-@login_required
 def subscribe():
+     
     # Save subscription info to your DB
     subscription_info = request.get_json()
     # Save subscription_info for the user
@@ -874,7 +899,6 @@ def uplaod_image():
 
         return jsonify({'Success':'Image Upload Successfull'}),200
 
-
 @app.route('/compose', methods=['POST',"GET"])
 # @login_required
 def compose():
@@ -986,7 +1010,6 @@ def compose():
 
     return render_template("compose.html", users=users,usr=curr_user,form=message_form, chat_with = chat_with,chat_with_company=chat_with_company )
 
-
 def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
 
     recipient_sub_info = {
@@ -1047,7 +1070,6 @@ def auto_recovery_checker():
 @app.route('/install')
 def install_app():
     return render_template('download_app.html')
-
 
 @app.route('/about')
 def about():
@@ -1155,7 +1177,6 @@ def register_new_keys():
 
         return jsonify({"success": True, "message": "Key update successful"}), 201
     
-
 @app.route('/logout')
 @login_required
 def logout():
@@ -1163,6 +1184,16 @@ def logout():
     logout_user()
     
     return redirect(url_for('home'))
+
+def notify_all_subscribers_async(curr_user, msg, title="Q-Messanger", url="/"):
+    def notify():
+        all_subs = NotificationsAccess.query.all()
+        for sub in all_subs:
+            try:
+                app_notification(sub, curr_user, msg, title, url)
+            except Exception as e:
+                print(f"Notification failed for {sub.id}: {e}")
+    threading.Thread(target=notify).start()
 
 @app.route('/register', methods=['POST','GET'])
 def register():
@@ -1281,6 +1312,8 @@ def register():
 
                 print("register==Registration Successful")
                 flash("✔ Registration Successful","success")
+                # After successful registration and db.session.commit()
+
                 # session['username'] = get_user.username
                 # session['pubKey']=get_user.pkey
                 # session.permanent = True  # Make the session permanent 
@@ -1330,9 +1363,6 @@ def fetch_user_data():
                 return jsonify({"info":all_info}), 200
         else:
             print("fetch_user_data==No Data Received")
-
-
-
 
     return 
 
@@ -1426,6 +1456,7 @@ def company_account():
         try:
             db.session.commit()
             flash("Account updated!", "success")
+            # Send SMS to the company if company_contacts is empty
             if not company_contacts and cmp_usr.company_contacts:
                 company_name = cmp_usr.company_name
                 if len(company_name) > 17:
@@ -1442,6 +1473,21 @@ def company_account():
                     
                 except PhoneNumberError as e:
                     print(f"company: {company_name}, No: {phone}; Invalid phone number: {e}", "danger")
+
+                # Notify All users about new company registration 
+                tagline = cmp_usr.tagline
+                if tagline and len(tagline) > 80:
+                    tagline = tagline[:77] + "..."
+                notify_all_subscribers_async(
+                    curr_user=current_user.name,
+                    msg=f"{tagline}- Discover {cmp_usr.company_name} on Quick Messenger!",
+                    title=cmp_usr.company_name + " is now on Quick Messenger!",
+                    url="/business_community"
+                )
+            
+            # Send email confirmation
+            if not cmp_usr.email:
+                reg_confirmation(cmp_usr.email, cmp_usr.company_name)
                     
             return redirect(url_for('home'))
         
@@ -1881,6 +1927,115 @@ def update_company():
 
     return render_template("message_blueprint.html")
 
+
+def reg_confirmation(email, company_name):
+    
+
+    def send_veri_mail():
+
+        app.config["MAIL_SERVER"] = "smtp.googlemail.com"
+        app.config["MAIL_PORT"] = 587
+        app.config["MAIL_USE_TLS"] = True
+        # Creditentials saved in environmental variables
+        em = app.config["MAIL_USERNAME"] = creds.get('email')  # os.getenv("MAIL")
+        app.config["MAIL_PASSWORD"] = creds.get('gpass') #os.getenv("PWD")
+        app.config["MAIL_DEFAULT_SENDER"] = "noreply@gmail.com"
+
+        mail = Mail(app)
+
+
+        msg = Message(subject="Registration Confirmation", sender="no-reply@gmail.com", recipients=[email])
+
+        msg.html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to Quick Messenger!</title>
+</head>
+<body style="margin:0; padding:0; background:#f7f7f9; font-family:'Segoe UI', Arial, sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7f7f9; min-height:100vh;">
+        <tr>
+            <td align="center">
+                    <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.07); margin:40px 0; max-width:480px;"></table>
+                    <tr>
+                        <td align="center" style="padding:32px 0 16px 0;">
+                            <img src="https://qm.techxolutions.com/static/images/logo-icon-white.png" alt="Quick Messenger Logo" style="height:60px; border-radius:12px; background:#EF4036; padding:8px;">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding:0 32px;">
+                            <h1 style="color:#222; font-size:2em; margin:0 0 12px 0; letter-spacing:1px;">Welcome to Quick Messenger!</h1>
+                            <p style="color:#EF4036; font-size:1.1em; margin:0 0 24px 0; font-weight:600;">We're excited to have <span style="color:#222;">{company_name}</span> join our business community.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0 32px;">
+                            <div style="background:#f1f1f1; border-radius:10px; padding:18px 20px; margin-bottom:24px;">
+                                <h2 style="color:#EF4036; font-size:1.1em; margin:0 0 10px 0;">Why Quick Messenger?</h2>
+                                <ul style="color:#444; font-size:1em; padding-left:18px; margin:0;">
+                                    <li>🚀 <b>Instant Messaging</b> with your clients and partners</li>
+                                    <li>📢 <b>Advertise & Promote</b> your products & services</li>
+                                    <li>📌 <b>Brand Awareness</b> & products campaigns</li>
+                                    <li>🔒 <b>Secure & Private</b> communications</li>
+                                    <li>📱 <b>Mobile & Desktop</b> Application - easy to install</li>
+                                    <li>🌐 <b>Business Community</b> networking</li>
+                                    <li>📊 <b>Analytics</b> to track your engagement</li>
+                                </ul>
+                                <div style="margin-top:18px; background:#fff7e6; border-left:4px solid #EF4036; padding:12px 16px; border-radius:8px; color:#EF4036; font-size:1.05em;">
+                                    <b>
+                                        At Quick Messenger, we are committed to becoming the region’s leading digital marketing platform—empowering your business with advanced CRM (Customer Relationship Management) and CMS (Content Management System) tools. Our mission is to help you connect, engage, and grow like never before.
+                                    </b>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="padding:0 32px;">
+                            <a href="https://qm.techxolutions.com/business_community" style="display:inline-block; background:#EF4036; color:#fff; text-decoration:none; font-weight:600; padding:14px 36px; border-radius:8px; font-size:1.1em; margin-bottom:24px; box-shadow:0 2px 8px #ef403633;">Explore</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0 32px 32px 32px; color:#888; font-size:0.95em; text-align:center;">
+                            <p style="margin:0 0 8px 0;">Need help? Our support team is here for you: <a href="mailto:thabo@techxolutions.com" style="color:#EF4036; text-decoration:none;">info@techxolutions.com</a></p>
+                            <p style="margin:0;">Welcome aboard,<br><b>The Quick Messenger Team</b></p>
+                        </td>
+                    </tr>
+                </table>
+                <p style="color:#bbb; font-size:0.9em; margin-top:16px;">&copy; 2025 Quick Messenger. All rights reserved.</p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+"""
+
+
+        try:
+            mail.send(msg)
+            flash(f'We have sent you an email with Registration Details', 'success')
+            return "Email Sent"
+        except Exception as e:
+            flash(f'Email not sent here', 'error')
+            return "The mail was not sent"
+
+    # try:
+    send_veri_mail() 
+    # except:
+
+@app.route('/get_reviews', methods=['POST'])
+def get_reviews():
+    data = request.get_json()
+    company_id = data.get('company_id')
+    reviews = Review.query.filter_by(company_id=company_id).all()
+    return jsonify({
+        "reviews": [
+            {
+                "rating": r.rating,
+                "comment": r.comment,
+                "customer_name": r.customer_name
+            } for r in reviews
+        ]
+    })
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':

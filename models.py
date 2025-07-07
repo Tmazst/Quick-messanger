@@ -5,6 +5,7 @@ from flask_login import login_user, UserMixin
 from sqlalchemy.orm import backref, relationship
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+import pytz
 # from app import app
 
 db = SQLAlchemy()
@@ -13,6 +14,21 @@ db = SQLAlchemy()
 #from app import login_manager
 
 metadata = MetaData()
+
+def current_time_wlzone():
+    # Get the current UTC time
+    timestamp = datetime.now(pytz.utc)
+
+    # Define the user's timezone
+    user_timezone = 'Africa/Mbabane'  # Replace this with the user's timezon
+
+    # Create a timezone object
+    local_tz = pytz.timezone(user_timezone)
+
+    # Convert UTC time to user's local tim
+    local_time = timestamp.astimezone(local_tz)
+
+    return local_time
 
 
 
@@ -28,8 +44,6 @@ class chat_user(db.Model,UserMixin):
     user_details = relationship("User", backref='chat_user', lazy=True)
     visitors_id = relationship("Visitors", backref='chat_user', lazy=True)
     
-
-
 
 #Users class, The class table name 'h1t_users_cvs'
 class User(db.Model,UserMixin):
@@ -52,6 +66,7 @@ class User(db.Model,UserMixin):
     company_id = relationship("company_info", backref='user', lazy=True)
     notification_access = relationship("NotificationsAccess", backref='chat_user', lazy=True)
     key_id = relationship("UserKey", backref='user.id', lazy=True)
+    following = relationship("Followers", backref='user', lazy=True)
 
     def to_dict(self):
         return {
@@ -189,6 +204,7 @@ class company_info(db.Model):
     payment_options = db.Column(db.String(100))
     adverts_id = relationship('Advert',backref="company_info",lazy=True)
     news_id = relationship('News',backref="company_info",lazy=True)
+    followers = relationship('Followers', backref='company_info', lazy=True)
 
     def to_dict(self):
         def clean(val):
@@ -211,6 +227,29 @@ class company_info(db.Model):
             "country": clean(self.country),
         }
 
+class Followers(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey('user.id'))
+    company_id = db.Column(db.Integer, ForeignKey('company_info.id'))
+    timestamp = db.Column(db.DateTime, default=current_time_wlzone())
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "company_id": self.company_id,
+            "timestamp": self.timestamp.strftime("%H:%M - %d %b %y") if self.timestamp else None
+        }
+
+class Review(db.Model):
+
+    id = db.Column(db.Integer, primary_key=True)
+    company_id = db.Column(db.Integer, ForeignKey('company_info.id'))
+    user_id = db.Column(db.Integer, ForeignKey('user.id'))
+    rating = db.Column(db.Integer)  
+    comment = db.Column(db.String(500))  
+    timestamp = db.Column(db.DateTime, default=current_time_wlzone())
 
 class recovery_check_v2(db.Model):
     id = db.Column(db.Integer, primary_key=True)

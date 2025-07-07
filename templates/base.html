@@ -450,6 +450,13 @@
     
 
 <script>
+// Install in ios 
+function isIos() {
+    return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+function isInStandaloneMode() {
+    return ('standalone' in window.navigator) && window.navigator.standalone;
+}
 
 
 let deferredPromptTwo = null;
@@ -505,6 +512,16 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             localStorage.removeItem('pwaPromptDismissed');
         }, 24 * 60 * 60 * 1000); // 24 hours
+    }
+
+    
+    // iOS: Show custom install instructions if not installed
+    if (isIos() && !isInStandaloneMode()) {
+        document.getElementById('pwa-install-modal').style.display = 'block';
+        document.getElementById('pwa-install-btn2').style.display = 'none';
+        document.getElementById('pwa-dismiss-btn').style.display = 'inline-block';
+        document.querySelector('#pwa-install-modal p').innerHTML =
+            "To install Quick Messenger on your iPhone, tap the <b>Share</b> <img src='static/icons/ios-share.png' style='height:1em;vertical-align:middle;'> button and select <b>'Add to Home Screen'</b>.";
     }
 });
 
@@ -652,7 +669,6 @@ function skipRecovery(){
 
     window.addEventListener('popstate', hideLoader);
 })();
-
 
 
  </script>

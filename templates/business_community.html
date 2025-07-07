@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
     <h2></h2>
 <!-- Toggle View  -->
 <div class="toggle-container">
-    <button id="toggle-general" class="toggle-btn" aria-pressed="false">Default</button>
+  <button id="toggle-general" class="toggle-btn" aria-pressed="false">Default</button>
   <button id="toggle-grid" class="toggle-btn" aria-pressed="{{ 'true' if view == 'grid' else 'false' }}"><img src="static/icons/grid-icon.png" /> <span>Grid</span></button>
   <button id="toggle-list" class="toggle-btn" aria-pressed="{{ 'true' if view == 'list' else 'false' }}"><img src="static/icons/list-icon.png" /> <span>List</span></button>
 </div>
@@ -546,7 +546,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                 <!-- Other Compnaies  -->
                 <div style="background-image: url('{{ url_for('static', filename='uploads/' ~ company.logo) }}');" class="business-card gen-flex-col"> 
                     <div class="overlay"></div> 
-                    <div style="z-index:5" class="sub-layout-1 gen-flex">
+                    <div style="z-index:5;position:relative" class="sub-layout-1 gen-flex">
                         <div style="flex-grow: 1;align-items: flex-start;" class="bus-title gen-flex-col">
                             <!-- Card Header - Company Name - Logo  -->
                             <div style="align-items: flex-start;" class="bscomm-card-header gen-flex">
@@ -666,19 +666,27 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
       <div class="company-modal-loading">Loading...</div>
     </div>
   </div>
+  <div id="reviews-content" style="display:none;">
+    <!-- Reviews will be loaded here -->
+    <div class="company-modal-content">
+      <span class="company-modal-close">&times;</span>
+      <div id="reviews-body">
+        <div class="company-modal-loading">Loading reviews...</div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
 
-    var closeBtn = document.querySelector(".close-btn");
-    var adContainer = document.querySelector('.advertise-here');
-    var contanier = document.querySelector('.view-container');
+var closeBtn = document.querySelector(".close-btn");
+var adContainer = document.querySelector('.advertise-here');
+var contanier = document.querySelector('.view-container');
 
-    closeBtn.addEventListener('click', function(){
-        adContainer.style.display = 'none';
-        contanier.style.paddingTop = '7px';
-    });
-
+closeBtn.addEventListener('click', function(){
+    adContainer.style.display = 'none';
+    contanier.style.paddingTop = '7px';
+});
 
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -839,8 +847,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 
-    document.addEventListener('DOMContentLoaded', function() {
-    // ... your toggle code ...
+document.addEventListener('DOMContentLoaded', function() {
 
     // Modal logic
     const modal = document.getElementById('company-modal');
@@ -903,6 +910,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderCompanyDetails(company) {
+        modalContent.setAttribute('data-company-id', company.id);
         let tagline = company.tagline || ''; 
         return `
         <div class="company-modal-body-content">
@@ -921,8 +929,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             </div>
             <div class="gen-flex"><img src="static/icons/portfolio-icon.png" style="height:40px;width:40px;" />Work We've Done</div>
-            <!--<div class="lead-gen-icons">Follow</div>-->
-            <!--<div class="gen-flex">Get Notified about our products & services updates, events, specials and more? </div>-->
+            <div class="gen-flex"><img src="static/icons/reviews-icon.png" style="height:40px;width:40px;" /></div>
             <!--<div class="lead-gen-icons">Get in Touch</div>-->
             
         </div>
@@ -946,6 +953,75 @@ document.addEventListener('DOMContentLoaded', function() {
 
     addCidToCards();
     attachCardListeners();
+
+    // Reviews Section 
+    const reviewsBtnSelector = '.gen-flex img[src*="reviews-icon"]';
+    const reviewsBtn = document.querySelector(reviewsBtnSelector)?.parentElement;
+    const modalContent = document.querySelector('.company-modal-content');
+    const reviewsContent = document.getElementById('reviews-content');
+    const reviewsBody = document.getElementById('reviews-body');
+
+    // Show reviews section
+    function showReviews(companyId) {
+        modalContent.style.display = 'none';
+        reviewsContent.style.display = 'block';
+        reviewsBody.innerHTML = '<div class="company-modal-loading">Loading reviews...</div>';
+        // Fetch reviews from backend
+        fetch('/get_reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ company_id: companyId })
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            reviewsBody.innerHTML = renderReviews(data.reviews || []);
+        })
+        .catch(() => {
+            reviewsBody.innerHTML = '<div class="company-modal-loading">Error loading reviews.</div>';
+        });
+    }
+
+    // Hide reviews and show details
+    function hideReviews() {
+        reviewsContent.style.display = 'none';
+        modalContent.style.display = 'block';
+    }
+
+    // Attach to reviews button
+    document.addEventListener('click', function(e) {
+        if (e.target.closest(reviewsBtnSelector)) {
+            const companyId = modalContent.getAttribute('data-company-id');
+            showReviews(companyId);
+        }
+        if (e.target.closest('#reviews-content .company-modal-close')) {
+            hideReviews();
+        }
+    });
+
+    // When rendering company details, set data-company-id for later use
+    // function renderCompanyDetails(company) {
+    //     modalContent.setAttribute('data-company-id', company.id);
+    //     // ...existing code...
+    // }
+
+    // Render reviews (stars + comments)
+    function renderReviews(reviews) {
+        if (!reviews.length) return '<div>No reviews yet.</div>';
+        return reviews.map(r => `
+            <div style="margin-bottom:18px;">
+                <div>${renderStars(r.rating)}</div>
+                <div style="font-size:1em;color:#333;margin-top:4px;">"${r.comment}"</div>
+                <div style="font-size:0.9em;color:#888;">- ${r.customer_name || 'Anonymous'}</div>
+            </div>
+        `).join('');
+    }
+    function renderStars(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            stars += `<span style="color:${i <= rating ? '#EF4036' : '#ccc'};font-size:1.3em;">&#9733;</span>`;
+        }
+        return stars;
+    }
 });
 
 </script>
