@@ -372,9 +372,10 @@ def follow_company():
         return jsonify({'status': 'error', 'msg': 'Company not found'}), 404
     
     # Check if the user is already following the company
-    existing_follower = Followers.query.filter_by(user_id=current_user.id, company_id=cid).first()
-    if existing_follower:
-        return jsonify({'status': 'success', 'msg': f'You are already following {company.company_name}'}), 200
+    if current_user.is_authenticated:
+        existing_follower = Followers.query.filter_by(user_id=current_user.id, company_id=cid).first()
+        if existing_follower:
+            return jsonify({'status': 'success', 'msg': f'You are already following {company.company_name}'}), 200
     
     existing_follower = Followers.query.filter_by(ip_address=request.remote_addr, company_id=cid).first()
     if existing_follower:
