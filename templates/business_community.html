@@ -870,6 +870,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeModal();
     });
+    
+
+
 
     // Attach click listeners to all cards in grid and list
     function attachCardListeners() {
@@ -897,7 +900,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(resp => resp.json())
                 .then(data => {
                     if (data.company) {
-                        modalBody.innerHTML = renderCompanyDetails(data.company);
+                        modalBody.innerHTML = renderCompanyDetails(data.company,data.follow_status);
+                        Listen();
                     } else {
                         modalBody.innerHTML = '<div class="company-modal-loading">No details found.</div>';
                     }
@@ -909,10 +913,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function renderCompanyDetails(company) {
+
+
+    function renderCompanyDetails(company,follow_status) {
         modalContent.setAttribute('data-company-id', company.id);
-        let tagline = company.tagline || ''; 
-        return `
+        let tagline = company.tagline || '';
+        let follow_descr='Interested 👍'
+        if (follow_status) {
+            follow_descr = 'Following ✔';
+        }
+
+        const html = `
         <div class="company-modal-body-content">
             <div style="text-align:center;">
                 <img class="modal-logo" src="/static/uploads/${company.logo}" alt="${company.company_name} logo">
@@ -928,13 +939,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 ${company.fb_link ? `<div class="modal-field link-overflow-x"><span class="modal-label"><img src="/static/icons/facebook-outline-icon.png" alt="Facebook"></span> <a href="mailto:${company.fb_link}">${company.fb_link}</a></div>` : ''}
             
             </div>
-            <div class="gen-flex"><img src="static/icons/portfolio-icon.png" style="height:40px;width:40px;" />Work We've Done</div>
-            <div class="gen-flex"><img src="static/icons/reviews-icon.png" style="height:65px;" /></div>
-            <!--<div class="lead-gen-icons">Get in Touch</div>-->
+            <div class="gen-flex line-bottom"><img src="static/icons/portfolio-icon.png" style="height:40px;width:40px;" />Work We've Done</div>
+            <hr>
+            <div class="gen-flex line-bottom"><img src="static/icons/reviews-icon.png" style="height:65px;" /></div>
+            <hr>
+            <small style="color:#888;font-size:0.9em;font-family:Montserrat;font-size:13px">Get updates on specials, new products and related updates from ${company.company_name} tailoured for you?</small>
+            <div style="padding-bottom:9px" data-uid={{current}} data-cid=${company.id} id="follower-trigger" class="lead-gen-icons btns gen-flex"><span>${follow_descr}<span></div>
             
-        </div>
+        </div><br>
         `;
+        return html;
+        
     }
+
+        function Listen() {
+            const el = document.getElementById('follower-trigger');
+            if (!el) return;
+
+            el.addEventListener('click', function () {
+                const userId = this.getAttribute('data-uid');
+                const companyId = this.getAttribute('data-cid');
+                followCompany(userId, companyId);
+            });
+        }
+
+
+    function followCompany(uid,cid) {
+        // const uid = document.getElementById('follower-trigger').getAttribute('data-uid') || '';
+        const data = { uid: uid, cid: cid };
+        fetch('/follow_company', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(resp => resp.json())
+        .then(resp => {
+                document.getElementById('follower-trigger').innerHTML = '<div style="padding-bottom:9px" id="follower-trigger" class="lead-gen-icons btns gen-flex"><span>Following ✔<span></div>';
+           
+                console.log(resp.msg || 'Error following company.');
+
+        })
+        .catch(() => {
+            console.log('caught Error following company.');
+        });
+    }
+
+
 
     // Add data-cid attribute to each card for secure lookup
     function addCidToCards() {
@@ -953,6 +1003,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     addCidToCards();
     attachCardListeners();
+
 
     // Reviews Section 
     const reviewsBtnSelector = '.gen-flex img[src*="reviews-icon"]';
@@ -1006,7 +1057,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Render reviews (stars + comments)
     function renderReviews(reviews) {
-        if (!reviews.length) return '<div>No reviews yet.</div>';
+        if (!reviews.length) return '<div>No Customer reviews yet.</div>';
         return reviews.map(r => `
             <div style="margin-bottom:18px;">
                 <div>${renderStars(r.rating)}</div>

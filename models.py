@@ -219,9 +219,9 @@ class company_info(db.Model):
             "postal_address": clean(self.postal_address),
             "logo": clean(self.image),
             "company_contacts": clean(self.company_contacts),
-            "website": clean(self.website),
+            "website_link": clean(self.website),
             "tagline": clean(self.tagline),
-            "fb_link": clean(self.fb_link),
+            "facebook_link": clean(self.fb_link),
             "twitter_link": clean(self.twitter_link),
             "youtube": clean(self.youtube),
             "country": clean(self.country),
@@ -230,7 +230,8 @@ class company_info(db.Model):
 class Followers(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, ForeignKey('user.id'),nullable=True)
+    ip_address = db.Column(db.String(100))
     company_id = db.Column(db.Integer, ForeignKey('company_info.id'))
     timestamp = db.Column(db.DateTime, default=current_time_wlzone())
 

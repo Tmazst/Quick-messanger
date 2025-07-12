@@ -32,7 +32,7 @@ class Register(FlaskForm):
 class MessagesForm(FlaskForm):
     receiver = SelectField('To', validators=[Optional()])
     email = StringField('Email', validators=[DataRequired(), Email()])
-    subject = StringField('Subject',choices=sorted([
+    subject = SelectField('Subject',choices=sorted([
         ('Order', 'Order'),
         ('Service Enquiry', 'Service Enquiry'),
         ('Testimonial', 'Testimonial'),

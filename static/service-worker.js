@@ -32,6 +32,17 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)
       .then(response => response || fetch(event.request))
+      .catch(err => {
+        console.error('Fetch failed; returning offline page instead.', err);
+        // Notify client to unregister service worker
+        // self.clients.matchAll().then(clients => {
+        //   clients.forEach(client => {
+        //     client.postMessage({ type: 'SW_FETCH_ERROR' });
+        //   });
+        // });
+        // Optionally return a fallback response
+        // return new Response('', { status: 503, statusText: 'Service Unavailable' });
+      })
   );
 });
 

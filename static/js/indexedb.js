@@ -490,6 +490,7 @@ async function preRegister(){
             if (myUsrname !== currentFromServ.textContent) {
                 if (currentFromServ.textContent === "") {
                     console.log("No Username Found on Server");
+                    return;
                     // proceed to open login modal 
                 } else {
                     console.log("Alert!! Username Mismatch");
@@ -499,8 +500,37 @@ async function preRegister(){
                 
             }
 
+            
+            if (currentFromServ.textContent === "") {
+                    console.log("No Username Found on Server 2");
+                    return;
+                    // proceed to open login modal 
+                } 
+                
+    
             // Username matches
-            console.log("Username matching: ", myUsrname, currentFromServ.textContent);
+            console.log("Username matching: ","IndexedDB: ", myUsrname, ",Server Side: ", currentFromServ.textContent);
+
+            if (currentFromServ.textContent === myUsrname) {
+                console.log("Username matches, proceeding to register new keys");
+                fetch('/api/is_logged_in')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.logged_in) {
+                        console.log("User is logged in",data.logged_in);
+                        if(document.querySelector("#login-mobile").textContent === "login"){
+                            console.log("Turn ON Alert Box");
+                            modal.style.display = "flex";
+                            loginId.href = "/login?id=" + myUsrname;
+                        }
+                    } else {
+                        console.log("User is NOT logged in");
+                        console.log("Turn ON Alert Box");
+                        modal.style.display = "flex";
+                        loginId.href = "/login?id=" + myUsrname;
+                    }
+                });
+            }
 
             // Check recovery status from server
             const response = await fetch("/auto_recovery_checker", {
@@ -519,11 +549,13 @@ async function preRegister(){
                     console.log("Turn ON Alert Box");
                     modal.style.display = "flex";
                     loginId.href = "/login?id=" + myUsrname;
+                }else{
+                    return;
                 }
             }
         } else {
             if (currentFromServ.textContent === "") {
-                    console.log("No Username Found on Server");
+                    console.log("No Username Found on Server 3");
                 } else {
                     console.log("Alert!! Username Mismatch");
                     autoRecoverKeysModal();

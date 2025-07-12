@@ -62,20 +62,54 @@
 <!-- <button class="menu burger">Menu</button> -->
 </head>
 <body>
+    <!-- <div class="spacer-mobile" style="display:none;width:100%;height: 50px;"></div> -->
     {% block replyunit%}
     {%endblock%}
     {% block about%}
     {%endblock%} 
-    <button style="z-index:1900;display:none" onclick="openQMenu()" id="quick-menu-btn">Quick Menu</button>
+    <button style="z-index:1900;display:none" onclick="openQMenu()" id="quick-menu-btn">Q-Menu</button>
     <!-- <div style="display: none;z-index:1900;width:max-content" id="download-icon-" class="app-nav-icons gen-flex">
         <img src="{{ url_for('static', filename='icons/download-pwa-icon.png') }}" alt="Logo" class="app-nav-icon">
         <small style="color:white">Install App</small>
     </div> -->
-    <!-- <div style="z-index:1900;display:none;top:85px" id="quick-menu-btn" onclick="openQMenu()" class="menu-icon">
-        <div style="z-index:1905;" class="stroke"></div>
-        <div style="z-index:1905;" class="stroke"></div>
-        <div style="z-index:1905;" class="stroke"></div>
-    </div> -->
+    <div style="display:none;justify-content: flex-start;flex-wrap: nowrap;" class="mobile-nav-bar gen-flex">
+        <div style="display:none;" id="menu-icon-mobile" onclick="toggleMenu()" class="menu-icon-mobile">
+            <div style="height: 3px;" class="stroke-mobile"></div>
+            <div style="height: 3px;" class="stroke-mobile"></div>
+            <div style="height: 3px;" class="stroke-mobile"></div>
+        </div>
+        <div style="flex-grow:1"></div>
+        {%if current_user.is_authenticated%}
+            {%if current_user.name | length >= 15 %}
+                <button id="login-mobile" onclick="window.location.href='/user_account'" class="btns">{{current_user.name[:15]}}...</button>
+            {%else%}
+                <button id="login-mobile" onclick="window.location.href='/user_account'" class="btns">{{current_user.name}}</button>
+            {%endif%}
+        {%else%}
+            <button id="login-mobile" onclick="window.location.href='/manual_login'" class="btns">login</button>
+        {%endif%}
+    </div>
+    <div style="justify-content: flex-start;padding-top:20px;display: none;" class="mobile-menu gen-flex-col">
+        <div class="mobile-menu-header gen-flex-col">
+            <img src="{{ url_for('static', filename='images/logo-icon-white.png') }}" alt="Logo" class="mobile-menu-logo">
+            <span style="color:#f1f1f1" class="mobile-menu-title">Quick Messanger</span>
+        </div>
+        <div  class="mobile-menu-links gen-flex-col">
+            <a href="/"><div class="mobile-menu-link">Home</div></a>
+            {%if current_user.is_authenticated and current_user.company_id[0].company_name %}
+                <a href="/company_account"><div class="mobile-menu-link">Company Details</div></a>
+            {%else%}
+                <a href="/user_account"><div class="mobile-menu-link">Account</div></a>
+            {%endif%}
+            <a href="/about"><div class="mobile-menu-link">Info</div></a>
+            <a href="/pricing"><div class="mobile-menu-link">Payment Plans</div></a>
+            {%if current_user.is_authenticated%}
+            <a href="/compose"><div class="mobile-menu-link">Compose</div></a>
+            {%endif%}
+        </div>
+        <img src="{{ url_for('static', filename='icons/add-icon.png') }}" onclick="toggleMenu()" alt="close" class="mobile-menu-close">
+    </div>
+
     <div id="global-loader" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:99999;background:rgba(255,255,255,0.85);align-items:center;justify-content:center;flex-direction:column;">
         <div style="margin-bottom:20px;">
             <svg width="60" height="60" viewBox="0 0 50 50">
@@ -205,6 +239,18 @@
             </div>
             <div><button onclick="registerNewKeys()" style="background-color: #5a5a5a;" class="btns call-loader" id="download-recovery-file">Create News Keys</button></div><br>
             <br><br>
+        </div>
+    </div>
+    <!-- Legacy Recovery Modal  -->
+    <div id="restore-modal" style="display:none; position:fixed; top:0;left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:2em; border-radius:10px; max-width:400px; margin:auto;">
+            <h2>Restore Your Account</h2>
+            <input type="file" id="recovery-file-input" accept=".json" /><br><br>
+            <input type="text" id="restore-key-input-legacy" placeholder="Enter your recovery key" style="width:100%;" /><br><br>
+            <button id="restore-account-btn">Restore</button>
+            <div id="restore-status" style="color:red; margin-top:1em;"></div>
+            <br>
+            <button onclick="closeRecModal()" class="btns">Close</button>
         </div>
     </div>
     <!-- Install PWA Modal Prompt  -->
@@ -426,9 +472,13 @@
                             {%endif%}
                         </div>
                         <span id="username-label">{{usr_obj.name}}</span>
-                        <div style="position: absolute;visibility: hidden;z-index: -2;" id="cuser-ref">{{current}}</div>
+                        <div style="position: absolute;z-index: -2;" id="cuser-ref">{{current}}</div>
                     </div>
                     {%else%}
+                    <div style="position: absolute;z-index: -2;" id="cuser-ref"></div>
+                    <button id="login-mobile" onclick="window.location.href='/manual_login'" class="btns">login</button>
+                    {%endif%}
+                    {%if not current_user.is_authenticated %}
                     <div onclick="window.location.href='/register'" class="username gen-flex btns">
                         <span class="">Register</span>
                     </div>
@@ -467,6 +517,12 @@ function isInStandaloneMode() {
     return ('standalone' in window.navigator) && window.navigator.standalone;
 }
 
+function toggleMenu() {
+    console.log("Toggling Mobile Menu");
+    const menuIcon = document.getElementById('menu-icon-mobile');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    mobileMenu.classList.toggle('open');
+}
 
 let deferredPromptTwo = null;
 
@@ -591,7 +647,7 @@ function skipRecovery(){
             // initialise DB 
             initDB().then((db) =>{
                 console.log("db", db.objectStoreNames.contains("keys"));
-                console.log("User Not Found");
+                console.log("Base == User Not Found");
                 preRegister();
                 
                 // sessionStorage.setItem("recCredInfo", "NA");
@@ -609,7 +665,36 @@ function skipRecovery(){
                     console.log('ServiceWorker registration failed:', err);
                 });
         });
+
+        navigator.serviceWorker.ready.then(function(registration) {
+        // Listen for controllerchange to reload page after unregister
+        navigator.serviceWorker.addEventListener('controllerchange', function() {
+            window.location.reload();
+        });
+
+        // Try to fetch the root page to check for network errors
+        fetch(window.location.origin + '/')
+                .catch(function(err) {
+                    console.warn('Service worker fetch failed, unregistering...', err);
+                    registration.unregister().then(function() {
+                        // After unregister, reload to get a fresh service worker
+                        window.location.reload();
+                    });
+                });
+        });
         }
+
+        navigator.serviceWorker.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'SW_FETCH_ERROR') {
+            navigator.serviceWorker.getRegistration().then(function(registration) {
+                if (registration) {
+                registration.unregister().then(function() {
+                    window.location.reload();
+                });
+                }
+            });
+            }
+        });
 
     // Function to open the menu
     function openMenuFunc() {
@@ -687,9 +772,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             const subscription = await registration.pushManager.getSubscription();
             if (!subscription) {
                     // Service worker not registered yet
-                if(isPWAInstalled()) {
+                if(!subscription && isPWAInstalled()) {
                     // If PWA is installed, show the notification-container
-                    document.getElementById('push-subscribe-modal').style.display = 'block';   
+                    document.getElementById('push-subscribe-modal')
+                    if (modal) modal.style.display = 'block';  
                 } 
             }
         } else {

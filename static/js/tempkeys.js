@@ -66,7 +66,7 @@ async function decryptData(encryptedObj, password) {
 
 // --- Registration: Show Recovery Modal and Download File ---
 
-// Call this function after successful registration
+// Call this function after successful registration -- Legacy
 async function showRecoveryModal(userObj) {
     // userObj = {username, publicKey, privateKey}
     // Generate a random recovery key
@@ -199,7 +199,7 @@ var recBtn = document.getElementById('restore-account-btn');
 if(recBtn){
   recBtn.onclick = async function() {
       const fileInput = document.getElementById('recovery-file-input');
-      const keyInput = document.getElementById('restore-key-input');
+      const keyInput = document.getElementById('restore-key-input-legacy'); // Legacy input ID
       const statusDiv = document.getElementById('restore-status');
       statusDiv.textContent = '';
       if (!fileInput.files.length || !keyInput.value) {

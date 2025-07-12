@@ -100,7 +100,7 @@ form{
             {% endwith %}
         </div> -->
 
-        <form _lpchecked="1" action="" method="post"  enctype="multipart/form-data" >
+        <form _lpchecked="1" action="" id="updateForm" method="post"  enctype="multipart/form-data" onsubmit="return confirmSubmit();">
               <div style=""  class="img-cont">
                 {% if current_user.image %}
                       <img class="prf-image" src="{{url_for('static', filename='uploads/' + company.image)}}"/>
@@ -298,10 +298,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Algolia Places.js autocomplete for address
-    var input = document.getElementById('company_address');
-      if (input && window.places) {
-          places({ container: input });
-      }
+    // var input = document.getElementById('company_address');
+    //   if (input && window.places) {
+    //       places({ container: input });
+    //   }
+
+    
+    // Block accidental submit via autocomplete click
+    document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('updateForm');
+
+    function confirmSubmit() {
+        // Optional: Add any extra validation here
+        return true; // Allow submission when submit button is clicked
+    }
+
+    form.addEventListener('submit', function (e) {
+        // Check if submit was triggered by an actual button click
+        const isSubmitButton = e.submitter && e.submitter.type === 'submit';
+        if (!isSubmitButton) {
+            e.preventDefault();
+        }
+    });
+});
 });
 </script>
 {% endblock %}

@@ -15,6 +15,7 @@ from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
 from werkzeug.datastructures import FileStorage
 from itsdangerous.url_safe import URLSafeTimedSerializer as Serializer
+from itsdangerous import URLSafeSerializer
 import pytz
 from pywebpush import webpush, WebPushException
 import json
@@ -24,6 +25,7 @@ from QM_validators import PhoneValidator, PhoneNumberError
 from hashlib import pbkdf2_hmac
 import base64
 import threading
+from datetime import timedelta
 
 
 
@@ -31,7 +33,7 @@ import threading
 
 #Change App
 app = Flask(__name__)
-app.config['SECRET_KEY'] = "sdsd1245jfe832j2rj_32j"
+app.config['SECRET_KEY'] = "45BFdfhfh-IKMwnfhdfcA7cR08RWECfzfhfdhfdfmYHFCeXFx97-P2_ZFxddfhfddfhdhdf5DDHtyoEP4yYCQ38aIVjI"
 
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle':280}
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
@@ -45,7 +47,7 @@ app.config["VAPID_PUBLIC_KEY"] = "BF-IKMwncA7cR08RWECfzfmYHFCeXFx97-P2_ZFxd5DDHH
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db" 
 # Local
 if os.environ.get('EMAIL_INFO') == 'info@techxolutions.com':
-    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db2.db"
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db3.db"
 else:#Online
     app.config[
     "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db" 
@@ -56,6 +58,8 @@ VAPID_PUBLIC_KEY = app.config["VAPID_PUBLIC_KEY"]
 VAPID_CLAIMS = {
     "sub": "mailto:pro.dignitron@gmail.com"
 }
+
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=365)
 
 db.init_app(app)
 CORS(app)  # Allow cross-origin requests
@@ -179,7 +183,11 @@ encry_pw = Bcrypt()
 
 # @app.route("/username/<username>", methods=['POST','GET'])
 def get_all_messages():
-    usr = session.get("username")
+ 
+    usr = session.get("username", "")
+    if usr:
+        usr = serializer.loads(usr)
+
     print(" Ran First: ", usr)
     message_list = None
     if usr:
@@ -220,7 +228,11 @@ def inject_ser():
     current = None
     company = None
     usr_obj = None
-    check_user_ndb = session.get('username') #Username stored in session
+
+    check_user_ndb = session.get("username", "")
+    if check_user_ndb:
+        check_user_ndb = serializer.loads(check_user_ndb)
+
     chk_user = chat_user.query.filter_by(username=check_user_ndb).first()#confirm user in db
     if chk_user:
         print("inject_ser==Currently in Session: ",check_user_ndb )
@@ -343,26 +355,40 @@ def send_af_one():
 
 
 @app.route('/follow_company', methods=['POST', 'GET'])
-@login_required
 def follow_company():
+
+    # flask db migrate -m "Add description column to CompanyInfo"
     data = request.get_json()
-    company_id = data.get('cid_serialized')
-    cid = ser.loads(company_id)['cid']
-    if not company_id:
+    cid = data.get('cid')
+    # cid = ser.loads(company_id)['cid']
+    print("Follow Company==Company ID: ", cid)
+    if not cid:
         return jsonify({'status': 'error', 'msg': 'Company name required'}), 400
 
     # Check if the company exists
     company = company_info.query.get(cid)
+    print("Follow Company==Company Object: ", company)
     if not company:
         return jsonify({'status': 'error', 'msg': 'Company not found'}), 404
+    
+    # Check if the user is already following the company
+    existing_follower = Followers.query.filter_by(user_id=current_user.id, company_id=cid).first()
+    if existing_follower:
+        return jsonify({'status': 'success', 'msg': f'You are already following {company.company_name}'}), 200
+    
+    existing_follower = Followers.query.filter_by(ip_address=request.remote_addr, company_id=cid).first()
+    if existing_follower:
+        return jsonify({'status': 'success', 'msg': f'You are already following {company.company_name}'}), 200
+
+    followers = Followers(ip_address=request.remote_addr,company_id=cid) #ip_address=request.remote_addr,
 
     # Add the user to the company's followers
     if current_user.is_authenticated:
-        company.followers.append(current_user)
-        db.session.commit()
-        return jsonify({'status': 'success', 'msg': f'You are now following {company.company_name}'}), 200
-    else:
-        return jsonify({'status': 'error', 'msg': 'User not authenticated'}), 401
+        followers.user_id = current_user.id
+        
+    db.session.add(followers)
+    db.session.commit()
+    return jsonify({'status': 'success', 'msg': f'You are now following {company.company_name}'}), 200
 
 # import gspread
 # from oauth2client.service_account import ServiceAccountCredentials
@@ -384,6 +410,9 @@ def follow_company():
 #     # Add new row: phone, message, status, timestamp
 #     SHEET.append_row([phone, message, 'pending', datetime.now().isoformat()])
 #     return jsonify({'status': 'success', 'msg': 'SMS job queued'})
+
+serializer = URLSafeSerializer(app.config['SECRET_KEY'])
+
 
 
 @app.route("/", methods=['POST','GET'])
@@ -510,16 +539,20 @@ def save_recovery_data():
 
     if user and encry_pw.check_password_hash(user.password, password):
         def derive_key_from_password(password, salt):
+            
             # salt should be random and stored alongside the encrypted data
             key = pbkdf2_hmac('sha256', password.encode(), salt, 100_000)
             return base64.urlsafe_b64encode(key)
         
         # Fetch salt as base64 string from DB
+        print("Check User ID == save_recovery_data: ", user.id)
         salt_obj = UserKey.query.filter_by(user_id=user.id).first()
+        print("Check Salt Object in UserKey == save_recovery_data: ", salt_obj)
         salt = base64.b64decode(salt_obj.salt) if salt_obj else None
 
 
         print("Salt Retrieved: ", salt)
+        print("Check Password First == save_recovery_data: ", password)
         # salt_b64 = base64.b64encode(salt).decode('utf-8')
         key_ = derive_key_from_password(password, salt)
 
@@ -1098,6 +1131,15 @@ def get_email():
 
     return jsonify({"email":user.email,'rec_pKey':usr.pkey}),200
 
+
+@app.route('/legacy_recovery', methods=['GET'])
+def legacy_recovery():
+    # This route is for legacy recovery, it will be used to recover old users
+    # who have not registered their keys or recovery data.
+    # It will redirect to the recovery page.
+
+    return render_template("legacy_recovery.html")
+
 # Login using indexedDB's Username'
 @app.route('/login', methods=['GET'])
 def login(id=None):
@@ -1116,7 +1158,9 @@ def login(id=None):
         if user:
             login_user(user)
             flash(f"Welcome, {user.name}","success")
-            session['username'] = username.username
+            signed_username = serializer.dumps(username.username)
+            session['username'] = signed_username
+            session.permanent = True
             session['pubKey']=username.pkey
             return redirect(url_for('home'))
         else:
@@ -1142,7 +1186,9 @@ def manual_login(id=None):
             username = chat_user.query.get(user_login.cht_usr_fKey)
 
             flash(f"Welcome, {user_login.name}","success")
-            session['username'] = username.username
+            signed_username = serializer.dumps(username.username)
+            session['username'] =  signed_username
+            session.permanent = True
             session['pubKey']=username.pkey
             return redirect(url_for('home'))
         else:
@@ -1160,7 +1206,10 @@ def register_new_keys():
     if not data:
         return jsonify({"message":"No User Submitted"}),400
     
-    username_ss = session.get('username')
+    username_ss = session.get("username", "")
+    if username_ss:
+        username_ss = serializer.loads(username_ss)
+
     if not username_ss == data.get('username'):
         return jsonify({"message":"Username Mismatch"}), 401
     
@@ -1186,10 +1235,16 @@ def register_new_keys():
 @app.route('/logout')
 @login_required
 def logout():
+    session.pop('username', None)
+    session.pop('pubKey', None)
     
     logout_user()
     
     return redirect(url_for('home'))
+
+@app.route('/api/is_logged_in')
+def is_logged_in():
+    return jsonify({'logged_in': current_user.is_authenticated})
 
 def notify_all_subscribers_async(curr_user, msg, title="Q-Messanger", url="/"):
     def notify():
@@ -1207,7 +1262,9 @@ def notify_all_subscribers_async(curr_user, msg, title="Q-Messanger", url="/"):
 def register():
     # data = request.json
     
-    usr_ssn = session.get('username')
+    usr_ssn = session.get("username", "")
+    if usr_ssn:
+        usr_ssn = serializer.loads(usr_ssn)
     usrnm = chat_user.query.filter_by(username=usr_ssn).first()
     if usrnm:
         return redirect(url_for('home'))
@@ -1276,7 +1333,9 @@ def register():
             db.session.add(user_details)
             db.session.commit()
 
-            session['username'] =get_user.username
+            signed_username = serializer.dumps(get_user.username)
+            session['username'] = signed_username
+            session.permanent = True
             session['pubKey']=get_user.pkey
 
             user = User.query.filter_by(cht_usr_fKey=get_user.id).first()
@@ -1508,7 +1567,7 @@ def company_account():
             flash("Email address must be unique and not empty.", "danger")
             # Optionally, log the error or handle further
 
-        return redirect(url_for('company_account'))
+        # return redirect(url_for('company_account'))
 
     # from myproject.models import user
     return render_template("company_account.html", company_update=company_update,cmp_usr=cmp_usr,cmp_obj=cmp_obj)
@@ -1789,14 +1848,19 @@ def business_community():
 @app.route('/business_profile', methods=['POST',"GET"])
 def business_profile():
     data = request.get_json()
+    follow_status = False
     print("ID Request: ", data)
     if data:
         de_ser = ser.loads(data["cid"])
         id_ = de_ser.get('cid')
         print("ID Request: ", id_)
         company_profile = company_info.query.get(id_).to_dict()
+    
+        follow_status = Followers.query.filter_by(ip_address=request.remote_addr,company_id=id_).first()
+        if follow_status:
+            follow_status = True
 
-    return jsonify({"company":company_profile})
+    return jsonify({"company":company_profile, "follow_status": follow_status}), 200
 
     
 @app.route('/get_messages', methods=['GET'])

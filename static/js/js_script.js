@@ -134,6 +134,24 @@ function closeRefresh(){
     window.location.reload();
 } 
 
+// Handle standard JS runtime errors
+window.onerror = function (msg, url, lineNo, columnNo, error) {
+    if (msg && msg.toString().includes("A listener indicated an asynchronous response")) {
+        return true;  // Suppress this known harmless error
+    }
+    return false; // Let other errors show up normally
+};
+
+// Handle unhandled promise rejections
+window.addEventListener("unhandledrejection", function (event) {
+    if (event.reason && event.reason.message &&
+        event.reason.message.includes("message channel closed")) {
+        event.preventDefault(); // Suppress extension-related issue
+    } else {
+        console.error("Unhandled rejection:", event.reason);
+    }
+});
+
 
 
 function urlBase64ToUint8Array(base64String) {
