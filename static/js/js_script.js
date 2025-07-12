@@ -2,7 +2,7 @@
 //// Function to handle the scroll event
 //function handleScroll() {
 //
-////      console.log("Scroll Called1");
+////      // console.log("Scroll Called1");
 //      // Get the navigation menu element
 //
 //      // Store the last known scroll position
@@ -21,7 +21,7 @@
 //       if (window.innerWidth <= 768){
 //          // If the user is scrolling down and the navigation is not already at the bottom
 //          if (scrollDirection === 'down' && (windowHeight + currentScroll) >= document.body.offsetHeight-4000) {
-//            console.log("Scroll Called",currentScroll,scrollDirection);
+//            // console.log("Scroll Called",currentScroll,scrollDirection);
 //          } else {
 //            //write code
 //          }
@@ -105,14 +105,14 @@ if ('serviceWorker' in navigator) {
 
 // Register service worker and subscribe to push
 if ('serviceWorker' in navigator && 'PushManager' in window) {
-    console.log("Notification Subscription in progress...");
+    // console.log("Notification Subscription in progress...");
     // if (Notification.permission === "denied") {
     //         // Optionally, show a message to the user:
     //         alert("You have blocked notifications for this site. Please enable them in your browser settings if you want to receive notifications.");
     //     }
     navigator.serviceWorker.register('service-worker.js')
     .then(function(registration) {
-        console.log("Notification Subscription in progress...Request Permission");
+        // console.log("Notification Subscription in progress...Request Permission");
         // Request notification permission
         //  if (confirm("We'd like to notify you about new messages in your Quick Messanger's inbox. Allow?")) {
         
@@ -195,9 +195,9 @@ async function subscribeUser(registration) {
 }
 
 navigator.serviceWorker.addEventListener('message', function(event) {
-    console.log("1. We Got message from the service worker js...");
+    // console.log("1. We Got message from the service worker js...");
   if (event.data && event.data.type === 'PUSH_NOTIFICATION') {
-    console.log("2...its a push notification");
+    // console.log("2...its a push notification");
     showNotification({
       id: Date.now(),
       title: event.data.data.title,
@@ -207,7 +207,7 @@ navigator.serviceWorker.addEventListener('message', function(event) {
 });
 
 function showNotification({ id, title, message }) {
-    console.log("3...Display the Notification");
+    // console.log("3...Display the Notification");
     const container = document.getElementById('notification-container');
     if (!container) return;
 
@@ -310,7 +310,7 @@ paragraph.forEach(function(pTag){
     pTag.classList.toggle('.sel-tag');
     });
 //function pop(){
-//    console.log('Mouse Over');
+//    // console.log('Mouse Over');
 //}
 var container = document.querySelector(".app-dowload-container");
 var containerTwo = document.querySelector("#download-icon-2");
@@ -319,7 +319,7 @@ var containerTwo = document.querySelector("#download-icon-2");
 // var installBtn = document.querySelector("#pwa-install-btn");
 // Check if the browser supports service workers and PWA installation
 if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
-    console.log("PWA installation is supported.");
+    // console.log("PWA installation is supported.");
 }
 
 let deferredPrompt;
@@ -333,12 +333,12 @@ window.addEventListener('load', () => {
     const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
 
     if ('serviceWorker' in navigator) {
-        console.log("Service worker supported");
+        // console.log("Service worker supported");
 
         if (!isAppInstalled()) {
             if ('BeforeInstallPromptEvent' in window) {
                 window.addEventListener('beforeinstallprompt', (e) => {
-                    console.log('A2HS event fired');
+                    // console.log('A2HS event fired');
                     e.preventDefault();
                     deferredPrompt = e;
                     container.style.display = "flex";
@@ -354,9 +354,9 @@ window.addEventListener('load', () => {
                             deferredPrompt.prompt();
                             deferredPrompt.userChoice.then((choiceResult) => {
                                 if (choiceResult.outcome === 'accepted') {
-                                    console.log('User accepted A2HS prompt');
+                                    // console.log('User accepted A2HS prompt');
                                 } else {
-                                    console.log('User dismissed A2HS prompt');
+                                    // console.log('User dismissed A2HS prompt');
                                 }
                                 deferredPrompt = null;
                             });
@@ -367,9 +367,9 @@ window.addEventListener('load', () => {
                             deferredPrompt.prompt();
                             deferredPrompt.userChoice.then((choiceResult) => {
                                 if (choiceResult.outcome === 'accepted') {
-                                    console.log('User accepted A2HS prompt');
+                                    // console.log('User accepted A2HS prompt');
                                 } else {
-                                    console.log('User dismissed A2HS prompt');
+                                    // console.log('User dismissed A2HS prompt');
                                 }
                                 deferredPrompt = null;
                             });
@@ -380,9 +380,9 @@ window.addEventListener('load', () => {
                     //         deferredPrompt.prompt();
                     //         deferredPrompt.userChoice.then((choiceResult) => {
                     //             if (choiceResult.outcome === 'accepted') {
-                    //                 console.log('User accepted A2HS prompt');
+                    //                 // console.log('User accepted A2HS prompt');
                     //             } else {
-                    //                 console.log('User dismissed A2HS prompt');
+                    //                 // console.log('User dismissed A2HS prompt');
                     //             }
                     //             deferredPrompt = null;
                     //         });
@@ -391,7 +391,7 @@ window.addEventListener('load', () => {
 
                 });
             } else if (isFirefox) {
-                console.log("Firefox detected, showing manual install tip.");
+                // console.log("Firefox detected, showing manual install tip.");
                 container.style.display = "flex";
                 container.innerHTML = `
                     <div class="firefox-tip">
@@ -425,21 +425,21 @@ manualInstall.addEventListener('click', () => {
     const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
 
     if ('serviceWorker' in navigator) {
-        console.log("Service worker supported");
+        // console.log("Service worker supported");
 
         if (!isAppInstalled()) {
             if ('BeforeInstallPromptEvent' in window) {
                 window.addEventListener('beforeinstallprompt', (e) => {
-                    console.log('A2HS event fired');
+                    // console.log('A2HS event fired');
                     e.preventDefault();
                     deferredPrompt = e;
                     
                     deferredPrompt.prompt();
                     deferredPrompt.userChoice.then((choiceResult) => {
                             if (choiceResult.outcome === 'accepted') {
-                                console.log('User accepted A2HS prompt');
+                                // console.log('User accepted A2HS prompt');
                             } else {
-                                console.log('User dismissed A2HS prompt');
+                                // console.log('User dismissed A2HS prompt');
                             }
                             deferredPrompt = null;
                         });
@@ -447,7 +447,7 @@ manualInstall.addEventListener('click', () => {
 
                 }
             } else if (isFirefox) {
-                console.log("Firefox detected, showing manual install tip.");
+                // console.log("Firefox detected, showing manual install tip.");
                 container.style.display = "flex";
                 container.innerHTML = `
                     <div class="firefox-tip">
@@ -485,8 +485,8 @@ function changeProgressColor(){
 
         // Do not start from zero
         progressCountIncr.innerText = (sect+1);
-        //  console.log("Current Index Outside:" + currentSectionIndex);
-        //  console.log("Current Sect: Outside" + sect);
+        //  // console.log("Current Index Outside:" + currentSectionIndex);
+        //  // console.log("Current Sect: Outside" + sect);
         //  Make current progress count coral in color
 
         if(currentSectionIndex == sect){
@@ -502,7 +502,7 @@ function changeProgressColor(){
 
         }else{
 
-//            console.log("Current Index Else:" + currentSectionIndex);
+//            // console.log("Current Index Else:" + currentSectionIndex);
 //            if (!indexList.includes(currentSectionIndex)){
 
                 //Assign Classes to divs
@@ -510,7 +510,7 @@ function changeProgressColor(){
                 progressLineSep.classList.add("progress-line-sep");
                 progressCountIncr.classList.add("progress-no");
 
-                console.log("List Indexes: ",indexList);
+                // console.log("List Indexes: ",indexList);
                 }
 
                 // Append to parents div
@@ -532,7 +532,7 @@ var popCont = document.querySelectorAll('.pop-cont');
 
 quoteBtns.forEach(function(btn){
     btn.addEventListener('click', function(event){
-//    console.log("Contains Poster Quote: ",event.target);
+//    // console.log("Contains Poster Quote: ",event.target);
      if(event.target.id === 'logo_quote_btn'){
         var popScrnLogo = document.getElementById("logo_quote");
         popScrnLogo.classList.toggle("show-popup");
@@ -540,12 +540,12 @@ quoteBtns.forEach(function(btn){
 
         }else if(event.target.id === 'poster_quote_btn'){
             var popScrnPoster = document.getElementById("poster_quote");
-//            console.log("Contains Poster Quote: ")
+//            // console.log("Contains Poster Quote: ")
             popScrnPoster.classList.toggle("show-popup");
             popup.classList.toggle("show-popup");
         }else if(event.target.id === 'flyer_quote_btn'){
             var popScrnPoster = document.getElementById("flyer_quote");
-            console.log("Contains Poster Quote: ")
+            // console.log("Contains Poster Quote: ")
             popScrnPoster.classList.toggle("show-popup");
             popup.classList.toggle("show-popup");
             }
@@ -571,7 +571,7 @@ const navlinks = document.querySelectorAll(".nav-link");
 //navSlide();
 
 //function openPopup(event){
-//     console.log("Contains Poster Quote")
+//     // console.log("Contains Poster Quote")
 //};
 
 //    const popCont = document.querySelector('.pop-cont');
@@ -581,7 +581,7 @@ const navlinks = document.querySelectorAll(".nav-link");
 $(document).ready(function(){
 
     $('.pop-btns').click(function(){
-//        console.log('Cleicked');
+//        // console.log('Cleicked');
         $('form').serializeArray();
         $('form').submit();
     })
@@ -604,11 +604,11 @@ function closePopup(){
 //     elem.addEventListener('click', function(event){
 
 //         if (event.target.classList.contains("activate-options")){
-// //              console.log("Clicked: ",event.target.style.color);
+// //              // console.log("Clicked: ",event.target.style.color);
 //               elem.classList.remove("activate-options");
 //               elem.classList.add("bool-options");
 //         }else{
-// //            console.log("Click: ",event.target);
+// //            // console.log("Click: ",event.target);
 //             elem.classList.add("activate-options");
 //             elem.classList.remove("bool-options");
 //         }

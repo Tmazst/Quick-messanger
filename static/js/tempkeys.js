@@ -172,7 +172,7 @@ async function AutoSaveKeys(){
 
 
 async function updateRecoveryStatus(usrname){
-    console.log("1. Recovery Status Username", usrname);
+    // // console.log("1. Recovery Status Username", usrname);
     var response = await fetch("/recovery_status_update",{
             method: 'POST',
             headers: {
@@ -181,7 +181,7 @@ async function updateRecoveryStatus(usrname){
                 body: JSON.stringify({ username: usrname })
             });
     var data = await response.json();
-    console.log("2. Recovery Status", data.res);
+    // // console.log("2. Recovery Status", data.res);
     };
 
 
@@ -226,7 +226,7 @@ if(recBtn){
 
 // Example IndexedDB save function (replace with your own logic)
 async function saveCredentialsToIndexedDB(userObj) {
-    console.log("Parse Obj: ",userObj);
+    // // console.log("Parse Obj: ",userObj);
     var myUsername = userObj.myUsrname;
     var exportedPublicKey = userObj.Pkey;
     var exportedPrivateKey = userObj.Prkey;
@@ -236,7 +236,7 @@ async function saveCredentialsToIndexedDB(userObj) {
     // await idbKeyval.set('user', userObj);
     // For custom logic, use indexedDB API to store userObj
     // ...
-    console.log('Saving to IndexedDB:', userObj);
+    // // console.log('Saving to IndexedDB:', userObj);
 }
 
 function shouldShowAutoRecoveryModal() {
@@ -286,7 +286,7 @@ async function autoRecoverKeys() {
     }
 
     recovery_key = dat.key;
-    console.log("Recovery Key: ", recovery_key);
+    // // console.log("Recovery Key: ", recovery_key);
     document.getElementById("error-field").textContent = 'Please wait.....';
     const response = await fetch('/get_recovery_data', {
         method: 'POST',
@@ -305,6 +305,6 @@ async function autoRecoverKeys() {
     await saveCredentialsToIndexedDB(userObj);
     document.getElementById("error-field").textContent = 'Your account keys restored';
     document.querySelector("#auto-recovery-modal").style.display = "none";
-    console.log("User Object: ", userObj);
+    // // console.log("User Object: ", userObj);
     // Optionally, auto-login or reload
 }

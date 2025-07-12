@@ -17,14 +17,14 @@ function initDB() {
                 keyPath: "Usernames",
                 autoIncrement:true
             });
-            console.log("DB Created for Keys");
+            // console.log("DB Created for Keys");
         };
 
     };//onupgraneeded
 
     request.onsuccess = (event) =>{
         db = event.target.result;
-        console.log("IndexedDB opened @initDB");
+        // console.log("IndexedDB opened @initDB");
         resolve(db);
         // preRegister();
     };//onsuccess
@@ -47,7 +47,7 @@ async function encryptMessage() {
     var recDuplicatedMsg = document.querySelector("#rec-duplicated-msg");
     var message = messageField.value;
     // var sampleMsg = "Hi How are you Today?"
-    console.log("@encryptMessage");
+    // console.log("@encryptMessage");
     const tx = db.transaction("keys","readwrite");
     const store = tx.objectStore("keys");
     const request = store.getAll();
@@ -57,15 +57,15 @@ async function encryptMessage() {
             const myUsrname = request.result[0].Usernames;// Get the username from the first record
             const pKey = request.result[0].publicKey;
             const prKey = request.result[0].privateKey;
-            console.log("Username: ",myUsrname);
-            console.log("Private Key: ",pKey );
+            // console.log("Username: ",myUsrname);
+            // console.log("Private Key: ",pKey );
 
             const pubKey = await window.crypto.subtle.importKey("jwk",pKey,{ name: "RSA-OAEP", hash: "SHA-256" },
                         true,
                         ["encrypt"]
                     );
 
-            console.log("IMported pKey: ",pubKey);
+            // console.log("IMported pKey: ",pubKey);
 
             // // Encrypt the message using the recipient's public key
             const encrypted = await window.crypto.subtle.encrypt(
@@ -75,7 +75,7 @@ async function encryptMessage() {
             // Convert the encrypted message to a base64 string for transmission
             const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
 
-            console.log("Encrypted Message: ",encryptedBase64);
+            // console.log("Encrypted Message: ",encryptedBase64);
             messageField.value = "";
             
             messageField.value = encryptedBase64;
@@ -86,7 +86,7 @@ async function encryptMessage() {
             //..I am using the receiver public key to encrypt the message
             //..so that the receiver can decrypt it using their private key
             //..I am sending 2 versions of the messageField 1 for the sender and 1 for the receiver to be able to decrypt it with thier own private key
-            console.log("Recipient Public Key: ", recPKey.value);
+            // console.log("Recipient Public Key: ", recPKey.value);
             // Convert the recipient's public key from base64 to JWK object
             const recPKeyJson = atob(recPKey.value);
             const recPKeyJwk = JSON.parse(recPKeyJson);
@@ -104,20 +104,20 @@ async function encryptMessage() {
             const recEncryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(recEncrypted)));
 
             recDuplicatedMsg.value = recEncryptedBase64;
-            console.log("Recipient Encrypted Message: ",recEncryptedBase64);
+            // console.log("Recipient Encrypted Message: ",recEncryptedBase64);
 
             if(submitBtn){
                 setTimeout(() => {
                     submitBtn.click();
-                    console.log("Encrypted Message set to-:", messageField.value);
+                    // console.log("Encrypted Message set to-:", messageField.value);
                 }, 500);
             }else{
-                console.log("Submit Button not found");
+                // console.log("Submit Button not found");
             }
 
         
         }else{
-            console.log("Error @encryptMessage");
+            // console.log("Error @encryptMessage");
         }
     }
 
@@ -133,7 +133,7 @@ async function encryptMessageChat(event) {
     var receiverPKey =  form.elements['recipient_pkey'];//document.querySelector("#recipient_pkey");
     var recDuplicatedMsg = form.elements['rec_encrypted-msg'];  //document.querySelector("#rec-duplicated-msg");
     var message = messageField.value;
-    console.log("@encryptMessage Chat");
+    // console.log("@encryptMessage Chat");
     const tx = db.transaction("keys","readwrite");
     const store = tx.objectStore("keys");
     const request = store.getAll();
@@ -143,26 +143,26 @@ async function encryptMessageChat(event) {
             const myUsrname = request.result[0].Usernames;// Get the username from the first record
             const pKey = request.result[0].publicKey;
             const prKey = request.result[0].privateKey;
-            console.log("Username Chat: ",myUsrname);
-            console.log("Private Key Chat: ",pKey );
+            // console.log("Username Chat: ",myUsrname);
+            // console.log("Private Key Chat: ",pKey );
 
             const pubKey = await window.crypto.subtle.importKey("jwk",pKey,{ name: "RSA-OAEP", hash: "SHA-256" },
                         true,
                         ["encrypt"]
                     );
 
-            console.log("IMported pKey Chat: ",pubKey);
-            console.log("Message Chat: ",message);
+            // console.log("IMported pKey Chat: ",pubKey);
+            // console.log("Message Chat: ",message);
             let encrypted;
 
             // try {
-                console.log("About to encrypt. pubKey:", pubKey, "message:", message);
+                // console.log("About to encrypt. pubKey:", pubKey, "message:", message);
                 const encodedMsg = new TextEncoder().encode(message);
-                console.log("Encoded message:", encodedMsg);
+                // console.log("Encoded message:", encodedMsg);
                 encrypted = await window.crypto.subtle.encrypt(
                     { name: "RSA-OAEP" }, pubKey, encodedMsg
                 );
-                console.log("Encrypted result:", encrypted);
+                // console.log("Encrypted result:", encrypted);
             // } catch (e) {
             //     console.error("Encryption failed:", e);
             // }
@@ -172,7 +172,7 @@ async function encryptMessageChat(event) {
             //     { name: "RSA-OAEP" }, pubKey, new TextEncoder().encode(message)
             // );
 
-            // console.log("Encrypted Message Chat: ",encryptedBase64);
+            // // console.log("Encrypted Message Chat: ",encryptedBase64);
             // Convert the encrypted message to a base64 string for transmission
             const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
 
@@ -187,8 +187,8 @@ async function encryptMessageChat(event) {
             //..so that the receiver can decrypt it using their private key
             //..I am sending 2 versions of the messageField 1 for the sender and 1 for the receiver to be able to decrypt it with thier own private key
             var recPKey = receiverPKey;
-            console.log("Recipient Public Key Chat: ", recPKey.value);
-            console.log("Recipient Public Key Chat: ", recPKey.value);
+            // console.log("Recipient Public Key Chat: ", recPKey.value);
+            // console.log("Recipient Public Key Chat: ", recPKey.value);
             // Convert the recipient's public key from base64 to JWK object
             const recPKeyJson = atob(recPKey.value);
             const recPKeyJwk = JSON.parse(recPKeyJson);
@@ -206,29 +206,29 @@ async function encryptMessageChat(event) {
             const recEncryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(recEncrypted)));
 
             recDuplicatedMsg.value = recEncryptedBase64;
-            console.log("Recipient Encrypted Message Chat: ",recEncryptedBase64);
+            // console.log("Recipient Encrypted Message Chat: ",recEncryptedBase64);
 
             replyForm.submit();
 
             // if(submitBtn){
             //     setTimeout(() => {
                     
-            //         console.log("Encrypted Message set to-:", messageField.value);
+            //         // console.log("Encrypted Message set to-:", messageField.value);
             //     }, 500);
             // }else{
-            //     console.log("Submit Button not found");
+            //     // console.log("Submit Button not found");
             // }
 
         
         }else{
-            console.log("Error @encryptMessage");
+            // console.log("Error @encryptMessage");
         }
     }
 
 }
 
 sendForm = async () => {
-    console.log("Send Form Called");
+    // console.log("Send Form Called");
     // var submitBtn = document.getElementById('submit-form');
     
     // e.preventDefault();
@@ -243,14 +243,14 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".nav-message-text").forEach(function(elmsgDiv){
         var encryptedBase64 = elmsgDiv.getAttribute("data-encrypted");
         if (encryptedBase64) {
-            console.log("Encrypted Base64: ", encryptedBase64);
+            // console.log("Encrypted Base64: ", encryptedBase64);
             decryptNavMessage(encryptedBase64, elmsgDiv).then(() => {
-                console.log("Decryption completed");
+                // console.log("Decryption completed");
             }).catch((error) => {
                 console.error("Decryption failed:", error);
             });
         } else {
-            console.log("No encrypted message found.");
+            // console.log("No encrypted message found.");
         }
 
     })
@@ -259,14 +259,14 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".message-text").forEach(function(elmsgDiv){
         var encryptedBase64 = elmsgDiv.getAttribute("data-encrypted");
         if (encryptedBase64) {
-            console.log("Encrypted Base64: ", encryptedBase64);
+            // console.log("Encrypted Base64: ", encryptedBase64);
             decryptMessage(encryptedBase64, elmsgDiv).then(() => {
-                console.log("Decryption completed");
+                // console.log("Decryption completed");
             }).catch((error) => {
                 console.error("Decryption failed:", error);
             });
         } else {
-            console.log("No encrypted message found.");
+            // console.log("No encrypted message found.");
         }
 
     })
@@ -275,14 +275,14 @@ document.addEventListener("DOMContentLoaded", function () {
      document.querySelectorAll(".message-body").forEach(function(msgBdyDiv){
         var encryptedBase64 = msgBdyDiv.getAttribute("data-message");
         if (encryptedBase64) {
-            console.log("Encrypted Base64: ", encryptedBase64);
+            // console.log("Encrypted Base64: ", encryptedBase64);
             decryptMessageBody(encryptedBase64, msgBdyDiv).then(() => {
-                console.log("Decryption completed");
+                // console.log("Decryption completed");
             }).catch((error) => {
                 console.error("Decryption failed:", error);
             });
         } else {
-            console.log("No encrypted message found.");
+            // console.log("No encrypted message found.");
         }
 
     })
@@ -292,10 +292,10 @@ document.addEventListener("DOMContentLoaded", function () {
 async function decryptNavMessage(encryptedBase64,elmsgDiv) {
      if (!db) {
         // If db is not initialized, wait for it
-        console.log("DB not initialized, calling initDB");
+        // console.log("DB not initialized, calling initDB");
         db = await initDB();
     }
-    console.log("@decryptMessage");
+    // console.log("@decryptMessage");
     const tx = db.transaction("keys","readwrite");
     const store = tx.objectStore("keys");
     const request = store.getAll();
@@ -305,15 +305,15 @@ async function decryptNavMessage(encryptedBase64,elmsgDiv) {
             const myUsrname = request.result[0].Usernames;// Get the username from the first record
             const pKey = request.result[0].publicKey;
             const prKey = request.result[0].privateKey;
-            console.log("Username: ",myUsrname);
-            console.log("Private Key: ",pKey );
+            // console.log("Username: ",myUsrname);
+            // console.log("Private Key: ",pKey );
 
             const privKey = await window.crypto.subtle.importKey("jwk",prKey,{ name: "RSA-OAEP", hash: "SHA-256" },
                         true,
                         ["decrypt"]
                     );
 
-            console.log("IMported prKey: ",privKey);
+            // console.log("IMported prKey: ",privKey);
 
             // Convert the base64 string back to an ArrayBuffer
             const encryptedBuffer = new Uint8Array(atob(encryptedBase64).split("").map(c => c.charCodeAt(0)));
@@ -337,10 +337,10 @@ async function decryptNavMessage(encryptedBase64,elmsgDiv) {
             
             
 
-            console.log("Decrypted Message: ",decryptedMessage);
+            // console.log("Decrypted Message: ",decryptedMessage);
 
         }else{
-            console.log("Error @decryptMessage");
+            // console.log("Error @decryptMessage");
         }
     }
     
@@ -350,10 +350,10 @@ async function decryptNavMessage(encryptedBase64,elmsgDiv) {
 async function decryptMessage(encryptedBase64,elmsgDiv) {
      if (!db) {
         // If db is not initialized, wait for it
-        console.log("DB not initialized, calling initDB");
+        // console.log("DB not initialized, calling initDB");
         db = await initDB();
     }
-    console.log("@decryptMessage");
+    // console.log("@decryptMessage");
     const tx = db.transaction("keys","readwrite");
     const store = tx.objectStore("keys");
     const request = store.getAll();
@@ -363,15 +363,15 @@ async function decryptMessage(encryptedBase64,elmsgDiv) {
             const myUsrname = request.result[0].Usernames;// Get the username from the first record
             const pKey = request.result[0].publicKey;
             const prKey = request.result[0].privateKey;
-            console.log("Username: ",myUsrname);
-            console.log("Private Key: ",pKey );
+            // console.log("Username: ",myUsrname);
+            // console.log("Private Key: ",pKey );
 
             const privKey = await window.crypto.subtle.importKey("jwk",prKey,{ name: "RSA-OAEP", hash: "SHA-256" },
                         true,
                         ["decrypt"]
                     );
 
-            console.log("IMported prKey: ",privKey);
+            // console.log("IMported prKey: ",privKey);
 
             // Convert the base64 string back to an ArrayBuffer
             const encryptedBuffer = new Uint8Array(atob(encryptedBase64).split("").map(c => c.charCodeAt(0)));
@@ -391,10 +391,10 @@ async function decryptMessage(encryptedBase64,elmsgDiv) {
             elmsgDiv.innerHTML = decryptedMessage;
             
 
-            console.log("Decrypted Message: ",decryptedMessage);
+            // console.log("Decrypted Message: ",decryptedMessage);
 
         }else{
-            console.log("Error @decryptMessage");
+            // console.log("Error @decryptMessage");
         }
     }
     
@@ -404,10 +404,10 @@ async function decryptMessage(encryptedBase64,elmsgDiv) {
 async function decryptMessageBody(encryptedBase64,elmsgDiv) {
      if (!db) {
         // If db is not initialized, wait for it
-        console.log("DB not initialized, calling initDB");
+        // console.log("DB not initialized, calling initDB");
         db = await initDB();
     }
-    console.log("@decryptMessage2:", encryptedBase64);
+    // console.log("@decryptMessage2:", encryptedBase64);
     const tx = db.transaction("keys","readwrite");
     const store = tx.objectStore("keys");
     const request = store.getAll();
@@ -417,15 +417,15 @@ async function decryptMessageBody(encryptedBase64,elmsgDiv) {
             const myUsrname = request.result[0].Usernames;// Get the username from the first record
             const pKey = request.result[0].publicKey;
             const prKey = request.result[0].privateKey;
-            console.log("Username: ",myUsrname);
-            console.log("Private Key: ",pKey );
+            // // console.log("Username: ",myUsrname);
+            // // console.log("Private Key: ",pKey );
 
             const privKey = await window.crypto.subtle.importKey("jwk",prKey,{ name: "RSA-OAEP", hash: "SHA-256" },
                         true,
                         ["decrypt"]
                     );
 
-            console.log("IMported prKey2: ",privKey);
+            // // console.log("IMported prKey2: ",privKey);
 
             // Convert the base64 string back to an ArrayBuffer
             const encryptedBuffer = new Uint8Array(atob(encryptedBase64).split("").map(c => c.charCodeAt(0)));
@@ -444,17 +444,17 @@ async function decryptMessageBody(encryptedBase64,elmsgDiv) {
             elmsgDiv.innerHTML = decryptedMessage;
            
 
-            console.log("Decrypted Message2: ",decryptedMessage);
+            // // console.log("Decrypted Message2: ",decryptedMessage);
 
         }else{
-            console.log("Error @decryptMessage");
+            // console.log("Error @decryptMessage");
         }
     }
     
 }
 
 function saveUsername(user){
-    console.log("Save Is Called: ",user);
+    // // console.log("Save Is Called: ",user);
 }
 
 async function preRegister(){
@@ -464,11 +464,11 @@ async function preRegister(){
     var loginId = document.querySelector("#login");
     var goRegister = document.querySelector("#go-register");
     var currentFromServ = document.querySelector("#cuser-ref");
-    console.log("CURRENT FROM SERVER: ", currentFromServ.textContent);
+    // // console.log("CURRENT FROM SERVER: ", currentFromServ.textContent);
 
     if (modal.style.display === "flex") {
         modal.style.display = "none";
-        console.log("Turn OFF Alert Box");
+        // console.log("Turn OFF Alert Box");
         return;
     };
 
@@ -477,23 +477,23 @@ async function preRegister(){
     const request = store.getAll();
 
     request.onsuccess = async function() {
-        console.log("Request Success: ", store);
+        // // console.log("Request Success: ", store);
         if (request.result && request.result.length > 0) {
             const { Usernames: myUsrname, publicKey: Pkey, privateKey: Prkey } = request.result[0];
-            console.log("CURRENT FROM BROWSER: ", myUsrname);
+            // console.log("CURRENT FROM BROWSER: ", myUsrname);
 
             if (!myUsrname) {
-                console.log("Username Not Found from Browser");
+                // console.log("Username Not Found from Browser");
                 return;
             }
 
             if (myUsrname !== currentFromServ.textContent) {
                 if (currentFromServ.textContent === "") {
-                    console.log("No Username Found on Server");
+                    // console.log("No Username Found on Server");
                     return;
                     // proceed to open login modal 
                 } else {
-                    console.log("Alert!! Username Mismatch");
+                    // console.log("Alert!! Username Mismatch");
                     autoRecoverKeysModal();
                     return;
                 }
@@ -502,30 +502,30 @@ async function preRegister(){
 
             
             if (currentFromServ.textContent === "") {
-                    console.log("No Username Found on Server 2");
+                    // // console.log("No Username Found on Server 2");
                     return;
                     // proceed to open login modal 
                 } 
                 
     
             // Username matches
-            console.log("Username matching: ","IndexedDB: ", myUsrname, ",Server Side: ", currentFromServ.textContent);
+            // // console.log("Username matching: ","IndexedDB: ", myUsrname, ",Server Side: ", currentFromServ.textContent);
 
             if (currentFromServ.textContent === myUsrname) {
-                console.log("Username matches, proceeding to register new keys");
+                // // console.log("Username matches, proceeding to register new keys");
                 fetch('/api/is_logged_in')
                 .then(res => res.json())
                 .then(data => {
                     if (data.logged_in) {
-                        console.log("User is logged in",data.logged_in);
+                        // // console.log("User is logged in",data.logged_in);
                         if(document.querySelector("#login-mobile").textContent === "login"){
-                            console.log("Turn ON Alert Box");
+                            // console.log("Turn ON Alert Box");
                             modal.style.display = "flex";
                             loginId.href = "/login?id=" + myUsrname;
                         }
                     } else {
-                        console.log("User is NOT logged in");
-                        console.log("Turn ON Alert Box");
+                        // // console.log("User is NOT logged in");
+                        // // console.log("Turn ON Alert Box");
                         modal.style.display = "flex";
                         loginId.href = "/login?id=" + myUsrname;
                     }
@@ -540,13 +540,13 @@ async function preRegister(){
             });
 
             const data = await response.json();
-            console.log("---Rec_Status_Check: ", data.status);
+            // console.log("---Rec_Status_Check: ", data.status);
 
             if (data.status === "False") {
                 autoRecoverCheck({ myUsrname, Pkey, Prkey });
             } else {
                 if(currentFromServ.textContent===""){
-                    console.log("Turn ON Alert Box");
+                    // console.log("Turn ON Alert Box");
                     modal.style.display = "flex";
                     loginId.href = "/login?id=" + myUsrname;
                 }else{
@@ -555,15 +555,15 @@ async function preRegister(){
             }
         } else {
             if (currentFromServ.textContent === "") {
-                    console.log("No Username Found on Server 3");
+                    // console.log("No Username Found on Server 3");
                 } else {
-                    console.log("Alert!! Username Mismatch");
+                    // console.log("Alert!! Username Mismatch");
                     autoRecoverKeysModal();
                 }
                 return;
         }
     };
-    // console.log("preRegister Called");
+    // // console.log("preRegister Called");
 };
 
 
@@ -595,21 +595,21 @@ async function registerNewKeys(){
     var currentFromServ = document.querySelector("#cuser-ref");
 
     if( currentFromServ.textContent === "") {
-        console.log("Your username is not set on the server");
+        // console.log("Your username is not set on the server");
         alert("Your username is not set on the server. Please contact support.");
         return;
     };
 
     // Example usage
     const myUsername = currentFromServ.textContent; // Generate a 10-character base32 string
-    console.log("Random Base32 String:", myUsername);
+    // console.log("Random Base32 String:", myUsername);
 
     // Open the IndexedDB database
     const request = indexedDB.open("QMessangerDB4", 4);
 
     request.onsuccess = async function (event) {
             db = event.target.result;
-            console.log("Database opened @register");
+            // console.log("Database opened @register");
 
             // Step 1: Generate RSA key pair
             const keyPair = await window.crypto.subtle.generateKey(
@@ -629,7 +629,7 @@ async function registerNewKeys(){
             // Step 2: Export the public key as JWK
             const exportedPublicKey = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey);
             const exportedPrivateKey = await crypto.subtle.exportKey("jwk", keyPair.privateKey);
-            console.log("Exported public key JWK: @register", exportedPublicKey);
+            // console.log("Exported public key JWK: @register", exportedPublicKey);
 
             // Step 3: Save it
             savePublicKey(myUsername, exportedPublicKey, exportedPrivateKey);
@@ -660,7 +660,7 @@ async function registerNewKeys(){
             })
             .then(response => response.json())
             .then(data => {
-                console.log("Server Response:", data);
+                // console.log("Server Response:", data);
                 if (data.success) {
                     alert("Keys registered successfully!");
                     window.location.href = "/login?id=" + myUsername;
@@ -673,7 +673,7 @@ async function registerNewKeys(){
 
 // Register 
 async function register() {
-    console.log("Register")
+    // console.log("Register")
 
     var modal = document.querySelector("#alert-confirm");
     modal.style.display = "none";
@@ -691,14 +691,14 @@ async function register() {
 
     // Example usage
     const myUsername = generateRandomBase32String(10); // Generate a 10-character base32 string
-    console.log("Random Base32 String:", myUsername);
+    // console.log("Random Base32 String:", myUsername);
 
     // Open the IndexedDB database
     const request = indexedDB.open("QMessangerDB4", 4);
 
     request.onsuccess = async function (event) {
         db = event.target.result;
-        console.log("Database opened @register");
+        // console.log("Database opened @register");
 
         // Step 1: Generate RSA key pair
         const keyPair = await window.crypto.subtle.generateKey(
@@ -718,7 +718,7 @@ async function register() {
         // Step 2: Export the public key as JWK
         const exportedPublicKey = await window.crypto.subtle.exportKey("jwk", keyPair.publicKey);
         const exportedPrivateKey = await crypto.subtle.exportKey("jwk", keyPair.privateKey);
-        console.log("Exported public key JWK: @register", exportedPublicKey);
+        // console.log("Exported public key JWK: @register", exportedPublicKey);
 
         // Step 3: Save it
         savePublicKey(myUsername, exportedPublicKey, exportedPrivateKey);
@@ -741,12 +741,12 @@ async function register() {
         var pKey = document.querySelector("#pKey");
         var usrName= document.querySelector("#username");
         //const pubBase64 = btoa(String.fromCharCode(...new Uint8Array(jwk)));// Convert the public key to a base64 string for transmission
-        console.log("Base64 Public Key:", pubBase64);
+        // console.log("Base64 Public Key:", pubBase64);
         setTimeout(() => {
             usrName.value = "";
             pKey.value = pubBase64;
             usrName.value = myUsername;
-            console.log("Username set to-:", usrName.value);
+            // console.log("Username set to-:", usrName.value);
             // sendEncryptedWelcomeMessage(myUsername, exportedPublicKey);
         }, 500);
 
@@ -760,7 +760,7 @@ async function register() {
         //     body: JSON.stringify({ username: username })
         // });
         // var data = await response.json();
-        // console.log("Rec_Status_Rec: ",data.res);
+        // // console.log("Rec_Status_Rec: ",data.res);
 
         // Optional: Use MutationObserver to monitor changes and override them
         // const observer = new MutationObserver(() => {
@@ -768,7 +768,7 @@ async function register() {
         //     usrName.value = "";
         //     usrName.value = myUsername;
         //     usrName.setAttribute('value', myUsername);
-        //     console.log("Username corrected to:", usrName.value);
+        //     // console.log("Username corrected to:", usrName.value);
         // }
     // });
 
@@ -787,7 +787,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const username = request.result[0].Usernames;// Get the username from the first record
             const pKey = request.result[0].publicKey;
 
-            console.log("Testing Auto Message.....: ",username);
+            // console.log("Testing Auto Message.....: ",username);
             const welcomeText = "Hello and welcome to Quick Messanger! Start connecting and growing your business today. Should you have any enquiries, please feel free to use this platform for a prompt response.";
 
             // Import the user's public key
@@ -816,7 +816,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 message: encryptedBase64
             };
             try {
-                console.log("Testing Auto Message.....:2 ",welcomeMsg);
+                // console.log("Testing Auto Message.....:2 ",welcomeMsg);
                 const response = await fetch("/send_message", {
                     method: "POST",
                     headers: {
@@ -825,7 +825,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     body: JSON.stringify(welcomeMsg)
                 });
                 const result = await response.json();
-                console.log("Welcome message sent:", result);
+                // console.log("Welcome message sent:", result);
             } catch (err) {
                 console.error("Failed to send welcome message:", err);
             }
@@ -854,20 +854,20 @@ function savePublicKey(username, publicJwk, privateJwk) {
     const getAllRequest = store.getAll();
 
     getAllRequest.onsuccess = async () =>{
-        console.log("DB Output: @savePublicKey", getAllRequest.result);
+        // console.log("DB Output: @savePublicKey", getAllRequest.result);
 
         // Extract and log the IDs of the keys
         const keyIds = getAllRequest.result.map(entry => entry.Usernames);
-        console.log("Key IDs:", keyIds);   
+        // console.log("Key IDs:", keyIds);   
 
         const keys = getAllRequest.result;
         // Delete all keys if the user confirms
         const deleteTx = db.transaction("keys", "readwrite");
         const deleteStore = deleteTx.objectStore("keys");
         if (keys.length >= 1) {
-        console.log("Keys to delete: ", keys)
+        // console.log("Keys to delete: ", keys)
         keys.forEach((key) => {
-            console.log("Almost Deleted");
+            // console.log("Almost Deleted");
             deleteStore.delete(key.Usernames);
         });
         };
@@ -880,7 +880,7 @@ function savePublicKey(username, publicJwk, privateJwk) {
       privateKey: privateJwk
     });
 
-    tx.oncomplete = () => console.log("JWK saved for", username);
+    tx.oncomplete = () => // console.log("JWK saved for", username);
     tx.onerror = (e) => console.error("Save failed:", e.target.error);
 };
 

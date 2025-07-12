@@ -48,7 +48,7 @@ self.addEventListener('fetch', event => {
 
 
 self.addEventListener('push', function(event) {
-  console.log("Push Event Called2!");
+  // console.log("Push Event Called2!");
     let data = {};
     if (event.data) {
       data = event.data.json();
@@ -72,12 +72,12 @@ self.addEventListener('push', function(event) {
       self.registration.showNotification(data.title || 'New Message', options)
     );
 
-    console.log(">>>>");
+    // console.log(">>>>");
     self.clients.matchAll({type: 'window'}).then(function(clients) {
-      console.log("Custom PUSH_NOTIFICATION Data: ", data);
-      console.log("CLIENTS: ", clients);
+      // console.log("Custom PUSH_NOTIFICATION Data: ", data);
+      // console.log("CLIENTS: ", clients);
       clients.forEach(function(client) {
-        console.log("Custom PUSH_NOTIFICATION Data: ", data);
+        // console.log("Custom PUSH_NOTIFICATION Data: ", data);
         client.postMessage({type: 'PUSH_NOTIFICATION', data: data});
       });
   });
@@ -88,7 +88,7 @@ self.addEventListener('push', function(event) {
 
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
-  console.log("Username @Push: ",event.notification.data.url);
+  // console.log("Username @Push: ",event.notification.data.url);
   // Extract username or other params from notification data
   const username = event.notification.data && event.notification.data.username;
   let getMessagesUrl = event.notification.data.url;
