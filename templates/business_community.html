@@ -506,15 +506,15 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                         <div class="tagline tag-in-card"><span style="text-decoration: i;"><i></i></span></div>
                     {%endif%}
                     <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
-                        {%if company.website %}
-                        <a href="{{company.website}}" target="_blank">
+                        {%if company.website_link %}
+                        <a href="{{company.website_link}}" target="_blank">
                             <div class="social-media-cont">
                                 <img src="static/icons/website-outline-icon.png" />
                             </div>
                         </a>
                         {%endif%}
-                        {%if company.fb_link %}
-                        <a href="{{company.fb_link}}" target="_blank">
+                        {%if company.facebook_link %}
+                        <a href="{{company.facebook_link}}" target="_blank">
                             <div class="social-media-cont">
                                 <img src="static/icons/facebook-outline-icon.png" />
                             </div>
@@ -955,8 +955,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="modal-field" style="font-size:14px;font-weight:500"><span class="modal-label"><img src="/static/icons/location-icon.png" alt="Address"></span> ${company.company_address || ''}</div>
                 <div class="modal-field"><span class="modal-label"><img src="/static/icons/tel-blue-outline.png" alt="Contacts"></span> <a href="tel:${company.company_contacts || ''}">${company.company_contacts || ''}</a></div>
                 ${company.email ? `<div class="modal-field link-overflow-x"><span class="modal-label"><img src="/static/icons/email-blue-outline.png" alt="Email"></span> <a href="mailto:${company.email}">${company.email}</a></div>` : ''}
-                ${company.website ? `<div class="modal-field link-overflow-x"><span class="modal-label"><img src="/static/icons/website-outline-icon.png" alt="Website"></span> <a href="${company.website}" target="_blank">${company.website}</a></div>` : ''}
-                ${company.fb_link ? `<div class="modal-field link-overflow-x"><span class="modal-label"><img src="/static/icons/facebook-outline-icon.png" alt="Facebook"></span> <a href="mailto:${company.fb_link}">${company.fb_link}</a></div>` : ''}
+                ${company.website_link ? `<div class="modal-field link-overflow-x"><span class="modal-label"><img src="/static/icons/website-outline-icon.png" alt="Website"></span> <a href="${company.website_link}" target="_blank">${company.website_link}</a></div>` : ''}
+                ${company.facebook_link ? `<div class="modal-field link-overflow-x"><span class="modal-label"><img src="/static/icons/facebook-outline-icon.png" alt="Facebook"></span> <a href="mailto:${company.facebook_link}">${company.facebook_link}</a></div>` : ''}
             
             </div>
             <div class="gen-flex line-bottom"><img src="static/icons/portfolio-icon.png" style="height:40px;width:40px;" />Work We've Done</div>
