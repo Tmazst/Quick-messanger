@@ -1075,6 +1075,28 @@ def compose():
     return render_template("compose.html", users=users,usr=curr_user,form=message_form, chat_with = chat_with,chat_with_company=chat_with_company )
 
 
+@app.route('/campaign_route', methods=['POST',"GET"])
+# @login_required
+def campaign_route():
+    view = None
+
+    requested_list_view = request.args.get("req_view")
+    if requested_list_view:
+        view = requested_list_view
+    # Convert list of dicts to list of objects
+    company_dicts = [c.to_dict() for c in company_info.query.all()]
+    company_objs = [CompanyObj(**d) for d in company_dicts]
+
+    for comp in company_objs:
+        # for prop in comp:
+        print("DEBUG Companies: ", comp.company_name)
+
+    companies = company_info.query.all()
+    categories = {comp.category for comp in companies}
+
+    return render_template("campaign_route.html",companies=company_objs,categories=categories,view=view)
+
+
 @app.route('/compose_mobile', methods=['POST',"GET"])
 # @login_required
 def compose_mobile():
