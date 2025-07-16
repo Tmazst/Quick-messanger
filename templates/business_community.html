@@ -426,7 +426,8 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                         <div data-cid="{{ser.dumps({'cid':company.id})}}" style="justify-content: flex-start;" class="list-card gen-flex">
                             <img style="height:80px !important" src="static/uploads/{{company.logo}}" class="comp-logos" />
                             <div class="gen-flex-col">
-                                <div class="comp_name">{{company.company_name}}</div>
+                                <div  class="comp-name">{{company.company_name}} <span style="font-family: Montserrat;color:#868686;font-weight: 500;font-size:16px"> - {{company.country}}</span></div>
+                                    
                                 {%if company.tagline | length >= 103 %}
                                     <small class="comp_services">{{company.tagline[:103]}}...</small>
                                 {%else%}
@@ -502,7 +503,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                         <!-- <div class="community-logo"><img src="static\uploads\{{company.logo}}"></div> -->
                     {%endif%}
                     {%if company.tagline %}
-                        <div class="tagline tag-in-card"><span style="text-decoration: i;"><i>{{company.tagline}}</i></span></div>
+                        <div class="tagline tag-in-card"><span style="text-decoration: i;"><i></i></span></div>
                     {%endif%}
                     <div style="z-index:6" style="justify-content: flex-start;" class="links gen-flex">
                         {%if company.website %}
@@ -557,11 +558,9 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                             <!-- Card Header - Company Name - Logo  -->
                             <div style="align-items: flex-start;" class="bscomm-card-header gen-flex">
                                 <div style="justify-content: flex-start;flex-grow:1;">
-                                    {%if company.company_name | length >= 34 %}
-                                        <div class="company-name">{{company.company_name[:34]}}..</div>
-                                    {%else%}
-                                        <div  class="company-name">{{company.company_name}}</div>
-                                    {%endif%}
+                                    
+                                    <div  class="company-name">{{company.company_name}} <span style="font-family: Montserrat;color:#868686;font-weight: 500;font-size:16px"> - {{company.country}}</span></div>
+                                    
                                     {%if company.other2%}
                                         <div style="font-size: 17px;color: #575757;" class="company-name">({{company.other2}})</div>
                                     {%endif%}
