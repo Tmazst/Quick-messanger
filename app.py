@@ -47,7 +47,7 @@ app.config["VAPID_PUBLIC_KEY"] = "BF-IKMwncA7cR08RWECfzfmYHFCeXFx97-P2_ZFxd5DDHH
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db" 
 # Local
 if os.environ.get('EMAIL_INFO') == 'info@techxolutions.com':
-    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db3.db"
+    app.config['SQLALCHEMY_DATABASE_URI'] ='mysql+pymysql://root:tmazst41@localhost/quick_messanger' #"sqlite:///business_chat_db3.db"
 else:#Online
     app.config[
     "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db" 
@@ -463,6 +463,8 @@ def home():
 
         db.session.add(visit_obj)
         db.session.commit()
+
+        return redirect(url_for("business_community"))
 
     # Get all company logos (excluding empty or default ones)
     all_logos = [c.image for c in company_info.query.all() if c.image and c.image != "default.jpg"]
@@ -934,7 +936,7 @@ def uplaod_image():
         return jsonify({'Success':'Image Upload Successfull'}),200
 
 @app.route('/compose', methods=['POST',"GET"])
-# @login_required
+@login_required
 def compose():
     curr_user = None
     users=None
@@ -952,8 +954,6 @@ def compose():
                 return redirect(url_for('compose'))
             chat_with = chat_user.query.get(chat_with_company.usr_fKey)
                 
-
-    
     message_form = MessagesForm()
     
     if current_user.is_authenticated:
@@ -1041,8 +1041,95 @@ def compose():
             return redirect(url_for('compose'))
 
         print("Users: ", users)
+    else:
+        if request.method=="POST":
+            receiver = request.form.get("recipient")
+            recipientMsg = request.form.get("rec-msg-ownpkey-enryptd")
+            chat_user_ = chat_user.query.filter_by(username=receiver).first()
+            print("Receiver: ",receiver, " ,Msg: ",  recipientMsg)
+            if chat_user_:
+                company = company_info.query.filter_by(usr_fKey=chat_user_.id).first()
+                if not company:
+                    print("No Company Found for User: ", chat_user_.username)
+                    flash("No Company Found for User", "warning")
+                    return redirect(url_for('compose'))
+                
+                msg = Messages(
+                    sender = message_form.name.data,
+                    receiver = receiver,
+                    subject = message_form.subject.data,
+                    message = recipientMsg,
+                    date = current_time_wlzone(), #timestamp
+                    key = receiver,
+                    company_info_name = company.company_name
+                )
+                db.session.add(msg)
+                db.session.commit()
+
+                print("No User Authenticated, Redirecting to Login")
+                flash("Please Login to Compose Messages", "warning")
+                receiver = request.form.get("recipient")
+                recipientMsg = request.form.get("rec-msg-ownpkey-enryptd")
+                return redirect(url_for('home'))
 
     return render_template("compose.html", users=users,usr=curr_user,form=message_form, chat_with = chat_with,chat_with_company=chat_with_company )
+
+
+@app.route('/compose_mobile', methods=['POST',"GET"])
+# @login_required
+def compose_mobile():
+    curr_user = None
+    users=None
+    chat_with = None
+    chat_with_company = None
+
+    if request.method == "GET":
+        comp_id = request.args.get('id')
+        if comp_id:
+            cid = ser.loads(comp_id).get('data')
+            print("Compose==Company ID: ", cid)
+            chat_with_company = company_info.query.get(cid)
+            if not chat_with_company:
+                print("Compose==No Company Found with ID: ", cid)
+                return redirect(url_for('compose'))
+            chat_with = chat_user.query.get(chat_with_company.usr_fKey)
+                
+    message_form = MessagesForm()
+
+    if request.method=="POST":
+        receiver = request.form.get("recipient")
+        recipientMsg = request.form.get("rec-msg-ownpkey-enryptd")
+        chat_user_ = chat_user.query.filter_by(username=receiver).first()
+        print("Receiver: ",receiver, " ,Msg: ",  recipientMsg)
+        if chat_user_:
+            company = company_info.query.filter_by(usr_fKey=chat_user_.id).first()
+            if not company:
+                print("No Company Found for User: ", chat_user_.username)
+                flash("No Company Found for User", "warning")
+                return redirect(url_for('compose'))
+            
+            msg = Messages(
+                sender = message_form.name.data,
+                phone = message_form.phone.data,
+                cust_email = message_form.cust_email.data,
+                receiver = receiver,
+                subject = message_form.subject.data,
+                message = recipientMsg,
+                date = current_time_wlzone(), #timestamp
+                key = receiver,
+                company_info_name = company.company_name
+            )
+            db.session.add(msg)
+            db.session.commit()
+
+            print("Message sent successfully")
+            flash("Message sent successfully", "warning")
+            # receiver = request.form.get("recipient")
+            # recipientMsg = request.form.get("rec-msg-ownpkey-enryptd")
+            return redirect(url_for('home'))
+
+    return render_template("compose_in_mobile.html", users=users,usr=curr_user,form=message_form, chat_with = chat_with,chat_with_company=chat_with_company )
+
 
 def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
 
@@ -1132,7 +1219,6 @@ def get_email():
 
     return jsonify({"email":user.email,'rec_pKey':usr.pkey}),200
 
-
 @app.route('/legacy_recovery', methods=['GET'])
 def legacy_recovery():
     # This route is for legacy recovery, it will be used to recover old users
@@ -1198,7 +1284,6 @@ def manual_login(id=None):
             # return redirect(url_for("home"))
 
     return render_template("manual_login.html",form=form)
-
 
 @app.route('/register_new_keys', methods=['POST','GET'])
 @login_required
@@ -1267,6 +1352,7 @@ def register():
     if usr_ssn:
         usr_ssn = serializer.loads(usr_ssn)
     usrnm = chat_user.query.filter_by(username=usr_ssn).first()
+
     if usrnm:
         return redirect(url_for('home'))
 
@@ -1303,22 +1389,22 @@ def register():
         print("register==DEBUG USERNAME IN DB: ",get_user )
 
         # IF Chat user 
-        if get_user:
+        # if get_user:
 
-            # Generate and Save User Salt 
-            salt = os.urandom(16) # Generate a random salt
-            salt_b64 = base64.b64encode(salt).decode('utf-8')
+        #     # Generate and Save User Salt 
+        #     salt = os.urandom(16) # Generate a random salt
+        #     salt_b64 = base64.b64encode(salt).decode('utf-8')
 
-            # save salt 
-            #Note: Its chat_user.id not user.id
-            salt_obj = UserKey(
-                user_id = get_user.id,
-                salt = salt_b64
-            )
+        #     # save salt 
+        #     #Note: Its chat_user.id not user.id
+        #     salt_obj = UserKey(
+        #         user_id = get_user.id,
+        #         salt = salt_b64
+        #     )
 
-            print("register==DEBUG SALT: ",salt_obj)
-            db.session.add(salt_obj)
-            db.session.commit()
+        #     print("register==DEBUG SALT: ",salt_obj)
+        #     db.session.add(salt_obj)
+        #     db.session.commit()
 
         # Register User and Company info 
         if get_user:
@@ -1332,6 +1418,21 @@ def register():
                 image = "default.jpg",
             )
             db.session.add(user_details)
+            db.session.commit()
+
+            # Generate and Save User Salt 
+            salt = os.urandom(16) # Generate a random salt
+            salt_b64 = base64.b64encode(salt).decode('utf-8')
+
+            # save salt 
+            #Note: Its chat_user.id not user.id
+            salt_obj = UserKey(
+                user_id = user_details.id,
+                salt = salt_b64
+            )
+
+            print("register==DEBUG SALT: ",salt_obj)
+            db.session.add(salt_obj)
             db.session.commit()
 
             signed_username = serializer.dumps(get_user.username)
@@ -1872,6 +1973,7 @@ def get_messages():
     if request.method == 'GET':
 
         other_usrname = request.args.get('key')
+        sender_phone=request.args.get('phone')
         other_user_obj = chat_user.query.filter_by(username=other_usrname).first()
         my_usrname = chat_user.query.get(current_user.cht_usr_fKey)
         if not other_usrname:
@@ -1889,6 +1991,9 @@ def get_messages():
             )
         ).order_by(Messages.date.asc()).all()
 
+        if len(all_chat_messages) == 0:
+            all_chat_messages = Messages.query.filter_by(phone=sender_phone).order_by(Messages.date.asc()).all()
+        
 
         if not all_chat_messages:
             return jsonify({'error': 'No messages found'}), 200

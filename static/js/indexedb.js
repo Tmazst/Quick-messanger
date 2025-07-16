@@ -43,6 +43,7 @@ async function encryptMessage() {
     var form = document.getElementById('message-form');
     var replyForm = document.getElementById('reply-form');
     var submitBtn = document.getElementById('submit-form');
+    var customerSubmitBtn = document.getElementById('submit-form-mobile');
     var recPKey = document.querySelector("#recipient-pkey");
     var recDuplicatedMsg = document.querySelector("#rec-duplicated-msg");
     var message = messageField.value;
@@ -111,8 +112,12 @@ async function encryptMessage() {
                     submitBtn.click();
                     // console.log("Encrypted Message set to-:", messageField.value);
                 }, 500);
-            }else{
-                // console.log("Submit Button not found");
+            }else if(customerSubmitBtn)  {
+                console.log("Submit Button not found");
+                setTimeout(() => {
+                    customerSubmitBtn.click();
+                    // console.log("Encrypted Message set to-:", messageField.value);
+                }, 500);
             }
 
         

@@ -1,126 +1,249 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div style="margin: 0 auto" class="letterhead-container">
-    <div style="justify-content: flex-start;" class="letterhead-header gen-flex">
-        {%if company.image%}
-        <div style="position:relative;" class="upload-logo">
-            <img src="{{ url_for('static', filename='uploads/' + company.image) }}" alt="Logo" class="letterhead-logo">
-            <form  method="POST" enctype="multipart/form-data" class="form-image gen-flex">
-                <input type="file" id="image-upload" style="display: none;" onchange="uploadImage(event, '{{current}}')" class="upload-logo-input" />
-                <label for="image-upload" class="upload-label upload-logo-input">&#9998;</label>
-            </form>
-        </div>
-        {%else%}
-        <div style="position:relative;" class="upload-logo2">
-            <form  method="POST" enctype="multipart/form-data" class="form-image gen-flex">
-                <input type="file" id="image-upload" style="display: none;" onchange="uploadImage(event, '{{current}}')" class="upload-logo-input" />
-                <label for="image-upload" class="upload-label upload-logo-input">&#9998;</label>
-            </form>
-            <!-- <img src="{{url_for('static', filename='icons/upload-imge-icon.png')}}" alt="upload" class="upload-image-icon" /> -->
-        </div>
-        {%endif%}
-        <div class="details-cont">
-            <h1>{{company.company_name}}</h1>
-            <div class="comp-details">
-                <div class="sender-company-details">
-                    <div id="comp-details-header" class="comp-details">
-                        <div style="justify-content: flex-start;" class="editable-field gen-flex">
-                            <input type="text" class="form-control" name="postal_address" {% if company.postal_address%} value="{{ company.postal_address}}" {%endif%}  placeholder="Postal Address"/>
-                            {%if not company.postal_address%}
-                            <span class="edit-icon">&#9998;</span> <!-- ASCII code for a pencil icon -->
-                            {%endif%}
-                        </div>
-                        <div class="editable-field gen-flex">
-                            <input type="text" class="form-control" name="company_contacts"  {% if company.company_contacts%} value="{{ company.company_contacts}}" {%endif%}  placeholder="e.g. 251 XXXX XX" />
-                            {%if not company.company_contacts%}
-                            <span class="edit-icon">&#9998;</span>
-                            {%endif%}
-                        </div>
-                        <div class="editable-field gen-flex">
-                            <input type="text" class="form-control" name="website" {% if company.website%} value="{{ company.website}}" {%endif%}  placeholder="e.g. www.xyzlimited.com" />
-                            {%if not usr.website%}
-                            <span class="edit-icon">&#9998;</span>
-                            {%endif%}
-                        </div>
-                        <div id="header-save" class="saving gen-flex">
-                            <span style="color:rgb(66, 48, 48)">Saving....</span>
+<div class="main-container">
+    <div style="margin: 0 auto" class="letterhead-container">
+        <div style="justify-content: flex-start;" class="letterhead-header gen-flex">
+            {%if company.image%}
+            <div style="position:relative;" class="upload-logo">
+                <img src="{{ url_for('static', filename='uploads/' + company.image) }}" alt="Logo" class="letterhead-logo">
+                <form  method="POST" enctype="multipart/form-data" class="form-image gen-flex">
+                    <input type="file" id="image-upload" style="display: none;" onchange="uploadImage(event, '{{current}}')" class="upload-logo-input" />
+                    <label for="image-upload" class="upload-label upload-logo-input">&#9998;</label>
+                </form>
+            </div>
+            {%else%}
+            <div style="position:relative;" class="upload-logo2">
+                <form  method="POST" enctype="multipart/form-data" class="form-image gen-flex">
+                    <input type="file" id="image-upload" style="display: none;" onchange="uploadImage(event, '{{current}}')" class="upload-logo-input" />
+                    <label for="image-upload" class="upload-label upload-logo-input">&#9998;</label>
+                </form>
+                <!-- <img src="{{url_for('static', filename='icons/upload-imge-icon.png')}}" alt="upload" class="upload-image-icon" /> -->
+            </div>
+            {%endif%}
+            <div class="details-cont">
+                <h1>{{company.company_name}}</h1>
+                <div class="comp-details">
+                    <div class="sender-company-details">
+                        <div id="comp-details-header" class="comp-details">
+                            <div style="justify-content: flex-start;" class="editable-field gen-flex">
+                                <input type="text" class="form-control" name="postal_address" {% if company.postal_address%} value="{{ company.postal_address}}" {%endif%}  placeholder="Postal Address"/>
+                                {%if not company.postal_address%}
+                                <span class="edit-icon">&#9998;</span> <!-- ASCII code for a pencil icon -->
+                                {%endif%}
+                            </div>
+                            <div class="editable-field gen-flex">
+                                <input type="text" class="form-control" name="company_contacts"  {% if company.company_contacts%} value="{{ company.company_contacts}}" {%endif%}  placeholder="e.g. 251 XXXX XX" />
+                                {%if not company.company_contacts%}
+                                <span class="edit-icon">&#9998;</span>
+                                {%endif%}
+                            </div>
+                            <div class="editable-field gen-flex">
+                                <input type="text" class="form-control" name="website" {% if company.website%} value="{{ company.website}}" {%endif%}  placeholder="e.g. www.xyzlimited.com" />
+                                {%if not usr.website%}
+                                <span class="edit-icon">&#9998;</span>
+                                {%endif%}
+                            </div>
+                            <div id="header-save" class="saving gen-flex">
+                                <span style="color:rgb(66, 48, 48)">Saving....</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div><br>
-    <div class="letterhead-body">
-        <form id="message-form" action="" method="POST" enctype="multipart/form-data">
-            
-                {{ form.hidden_tag()}}
+        </div><br>
+        <div class="letterhead-body">
+            <form id="message-form" action="" method="POST" enctype="multipart/form-data">
                 
-                {%if chat_with %} <!-- If chat_with is defined, use it to pre-fill the recipient field -->
-                    <label for="recipient">Sending To:</label>
-                    <div style="justify-content: flex-start;" class="gen-flex">
-                        <input type="hidden" id="recipient" name="recipient" value="{{ chat_with.username }}" class="form-control" /><div style="font-weight:500;color:rgb(173, 30, 30) !important" >{{ chat_with.user_details[0].name }} - <span 
-                            >{{chat_with_company.company_name}}</span></div>
-                    </div><br>
-                    <input type="hidden" id="recipient-pkey" name="recipient-pkey" class="form-control" value="{{ chat_with.pkey }}" readonly>
+                    {{ form.hidden_tag()}}
                     
-                    <div class="form-group">
-                        <label for="recipient">Include email: <span style="font-size:13px;font-weight:400px;color:rgb(165, 96, 5)"></span></label>
-                        <!-- <input type="text" id="recipient-email" name="recipient-email" class="form-control" > -->
-                        {{form.email(class="form-control",id="recipient-email", value=chat_with.user_details[0].email, readonly=true)}}
-                        {% set errors = form.email.errors %}
-                        {% if form.email.errors %}
-                            {% for error in errors %}
-                                <div class="alert alert-danger">{{ error }}</div>
-                            {% endfor %}
-                        {% endif %}
-                        {% if form.errors%}
-                            {%for error in errors%}
-                                {{error}}
-                            {%endfor%}
-                        {%endif%}
-                    </div>
-                {%else%}
-                    <div class="form-group"> <!-- If chat_with is not defined, show the recipient dropdown -->
-                        <label for="recipient">To:</label>
-                        <select onchange="updateRecField(event)" id="recipient" name="recipient" class="form-control" required>
-                            <option value=""><span>Select User</span></option>
-                            {%if users%}
-                                {% for user in users %}
-                                    {%if not user.username == current%} <!--DO not include the current user in the list-->
-                                        {%if chat_with %}
-                                            <option style="font-weight:500;color:#EF4036 !important" value="{{ chat_with.username }}" selected>{{ chat_with.user_details[0].name }} - <span 
-                                                >{{chat_with_company.company_name}}</span>
-                                            </option>
-                                        {%else%} 
-                                            {%if user.company_details and user.user_details and user.company_details[0].company_name %}
-                                            <option value="{{ user.username }}">{{ user.user_details[0].name }} - 
-                                                <span style="font-weight:500;color:rgb(173, 30, 30) !important">{{user.company_details[0].company_name}}</span>
-                                            </option>
+                    {%if chat_with %} <!-- If chat_with is defined, use it to pre-fill the recipient field -->
+                        <label for="recipient">Sending To:</label>
+                        <div style="justify-content: flex-start;" class="gen-flex">
+                            <input type="hidden" id="recipient" name="recipient" value="{{ chat_with.username }}" class="form-control" /><div style="font-weight:500;color:rgb(173, 30, 30) !important" >{{ chat_with.user_details[0].name }} - <span 
+                                >{{chat_with_company.company_name}}</span></div>
+                        </div><br>
+                        <input type="hidden" id="recipient-pkey" name="recipient-pkey" class="form-control" value="{{ chat_with.pkey }}" readonly>
+                        
+                        <div class="form-group">
+                            <label for="recipient">Include email: <span style="font-size:13px;font-weight:400px;color:rgb(165, 96, 5)"></span></label>
+                            <!-- <input type="text" id="recipient-email" name="recipient-email" class="form-control" > -->
+                            {{form.email(class="form-control",id="recipient-email", value=chat_with.user_details[0].email, readonly=true)}}
+                            {% set errors = form.email.errors %}
+                            {% if form.email.errors %}
+                                {% for error in errors %}
+                                    <div class="alert alert-danger">{{ error }}</div>
+                                {% endfor %}
+                            {% endif %}
+                            {% if form.errors%}
+                                {%for error in errors%}
+                                    {{error}}
+                                {%endfor%}
+                            {%endif%}
+                        </div>
+                    {%else%}
+                        <div class="form-group"> <!-- If chat_with is not defined, show the recipient dropdown -->
+                            <label for="recipient">To:</label>
+                            <select onchange="updateRecField(event)" id="recipient" name="recipient" class="form-control" required>
+                                <option value=""><span>Select User</span></option>
+                                {%if users%}
+                                    {% for user in users %}
+                                        {%if not user.username == current%} <!--DO not include the current user in the list-->
+                                            {%if chat_with %}
+                                                <option style="font-weight:500;color:#EF4036 !important" value="{{ chat_with.username }}" selected>{{ chat_with.user_details[0].name }} - <span 
+                                                    >{{chat_with_company.company_name}}</span>
+                                                </option>
+                                            {%else%} 
+                                                {%if user.company_details and user.user_details and user.company_details[0].company_name %}
+                                                <option value="{{ user.username }}">{{ user.user_details[0].name }} - 
+                                                    <span style="font-weight:500;color:rgb(173, 30, 30) !important">{{user.company_details[0].company_name}}</span>
+                                                </option>
+                                                {%endif%}
                                             {%endif%}
                                         {%endif%}
-                                    {%endif%}
-                                {% endfor %}
+                                    {% endfor %}
+                                {%endif%}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="hidden" id="recipient-pkey" name="recipient-pkey" class="form-control" value="" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label for="recipient">Include email: <span style="font-size:13px;font-weight:400px;color:rgb(165, 96, 5)">(If they are not in the list above they will only receive an email)</span></label>
+                            <!-- <input type="text" id="recipient-email" name="recipient-email" class="form-control" > -->
+                            {{form.email(class="form-control",id="recipient-email")}}
+                            {% if form.errors%}
+                                {%for error in errors%}
+                                    {{error}}
+                                {%endfor%}
                             {%endif%}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <input type="hidden" id="recipient-pkey" name="recipient-pkey" class="form-control" value="" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="recipient">Include email: <span style="font-size:13px;font-weight:400px;color:rgb(165, 96, 5)">(If they are not in the list above they will only receive an email)</span></label>
-                        <!-- <input type="text" id="recipient-email" name="recipient-email" class="form-control" > -->
-                        {{form.email(class="form-control",id="recipient-email")}}
-                        {% if form.errors%}
-                            {%for error in errors%}
-                                {{error}}
-                            {%endfor%}
+                        </div>
+                    {%endif%}
+                <div class="form-group">
+                    <label for="subject">Subject:</label>
+                    <!-- <input type="text" id="subject" name="subject" class="form-control" > -->
+                    {{form.subject(class="form-control",id="subject")}}
+                    {% if form.errors%}
+                        {%for error in errors%}
+                            {{error}}
+                        {%endfor%}
+                    {%endif%}
+                </div>
+                <div class="form-group">
+                    <label for="message">Message:</label>
+                    <!-- <textarea id="message" name="message" class="form-control" rows="10" required></textarea> -->
+                    {{form.message(class="form-control",id="message",rows="10")}}
+                    {% if form.errors%}
+                        {%for error in errors%}
+                            {{error}}
+                        {%endfor%}
+                    {%endif%}
+                </div>
+                <!-- MSG DUPLICATE  -->
+                <input type="hidden" id="rec-duplicated-msg" name="rec-msg-ownpkey-enryptd" value="">
+                <div class="form-group">
+                    <!-- <textarea id="message" name="message" class="form-control" rows="10" required></textarea> -->
+                    {{form.submit(class="btns btn-primary",id="submit-form",style="z-index:-1")}}
+                </div>
+                
+            </form>
+        </div>
+        <div style="justify-content: flex-start;" class="sender-profile gen-flex">
+            {%if usr_obj.image%}
+                <div class="footer-sender-profile-cont gen-flex">
+                    <!-- <img src="{{ url_for('static', filename='uploads/'+ usr_obj.image) }}" alt="profile" class="footer-sender-profile"> -->
+                </div>
+            {%else%}
+                <!-- <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="profile" class="footer-sender-profile"> -->
+            {%endif%}
+            <!-- SENDER'S PROFILE DETAILS  -->
+            <div class="sender-profile-details">
+                <div style="align-items: flex-start;gap:0" class="comp-details gen-flex-col">
+                    <div class="editable-field-user gen-flex">
+                        <input style="font-weight: 600 !important;" type="text" class="form-control" name="name"  {% if usr_obj.name%} value="{{ usr_obj.name}}" {%endif%} placeholder="Your Name" />
+                        {%if not usr_obj.name%}
+                        <span class="edit-icon">&#9998;</span> <!-- ASCII code for a pencil icon -->
                         {%endif%}
                     </div>
-                {%endif%}
+                    <div id="position_mobile" class="editable-field-user gen-flex">
+                        <input type="text" class="form-control" name="position" {% if usr_obj.position%} value="{{ usr_obj.position}}" {%endif%} placeholder="e.g. Sales Manager" />
+                        {% if not usr_obj.position or usr_obj.position == 'None' %}
+                        <span class="edit-icon">&#9998;</span>
+                        {% endif %}
+                    </div>
+                    <div class="editable-field-user gen-flex">
+                        <input type="text" class="form-control" name="email" {% if usr_obj.email%} value="{{ usr_obj.email}}" {%endif%} placeholder=" e.g. Your email"/>
+                        {%if not usr_obj.email%}
+                        <span class="edit-icon">&#9998;</span>
+                        {%endif%}
+                    </div>
+                    <div class="editable-field-user gen-flex">
+                        <input type="tel" class="form-control" name="contacts" {% if usr_obj.contacts  %} value="{{ usr_obj.contacts}}" {%endif%} placeholder=" e.g. 7546 135489" />
+                        {%if not usr_obj.contacts%}
+                        <span class="edit-icon">&#9998;</span>
+                        {%endif%}
+                    </div>
+                    <div id="user-save" class="saving gen-flex">
+                        <span style="color:rgb(66, 48, 48)">Saving....</span>
+                    </div>
+                </div>
+            </div>
+        </div><br>
+        <div class="letterhead-footer gen-flex-col">
+            <div>
+                <div class="sender-company-details">
+                    <div class="comp-details">
+                        <div class="editable-field gen-flex">
+                            <textarea type="text" class="form-control" name="tagline" 
+                            placeholder="Eco-friendly cleaning products that are safe for the environment, effective for consumers." 
+                            oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';" 
+                            style="overflow:hidden; resize:none;color:rgb(59, 35, 77);font-weight: 600;text-align: center;">{% if company.tagline%}{{company.tagline}}{%endif%}</textarea>
+                            {%if not company.tagline%}
+                            <span class="edit-icon">&#9998;</span> <!-- ASCII code for a pencil icon -->
+                            {%endif%}
+                        </div>
+                        <div class="editable-field gen-flex-col"> 
+                            <img src="static/icons/location-icon.png" class="location-icon" />
+                                <textarea type="text" class="form-control" name="company_address" 
+                                oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';" 
+                                style="overflow:hidden; resize:none;color:rgb(87, 33, 55);font-weight: 600;text-align: center;"
+                                placeholder="e.g XYZ Innovations LLC1234 Innovate Way Suite 567 San Francisco, CA 94107 United States">{% if company.company_address%}{{ company.company_address}}{%endif%}</textarea>
+                                {%if not company.company_address%}
+                                    <span class="edit-icon">&#9998;</span>
+                                {%endif%}
+                        </div>
+                    </div>
+                <div class="social-media gen-flex">
+                    <a href="#"><img src="{{ url_for('static', filename='icons/facebook-icon.png') }}" alt="Facebook"></a>
+                    <a href="#"><img src="{{ url_for('static', filename='icons/instagram-icon.png') }}" alt="Instagram"></a>
+                    <a href="#"><img src="{{ url_for('static', filename='icons/linkedin-icon.png') }}" alt="LinkedIn"></a>
+                    <a href="#"><img src="{{ url_for('static', filename='icons/whatsapp-icon.png') }}" alt="LinkedIn"></a>
+                </div>
+                <div style="margin:0 auto;width:max-content !important"> &copy; 2025 {{ company.company_name }}. All rights reserved.</div>
+            </div>
+        </div><br><br><br>
+    
+        <button class="btns btn-primary" onclick="encryptMessage()" id="activate-submit" >Send</button> 
+        <!-- <button onclick="checkScriptBlock()">Check</button> -->
+    </div>
+</div>
+
+<div style="display: none;align-items: flex-start;" class="message-company-modal gen-flex" id="message-company-modal">
+    <div style="overflow-y: auto;height: 100%;width:100%">
+        <form style="background: white;" id="message-form-mobile" action="" method="POST" enctype="multipart/form-data">
+                
+            {{ form.hidden_tag()}}
+            
+            {%if chat_with %} <!-- If chat_with is defined, use it to pre-fill the recipient field -->
+                <label for="recipient">Send Message:</label>
+                <div style="justify-content: flex-start;" class="gen-flex">
+                    <input type="hidden" id="recipient" name="recipient" value="{{ chat_with.username }}" class="form-control" /><div style="font-weight:500;color:rgb(63, 63, 63) !important;" >{{ chat_with.user_details[0].name }} - <span 
+                        >{{chat_with_company.company_name}}</span></div>
+                </div><br>
+                <input type="hidden" id="recipient-pkey" name="recipient-pkey" class="form-control" value="{{ chat_with.pkey }}" readonly> 
+            {%endif%}
             <div class="form-group">
                 <label for="subject">Subject:</label>
-                <!-- <input type="text" id="subject" name="subject" class="form-control" > -->
                 {{form.subject(class="form-control",id="subject")}}
                 {% if form.errors%}
                     {%for error in errors%}
@@ -130,102 +253,58 @@
             </div>
             <div class="form-group">
                 <label for="message">Message:</label>
-                <!-- <textarea id="message" name="message" class="form-control" rows="10" required></textarea> -->
-                {{form.message(class="form-control",id="message",rows="10")}}
+                {{form.message(class="form-control",id="message",rows="4")}}
                 {% if form.errors%}
                     {%for error in errors%}
                         {{error}}
                     {%endfor%}
                 {%endif%}
             </div>
-            <input type="hidden" id="rec-duplicated-msg" name="rec-msg-ownpkey-enryptd" value="">
             <div class="form-group">
-                <!-- <textarea id="message" name="message" class="form-control" rows="10" required></textarea> -->
-                {{form.submit(class="btns btn-primary",id="submit-form",style="z-index:-1")}}
+                <label for="message">Name:</label>
+                {{form.name(class="form-control",id="cust-name")}}
+                {% if form.name.errors%}
+                    {%for error in form.name.rrors%}
+                        {{error}}
+                    {%endfor%}
+                {%endif%}
             </div>
-             
+            <div class="form-group">
+                <label for="message">Phone:</label>
+                {{form.phone(class="form-control",id="phone")}}
+                {% if form.phone.errors%}
+                    {%for error in form.phone.rrors%}
+                        {{error}}
+                    {%endfor%}
+                {%endif%}
+            </div>
+            <div class="form-group">
+                <label for="message">Email:</label>
+                {{form.cust_email(class="form-control",id="cust_email")}}
+                {% if form.cust_email.errors%}
+                    {%for error in form.cust_email.rrors%}
+                        {{error}}
+                    {%endfor%}
+                {%endif%}
+            </div>
+            <input type="hidden" id="rec-duplicated-msg" name="rec-msg-ownpkey-enryptd" value="">
+            <div class="form-group gen-flex">
+                {{form.submit(class="btns btn-primary",id="submit-form-mobile",style="z-index:-1")}}
+                <button class="btns btn-primary" onclick="encryptMessage()" id="activate-submt" >Send</button> 
+                <button type="button" style="background: none;color:rgb(94, 94, 94)" class="btns btn-secondary" onclick="closeMsgBox()">Close</button>
+            </div>
+                
         </form>
     </div>
-    <div style="justify-content: flex-start;" class="sender-profile gen-flex">
-        {%if usr_obj.image%}
-            <div class="footer-sender-profile-cont gen-flex">
-                <!-- <img src="{{ url_for('static', filename='uploads/'+ usr_obj.image) }}" alt="profile" class="footer-sender-profile"> -->
-            </div>
-        {%else%}
-            <!-- <img src="{{ url_for('static', filename='images/default.jpg') }}" alt="profile" class="footer-sender-profile"> -->
-        {%endif%}
-        <div class="sender-profile-details">
-            <div style="align-items: flex-start;gap:0" class="comp-details gen-flex-col">
-                <div class="editable-field-user gen-flex">
-                    <input style="font-weight: 600 !important;" type="text" class="form-control" name="name"  {% if usr_obj.name%} value="{{ usr_obj.name}}" {%endif%} placeholder="Your Name" />
-                    {%if not usr_obj.name%}
-                    <span class="edit-icon">&#9998;</span> <!-- ASCII code for a pencil icon -->
-                    {%endif%}
-                </div>
-                <div id="position_mobile" class="editable-field-user gen-flex">
-                    <input type="text" class="form-control" name="position" {% if usr_obj.position%} value="{{ usr_obj.position}}" {%endif%} placeholder="e.g. Sales Manager" />
-                    {% if not usr_obj.position or usr_obj.position == 'None' %}
-                    <span class="edit-icon">&#9998;</span>
-                    {% endif %}
-                </div>
-                <div class="editable-field-user gen-flex">
-                    <input type="text" class="form-control" name="email" {% if usr_obj.email%} value="{{ usr_obj.email}}" {%endif%} placeholder=" e.g. Your email"/>
-                    {%if not usr_obj.email%}
-                    <span class="edit-icon">&#9998;</span>
-                    {%endif%}
-                </div>
-                <div class="editable-field-user gen-flex">
-                    <input type="tel" class="form-control" name="contacts" {% if usr_obj.contacts  %} value="{{ usr_obj.contacts}}" {%endif%} placeholder=" e.g. 7546 135489" />
-                    {%if not usr_obj.contacts%}
-                    <span class="edit-icon">&#9998;</span>
-                    {%endif%}
-                </div>
-                <div id="user-save" class="saving gen-flex">
-                    <span style="color:rgb(66, 48, 48)">Saving....</span>
-                </div>
-            </div>
-        </div>
-    </div><br>
-    <div class="letterhead-footer gen-flex-col">
-        <div>
-            <div class="sender-company-details">
-                <div class="comp-details">
-                    <div class="editable-field gen-flex">
-                        <textarea type="text" class="form-control" name="tagline" 
-                         placeholder="Eco-friendly cleaning products that are safe for the environment, effective for consumers." 
-                         oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';" 
-                         style="overflow:hidden; resize:none;color:rgb(59, 35, 77);font-weight: 600;">{% if company.tagline%}{{company.tagline}}{%endif%}</textarea>
-                        {%if not company.tagline%}
-                        <span class="edit-icon">&#9998;</span> <!-- ASCII code for a pencil icon -->
-                        {%endif%}
-                    </div>
-                    <div class="editable-field gen-flex-col"> 
-                        <img src="static/icons/location-icon.png" class="location-icon" />
-                            <textarea type="text" class="form-control" name="company_address" 
-                            oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px';" 
-                            style="overflow:hidden; resize:none;color:rgb(87, 33, 55);font-weight: 600;"
-                            placeholder="e.g XYZ Innovations LLC1234 Innovate Way Suite 567 San Francisco, CA 94107 United States">{% if company.company_address%}{{ company.company_address}}{%endif%}</textarea>
-                             {%if not company.company_address%}
-                                <span class="edit-icon">&#9998;</span>
-                            {%endif%}
-                    </div>
-                </div>
-            <div class="social-media gen-flex">
-                <a href="#"><img src="{{ url_for('static', filename='icons/facebook-icon.png') }}" alt="Facebook"></a>
-                <a href="#"><img src="{{ url_for('static', filename='icons/instagram-icon.png') }}" alt="Instagram"></a>
-                <a href="#"><img src="{{ url_for('static', filename='icons/linkedin-icon.png') }}" alt="LinkedIn"></a>
-                <a href="#"><img src="{{ url_for('static', filename='icons/whatsapp-icon.png') }}" alt="LinkedIn"></a>
-            </div>
-            <div style="margin:0 auto;width:max-content !important"> &copy; 2025 {{ company.company_name }}. All rights reserved.</div>
-        </div>
-    </div><br><br><br>
-   
-    <button class="btns btn-primary" onclick="encryptMessage()" id="activate-submit" >Send</button> 
-    <!-- <button onclick="checkScriptBlock()">Check</button> -->
 </div>
 
 
 <script>
+    function closeMsgBox() {
+        var composeModal = document.querySelector(".message-company-modal");
+        composeModal.style.display = "none"; // Hide the modal
+        window.location.href='/'; // Redirect to the home page
+    }
     // document.addEventListener('DOMContentLoaded', function() {
     // var activateBtn = document.getElementById('activate-submit');
     // var submitBtn = document.getElementById('submit-form');
@@ -237,7 +316,14 @@
     //     }
     // });
 
-
+    if(window.innerWidth <= "700"){
+        var composeModal = document.querySelector(".message-company-modal");
+        composeModal.style.display = "flex"; // Show the modal on mobile
+        var custNameField = document.querySelector("#cust-name").required = true;
+        var custEmailField = document.querySelector("#cust_email").required = true;
+        var custPhoneField = document.querySelector("#phone").required = true;
+        // document.querySelector(".main-container").style.display = 'none';
+    };
 
      async function updateRecField(event){
         value = event.target.value;

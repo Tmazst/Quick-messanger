@@ -230,10 +230,10 @@ body {
 .sender-profile-details{
     background-color:#cfcfcf;
     border-top-right-radius: 30px;
-    border-bottom-right-radius: 30px;
+    border-radius: 30px;
     padding:15px;
     padding-left: 40px;
-    margin-left: -37px;
+    /* margin-left: -37px; */
     width: 100%;
     /* ba */
 }
@@ -1483,6 +1483,14 @@ a {
     backdrop-filter: blur(5px);
 }
 
+.sponsor-ads-frame{
+    height:250px;
+    width:250px;
+    background-color: #630f0f;
+    margin-top:20px;
+    border-radius:10px
+}
+
 .sticky-category {
     position: sticky;
     top: 0px;
@@ -1855,6 +1863,52 @@ a {
     
 /* Responsive Design */
 @media (max-width: 700px) {
+    .imbc-icon-mobile{
+        /* position: absolute;
+        bottom:10px;
+        right:10px; */
+    }
+
+    .imbc-icon-mobile img{
+        height:65px;
+        box-shadow:  0px 1px 3px rgba(0, 0, 0, 0.16);
+        border-radius: 15px;
+        background-color:#fde7e6;
+        transition: all 0.3s ease;
+    }
+
+    .imbc-icon-mobile img:hover{
+        box-shadow:  0px 1px 3px rgba(224, 252, 249, 0.16);
+        border-radius: 15px;
+        background-color:#75ffda;
+        cursor: pointer;
+    }
+    #msg-icon-mobile{
+        display:  block !important;
+        position: relative !important;
+        top:none;
+    }
+    #msg-icon{
+        display:  none !important;
+    }
+    #message-form-mobile{
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        background: white !important;
+        border-radius: 15px;
+    }
+    .message-company-modal{
+        /* position: fixed;
+        top:0;
+        left:0;
+        right:0;
+        bottom:0;
+        z-index: 1000;
+        background-color: rgba(59, 35, 35, 0.5);
+        backdrop-filter: blur(5px); */
+        padding: 15px;
+    }
     .topbar{
         gap:0px !important
     }

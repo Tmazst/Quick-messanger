@@ -223,14 +223,19 @@ function showNotification({ id, title, message }) {
         <div style="font-weight:600;font-size:1.1em;">${title}</div>
         <div style="font-size:1em;">${message}</div>
         <div class="notif-actions">
-            <button class="notif-btn notif-reply">Reply</button>
-            <button class="notif-btn notif-delete">Delete</button>
+            <button onclick="window.location.href='/reply_unit'" class="notif-btn notif-reply">Reply</button>
+            <button class="notif-btn notif-delete">Dismiss</button>
         </div>
     `;
 
 
     // Close button
     notif.querySelector('.notif-close').onclick = function() {
+        notif.remove();
+    };
+
+    // Close button
+    notif.querySelector('.notif-delete').onclick = function() {
         notif.remove();
     };
 

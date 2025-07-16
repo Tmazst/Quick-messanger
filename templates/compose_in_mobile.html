@@ -1,0 +1,340 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    label{
+        font-family: Montserrat;
+        font-size: 13px;
+    }
+    .form-control{
+        margin-bottom: 0;
+    }
+    .btn-primary{
+        bottom: 20px !important;
+        left:20px
+    }
+</style>
+
+<div style="align-items: flex-start;" class="message-company-modal gen-flex" id="message-company-modal">
+    <div style="overflow-y: auto;height: 100%;width:100%">
+        <form style="background: white;" id="message-form-mobile" action="" method="POST" enctype="multipart/form-data">
+                
+            {{ form.hidden_tag()}}
+            
+            {%if chat_with %} <!-- If chat_with is defined, use it to pre-fill the recipient field -->
+                <label for="recipient">Send Message:</label>
+                <div style="justify-content: flex-start;" class="gen-flex">
+                    <input type="hidden" id="recipient" name="recipient" value="{{ chat_with.username }}" class="form-control" /><div style="font-weight:500;color:rgb(63, 63, 63) !important;" >{{ chat_with.user_details[0].name }} - <span 
+                        >{{chat_with_company.company_name}}</span></div>
+                </div><br>
+                <input type="hidden" id="recipient-pkey" name="recipient-pkey" class="form-control" value="{{ chat_with.pkey }}" readonly> 
+            {%endif%}
+            <div class="form-group">
+                <label for="subject">Subject:</label>
+                {{form.subject(class="form-control",id="subject")}}
+                {% if form.errors%}
+                    {%for error in errors%}
+                        {{error}}
+                    {%endfor%}
+                {%endif%}
+            </div>
+            <div class="form-group">
+                <label for="message">Message:</label>
+                {{form.message(class="form-control",id="message",rows="4",onclick="showOtherFields()")}}
+                {% if form.errors%}
+                    {%for error in errors%}
+                        {{error}}
+                    {%endfor%}
+                {%endif%}
+            </div>
+            <div display="none" class="form-group" id="cust_name_group">
+                <label for="message">Name:</label>
+                {{form.name(class="form-control",id="cust-name",placeholder="Name")}}
+                {% if form.name.errors%}
+                    {%for error in form.name.rrors%}
+                        {{error}}
+                    {%endfor%}
+                {%endif%}
+            </div>
+            <div display="none" class="form-group" id="phone_group">
+                <label for="message">Phone:</label>
+                {{form.phone(class="form-control",id="phone",placeholder="Contacts")}}
+                {% if form.phone.errors%}
+                    {%for error in form.phone.rrors%}
+                        {{error}}
+                    {%endfor%}
+                {%endif%}
+            </div>
+            <div display="none" class="form-group" id="cust_email_group">
+                <label for="message">Email:</label>
+                {{form.cust_email(class="form-control",id="cust_email",placeholder="Optional")}}
+                {% if form.cust_email.errors%}
+                    {%for error in form.cust_email.rrors%}
+                        {{error}}
+                    {%endfor%}
+                {%endif%}
+            </div>
+            <input type="hidden" id="rec-duplicated-msg" name="rec-msg-ownpkey-enryptd" value="">
+            <div class="form-group gen-flex">
+                {{form.submit(class="btns btn-primary",id="submit-form-mobile",style="z-index:-1")}}
+                <button class="btns btn-primary" onclick="encryptMessage()" id="activate-submt" >Send</button> 
+                <button type="button" style="background: none;color:rgb(94, 94, 94)" class="btns btn-secondary" onclick="closeMsgBox()">Close</button>
+            </div>  
+        </form>
+    </div>
+</div>
+
+
+<script>
+    function closeMsgBox() {
+        var composeModal = document.querySelector(".message-company-modal");
+        composeModal.style.display = "none"; // Hide the modal
+        window.location.href='/'; // Redirect to the home page
+    }
+    // document.addEventListener('DOMContentLoaded', function() {
+    // var activateBtn = document.getElementById('activate-submit');
+    // var submitBtn = document.getElementById('submit-form');
+    // if (activateBtn && submitBtn) {
+    //     activateBtn.addEventListener('click', function(e) {
+    //         e.preventDefault(); // Prevent any default action
+    //         submitBtn.click();
+    //     });
+    //     }
+    // });
+
+    if(window.innerWidth <= "700"){
+        var composeModal = document.querySelector(".message-company-modal");
+        composeModal.style.display = "flex"; // Show the modal on mobile
+       
+        // document.querySelector(".main-container").style.display = 'none';
+        function showOtherFields(){
+            var custNameGroup = document.querySelector("#cust_name_group");
+             custNameGroup.style.display = "block";
+             var custNameField = document.querySelector("#cust-name");
+             custNameField.required = true;
+            // var custEmailField = document.querySelector("#cust_email").required = true;
+            var custGroup = document.querySelector("#phone_group");
+            custGroup.style.display = "block";
+            var custPhoneField = document.querySelector("#phone");
+            custPhoneField.required = true;
+            var custEmailGroup = document.querySelector("#cust_email_group");
+            custEmailGroup.style.display = "block";
+        }
+    };
+
+     async function updateRecField(event){
+        value = event.target.value;
+        console.log("Selected Value: ",value)
+        var emailField = document.querySelector("#recipient-email");
+        var pkeyField = document.querySelector("#recipient-pkey");
+
+        const response = await fetch("/get_email", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: value})
+        });
+
+        var res = await response.json();
+            console.log("Fetched Email: ",res.email )
+            console.log("Fetched pKey: ",res.pkey ) 
+            emailField.value = res.email || value; 
+            pkeyField.value = res.rec_pKey || value;
+            // emailField.value = value;
+        }
+        
+
+    function checkScriptBlock(){
+        console.log("Script loaded");
+    }
+
+    // function uploadImage(event,username) {
+    //     const fileInput = event.target;
+    //     const file = fileInput.files[0];
+    //     const formData = new FormData();
+    //     formData.append('image', file);
+    //     formData.append('username', username);
+
+    //     // Display a preview of the uploaded image
+    //     const reader = new FileReader();
+    //     reader.onload = function (e) {
+    //         const previewImage = document.querySelector('.upload-image-icon');
+    //         previewImage.src = e.target.result;
+    //     };
+    //     reader.readAsDataURL(file);
+
+    //     // Send the image to Flask
+    //     fetch('/upload_image', {
+    //         method: 'POST',
+    //         body:  formData
+    //     })
+    //     .then(response => {
+    //         if (!response.ok) {
+    //             throw new Error('Failed to upload image');
+    //         }
+    //         return response.json();
+    //     })
+    //     .then(data => {
+    //         console.log('Image uploaded successfully:', data);
+    //     })
+    //     .catch(error => {
+    //         console.error('Error uploading image:', error);
+    //     });
+    // }
+
+    // document.addEventListener('DOMContentLoaded', function () {
+        // const inputs = document.querySelectorAll('.editable-field input');
+        // const inputsTextArea = document.querySelectorAll('.editable-field textarea');
+        // const inputsUser = document.querySelectorAll('.editable-field-user input');
+
+        // inputs.forEach(input => {
+        //     input.addEventListener('blur', function () {
+        //         console.log("Blur Event Triggered...");
+        //         const saving = document.querySelector("#header-save");
+        //         saving.style.display="block"
+        //         const fieldName = input.name;
+        //         const fieldValue = input.value;
+
+        //         fetch('/update_field', {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //                 // 'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if required
+        //             },
+
+        //             body: JSON.stringify({
+        //                 field: fieldName,
+        //                 value: fieldValue
+        //             })
+
+                    
+        //         })
+        //         .then(response => {
+        //             if (!response.ok) {
+        //                 throw new Error('Failed to update field');
+        //             }
+        //             return response.json();
+        //         })
+        //         .then(data => {
+        //             console.log('Field updated successfully:', data);
+        //         })
+        //         .catch(error => {
+        //             console.error('Error updating field:', error);
+        //         });
+        //         saving.classList.add("turn-off-saving");
+        //         // Listen for the animation end event
+        //         saving.addEventListener("animationend", () => {
+        //             // Hide the element after the animation ends
+        //             saving.style.display = "none";
+        //             saving.classList.remove("turn-off-saving"); // Optional: Remove the class if needed
+        //         });
+        //     });
+        // });
+
+        // inputsUser.forEach(input => {
+        //     input.addEventListener('blur', function () {
+        //         console.log("Blur Event Triggered...");
+        //         const saving = document.querySelector("#user-save");
+        //         saving.style.display="block"
+        //         const fieldName = input.name;
+        //         const fieldValue = input.value;
+
+        //         fetch('/update_field_user', {
+        //             method: 'POST',
+        //             headers: {
+        //                 'Content-Type': 'application/json',
+        //                 // 'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if required
+        //             },
+        //             body: JSON.stringify({
+        //                 field: fieldName,
+        //                 value: fieldValue
+        //             })
+        //         })
+        //         .then(response => {
+        //             if (!response.ok) {
+        //                 throw new Error('Failed to update field');
+        //             }
+        //             return response.json();
+        //         })
+        //         .then(data => {
+        //             console.log('Field updated successfully:', data);
+        //         })
+        //         .catch(error => {
+        //             console.error('Error updating field:', error);
+        //         });
+        //         saving.classList.add("turn-off-saving");
+        //         // Listen for the animation end event
+        //         saving.addEventListener("animationend", () => {
+        //             // Hide the element after the animation ends
+        //             saving.style.display = "none";
+        //             saving.classList.remove("turn-off-saving"); // Optional: Remove the class if needed
+        //         });
+        //     });
+        // });//
+
+        // inputsTextArea.forEach(input => {
+        //         input.addEventListener('blur', function () {
+        //         console.log("Blur in Text Area Event Triggered...");
+        //         const fieldName = input.name;
+        //         const fieldValue = input.value; // For textarea, use .value to get the content
+
+        //         fetch('/update_field', {
+        //             method: 'POST',
+        //             headers: {
+        //             'Content-Type': 'application/json',
+        //             // 'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token if required
+        //             },
+        //             body: JSON.stringify({
+        //             field: fieldName,
+        //             value: fieldValue
+        //             })
+        //         })
+        //         .then(response => {
+        //             if (!response.ok) {
+        //             throw new Error('Failed to update field');
+        //             }
+        //             return response.json();
+        //         })
+        //         .then(data => {
+        //             console.log('Field updated successfully:', data);
+        //         })
+        //         .catch(error => {
+        //             console.error('Error updating field:', error);
+        //         });
+        //         });
+        //     });//
+
+// });
+
+    
+
+    function sendMessage() {
+        const form = document.querySelector('form');
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to send message');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert('Message sent successfully!');
+        })
+        .catch(error => {
+            console.error('Error sending message:', error);
+        });
+    }
+
+    if(window.innerWidth <= "700"){
+        document.querySelector(".letterhead-header").style.display="none";
+        document.querySelector(".letterhead-footer").style.display="none";
+        document.querySelector("#position_mobile").style.display="none";
+    }
+
+</script>
+{%endblock%}

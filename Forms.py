@@ -44,7 +44,12 @@ class MessagesForm(FlaskForm):
         (' ', 'Other')
     ]), validators=[Optional()])
     message = TextAreaField('Message', validators=[DataRequired()])
+    name = StringField('Name', validators=[Optional(), Length(min=2, max=50)])
+    phone = StringField('Phone', validators=[Optional(), Length(min=8, max=20)])
+    cust_email = StringField('Email', validators=[Optional(), Email()])
+    
     submit = SubmitField('Send')
+
 
 HASHTAG_CHOICES = [
     ('public_relations', '#public_relations'),

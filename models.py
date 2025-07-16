@@ -283,6 +283,8 @@ class Messages(db.Model,UserMixin):
     key = db.Column(db.String(50)) #for public key identification
     company_info_id = db.Column(db.Integer)
     company_info_name = db.Column(db.String(100))
+    cust_email = db.Column(db.String(100))
+    phone = db.Column(db.String(70))
 
     def to_dict(self):
         return {
