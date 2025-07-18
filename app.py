@@ -942,6 +942,7 @@ def uplaod_image():
 
         return jsonify({'Success':'Image Upload Successfull'}),200
 
+@csrf.exempt
 @app.route('/compose', methods=['POST',"GET"])
 @login_required
 def compose():
@@ -1081,7 +1082,7 @@ def compose():
 
     return render_template("compose.html", users=users,usr=curr_user,form=message_form, chat_with = chat_with,chat_with_company=chat_with_company )
 
-
+@csrf.exempt
 @app.route('/campaign_route', methods=['POST',"GET"])
 # @login_required
 def campaign_route():
@@ -1103,7 +1104,7 @@ def campaign_route():
 
     return render_template("campaign_route.html",companies=company_objs,categories=categories,view=view)
 
-
+@csrf.exempt
 @app.route('/compose_mobile', methods=['POST',"GET"])
 # @login_required
 def compose_mobile():
@@ -1875,6 +1876,7 @@ def news():
 
     return render_template("news.html",news=news,all_news_imgs=all_news_imgs,companies_n_news=companies_n_news)
 
+@csrf.exempt
 @app.route("/news_pinned")
 @login_required
 def news_pinned():

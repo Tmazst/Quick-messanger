@@ -242,7 +242,8 @@ async function subscribeUser(registration) {
         fetch('/subscribe', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
             },
             body: JSON.stringify(subscription)
         });
@@ -323,7 +324,7 @@ async function subscribeToPush() {
         // Send subscription to your server via fetch/AJAX
         await fetch('/subscribe', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json','X-CSRFToken': getCSRFToken() },
             body: JSON.stringify(subscription)
         });
         document.getElementById('push-subscribe-modal').style.display = 'none';

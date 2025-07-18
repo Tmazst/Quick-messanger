@@ -540,7 +540,7 @@ async function preRegister(){
             // Check recovery status from server
             const response = await fetch("/auto_recovery_checker", {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json','X-CSRFToken': getCSRFToken() },
                 body: JSON.stringify({ username: myUsrname })
             });
 
@@ -656,7 +656,8 @@ async function registerNewKeys(){
             fetch("/register_new_keys", {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken()
                 },
                 body: JSON.stringify({ 
                     username: myUsername, 
@@ -785,7 +786,7 @@ async function register() {
 document.addEventListener("DOMContentLoaded", async function () {
     try{
         initDB();
-        
+
         const tx = db.transaction("keys","readwrite");
         const store = tx.objectStore("keys");
         const request = store.getAll();

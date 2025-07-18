@@ -93,7 +93,6 @@ self.addEventListener('push', function(event) {
 
 
 // let clients;
-
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
   // console.log("Username @Push: ",event.notification.data.url);
