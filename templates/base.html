@@ -676,7 +676,7 @@ function skipRecovery(){
     var goBtn = document.querySelector("#login");
     // var currentFromServ = "{{ current|tojson|safe }}";
     if (userLabel){
-        console.log("User Label",userLabel.textContent);
+        // console.log("User Label",userLabel.textContent);
         initDB().then((db) =>{
             preRegister();
             console.log("db", db.objectStoreNames.contains("keys"));
