@@ -80,22 +80,25 @@ function openMiniReplyWindow() {
   );
 }
 
-document.getElementById('open-reply-unit').addEventListener('click', function() {
-    const miniWidth = 350;
-    const miniHeight = 600;
-    // Get the available screen size
-    const screenW = window.screen.availWidth;
-    const screenH = window.screen.availHeight;
-    // Calculate left and top for bottom right
-    const left = screenW - miniWidth;
-    const top = screenH - miniHeight;
-    // Open the window
-    window.open(
-        '/reply_unit',
-        'ReplyUnit',
-        `width=${miniWidth},height=${miniHeight},left=${left},top=${top},resizable=yes,scrollbars=yes`
-    );
-});
+const replyBtn = document.getElementById('open-reply-unit');
+if(replyBtn){
+    replyBtn.addEventListener('click', function() {
+        const miniWidth = 350;
+        const miniHeight = 600;
+        // Get the available screen size
+        const screenW = window.screen.availWidth;
+        const screenH = window.screen.availHeight;
+        // Calculate left and top for bottom right
+        const left = screenW - miniWidth;
+        const top = screenH - miniHeight;
+        // Open the window
+        window.open(
+            '/reply_unit',
+            'ReplyUnit',
+            `width=${miniWidth},height=${miniHeight},left=${left},top=${top},resizable=yes,scrollbars=yes`
+        );
+    });
+};
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistration().then(function(reg) {
@@ -104,30 +107,86 @@ if ('serviceWorker' in navigator) {
 }
 
 // Register service worker and subscribe to push
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-    // console.log("Notification Subscription in progress...");
-    // if (Notification.permission === "denied") {
-    //         // Optionally, show a message to the user:
-    //         alert("You have blocked notifications for this site. Please enable them in your browser settings if you want to receive notifications.");
-    //     }
-    navigator.serviceWorker.register('service-worker.js')
-    .then(function(registration) {
-        // console.log("Notification Subscription in progress...Request Permission");
-        // Request notification permission
-        //  if (confirm("We'd like to notify you about new messages in your Quick Messanger's inbox. Allow?")) {
+// if ('serviceWorker' in navigator && 'PushManager' in window) {
+//     // console.log("Notification Subscription in progress...");
+//     // if (Notification.permission === "denied") {
+//     //         // Optionally, show a message to the user:
+//     //         alert("You have blocked notifications for this site. Please enable them in your browser settings if you want to receive notifications.");
+//     //     }
+//     navigator.serviceWorker.register('service-worker.js')
+//     .then(function(registration) {
+//         // console.log("Notification Subscription in progress...Request Permission");
+//         // Request notification permission
+//         //  if (confirm("We'd like to notify you about new messages in your Quick Messanger's inbox. Allow?")) {
         
-            if (Notification.permission !== 'granted') {
-                Notification.requestPermission().then(function(permission) {
+//             if (Notification.permission !== 'granted') {
+//                 Notification.requestPermission().then(function(permission) {
+//                     if (permission === 'granted') {
+//                         subscribeUser(registration);
+//                     }
+//                 });
+//             } else {
+//                 subscribeUser(registration);
+//             }
+//     // }
+//     });
+// }
+
+// Register service worker and handle push notification permission
+if ('serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window) {
+    navigator.serviceWorker.register('service-worker.js')
+        .then(function (registration) {
+            // Check current permission state
+            if (Notification.permission === 'granted') {
+                // Already allowed — subscribe user to push
+                subscribeUser(registration);
+            } else if (Notification.permission === 'default') {
+                // Not yet asked — explain first or ask directly
+                // You can show a UI prompt here before calling this line:
+                Notification.requestPermission().then(function (permission) {
                     if (permission === 'granted') {
                         subscribeUser(registration);
+                    } else {
+                        alert("Notifications were not allowed. You can enable them later in your browser settings.");
                     }
                 });
-            } else {
-                subscribeUser(registration);
-            }
-    // }
-    });
+            } else if (Notification.permission === 'denied') {
+                    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+                    const lastShown = localStorage.getItem('notificationDeniedAlert');
+                    const now = Date.now();
+
+                    // Check if 24 hours (86,400,000 ms) have passed
+                    if (!lastShown || now - parseInt(lastShown) > 86400000) {
+                        // Show alert only once per day
+                        if (isMobile) {
+                            alert(
+                                "You’ve blocked notifications for Quick Messanger.\n\nTo enable on Android:\n" +
+                                "1. Tap the 3-dot menu (⋮) in your browser.\n" +
+                                "2. Choose 'Site settings'.\n" +
+                                "3. Tap 'Notifications' and allow them.\n" +
+                                "4. Reload the page."
+                            );
+                        } else {
+                            alert(
+                                "You’ve blocked notifications for Quick Messanger.\n\nTo enable:\n" +
+                                "1. Click the padlock icon (🔒) in the address bar.\n" +
+                                "2. Go to 'Site settings'.\n" +
+                                "3. Allow notifications.\n" +
+                                "4. Reload the page."
+                            );
+                        }
+
+                        // Update last shown time
+                        localStorage.setItem('notificationDeniedAlert', now.toString());
+                    }
+                }
+        })
+        .catch(function (error) {
+            console.error('Service Worker registration failed:', error);
+        });
 }
+
 
 function closeRefresh(){
     document.getElementById('recovery-modal').style.display='none';
@@ -151,7 +210,6 @@ window.addEventListener("unhandledrejection", function (event) {
         console.error("Unhandled rejection:", event.reason);
     }
 });
-
 
 
 function urlBase64ToUint8Array(base64String) {
@@ -368,7 +426,7 @@ window.addEventListener('load', () => {
                         });
                     };
                     if (sidenavBgBtn) {
-                        noBgBtn.addEventListener('click', () => {
+                        sidenavBgBtn.addEventListener('click', () => {
                             deferredPrompt.prompt();
                             deferredPrompt.userChoice.then((choiceResult) => {
                                 if (choiceResult.outcome === 'accepted') {
@@ -421,6 +479,8 @@ function closeQMenu(){
 document.addEventListener('DOMContentLoaded', () => {
 var manualInstall = document.querySelector("manual-install");
 
+
+if(manualInstall){
 manualInstall.addEventListener('click', () => {
     
     function isAppInstalled() {
@@ -463,7 +523,9 @@ manualInstall.addEventListener('click', () => {
         }
     
     });
+}
 });
+
 
 
 var sections = document.querySelectorAll(".profile-sections");
@@ -663,7 +725,9 @@ function closePopup(){
 
 
 //If Other in web type is selected do the following...
-document.querySelector("#otherType").addEventListener('change',function(e){
+var otherCategory = document.querySelector("#otherType");
+if(otherCategory){
+otherCategory.addEventListener('change',function(e){
 
         if (this.selectedIndex == 5){
             var anInput = document.createElement('input');
@@ -689,10 +753,12 @@ document.querySelector("#otherType").addEventListener('change',function(e){
         }
 
     });
-
+};
 
     //If Other in web type is selected do the following...
-document.querySelector("#checkbox-opt").addEventListener('change',function(){
+var checkBoxBox = document.querySelector("#checkbox-opt");
+if(checkBoxBox){
+checkBoxBox.addEventListener('change',function(){
 
         if (this.checked){
             var anInput = document.createElement('input');
@@ -720,6 +786,7 @@ document.querySelector("#checkbox-opt").addEventListener('change',function(){
 
     }
     );
+};
 
 var $message = $('.sel-tag');
 

@@ -26,6 +26,7 @@ from hashlib import pbkdf2_hmac
 import base64
 import threading
 from datetime import timedelta
+from flask_wtf.csrf import CSRFProtect
 
 
 
@@ -34,6 +35,7 @@ from datetime import timedelta
 #Change App
 app = Flask(__name__)
 app.config['SECRET_KEY'] = "45BFdfhfh-IKMwnfhdfcA7cR08RWECfzfhfdhfdfmYHFCeXFx97-P2_ZFxddfhfddfhdhdf5DDHtyoEP4yYCQ38aIVjI"
+csrf = CSRFProtect(app)
 
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle':280}
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
@@ -519,6 +521,11 @@ def save_recovery_data1():
 
     return jsonify({'status': 'success'}),201
 
+@app.route('/log-notification-permission', methods=['POST'])
+def log_notification_permission():
+    data = request.get_json()
+    print("Client permission:", data.get('permission'), "; Client Address: ",request.remote_addr)
+    return jsonify({'status': 'success'})
 
 # Get salt from db and derive key using password 
 @app.route('/get_key', methods=['POST'])
@@ -1780,7 +1787,8 @@ def delete_news(news_id):
         db.session.rollback()
         flash(f"Error deleting news: {str(e)}", "danger")
 
-    return jsonify({"del msg":"Deleted Successfully"}) 
+    return redirect(url_for("news"))
+
 
 @app.route('/sendme_message', methods=['POST'])
 @login_required

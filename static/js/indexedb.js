@@ -783,58 +783,64 @@ async function register() {
 
 
 document.addEventListener("DOMContentLoaded", async function () {
-    const tx = db.transaction("keys","readwrite");
-    const store = tx.objectStore("keys");
-    const request = store.getAll();
+    try{
+        initDB();
+        
+        const tx = db.transaction("keys","readwrite");
+        const store = tx.objectStore("keys");
+        const request = store.getAll();
 
-    request.onsuccess = async function() {
-        if (request.result && request.result.length > 0) {
-            const username = request.result[0].Usernames;// Get the username from the first record
-            const pKey = request.result[0].publicKey;
+        request.onsuccess = async function() {
+            if (request.result && request.result.length > 0) {
+                const username = request.result[0].Usernames;// Get the username from the first record
+                const pKey = request.result[0].publicKey;
 
-            // console.log("Testing Auto Message.....: ",username);
-            const welcomeText = "Hello and welcome to Quick Messanger! Start connecting and growing your business today. Should you have any enquiries, please feel free to use this platform for a prompt response.";
+                // console.log("Testing Auto Message.....: ",username);
+                const welcomeText = "Hello and welcome to Quick Messanger! Start connecting and growing your business today. Should you have any enquiries, please feel free to use this platform for a prompt response.";
 
-            // Import the user's public key
-            const pubKey = await window.crypto.subtle.importKey(
-                "jwk",
-                pKey,
-                { name: "RSA-OAEP", hash: "SHA-256" },
-                true,
-                ["encrypt"]
-            );
+                // Import the user's public key
+                const pubKey = await window.crypto.subtle.importKey(
+                    "jwk",
+                    pKey,
+                    { name: "RSA-OAEP", hash: "SHA-256" },
+                    true,
+                    ["encrypt"]
+                );
 
-            // Encrypt the message
-            const encrypted = await window.crypto.subtle.encrypt(
-                { name: "RSA-OAEP" },
-                pubKey,
-                new TextEncoder().encode(welcomeText)
-            );
+                // Encrypt the message
+                const encrypted = await window.crypto.subtle.encrypt(
+                    { name: "RSA-OAEP" },
+                    pubKey,
+                    new TextEncoder().encode(welcomeText)
+                );
 
-            // Convert to base64
-            const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
+                // Convert to base64
+                const encryptedBase64 = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
 
-            // Send to backend
-            const welcomeMsg = {
-                to: username,
-                subject: "Welcome to Quick Messanger!",
-                message: encryptedBase64
+                // Send to backend
+                const welcomeMsg = {
+                    to: username,
+                    subject: "Welcome to Quick Messanger!",
+                    message: encryptedBase64
+                };
+                try {
+                    // console.log("Testing Auto Message.....:2 ",welcomeMsg);
+                    const response = await fetch("/send_message", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(welcomeMsg)
+                    });
+                    const result = await response.json();
+                    // console.log("Welcome message sent:", result);
+                } catch (err) {
+                    console.error("Failed to send welcome message:", err);
+                }
             };
-            try {
-                // console.log("Testing Auto Message.....:2 ",welcomeMsg);
-                const response = await fetch("/send_message", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(welcomeMsg)
-                });
-                const result = await response.json();
-                // console.log("Welcome message sent:", result);
-            } catch (err) {
-                console.error("Failed to send welcome message:", err);
-            }
-        };
+        }
+    }catch (err){
+        console.log("Failed to run DB");
     }
 });
 

@@ -2,8 +2,8 @@
     font-family: 'Montserrat';
     src: url('../montserrat/Montserrat-Light.eot');
     src: url('../montserrat/Montserrat-Light.eot?#iefix') format('embedded-opentype'),
-        url('../montserrat/Montserrat-Light.woff2') format('woff2'),
-        url('../montserrat/Montserrat-Light.woff') format('woff'),
+        /* url('../montserrat/Montserrat-Light.woff2') format('woff2'),
+        url('../montserrat/Montserrat-Light.woff') format('woff'), */
         url('../montserrat/Montserrat-Light.svg#Montserrat-Light') format('svg');
     font-weight: 400;
     font-style: normal;
@@ -14,8 +14,8 @@
     font-family: 'Oswald';
     src: url('../oswald/Oswald-Light.eot');
     src: url('../oswald/Oswald-Light.eot?#iefix') format('embedded-opentype'),
-        url('../oswald/Oswald-Light.woff2') format('woff2'),
-        url('../oswald/Oswald-Light.woff') format('woff'),
+        /* url('../oswald/Oswald-Light.woff2') format('woff2'),
+        url('../oswald/Oswald-Light.woff') format('woff'), */
         url('../oswald/Oswald-Light.svg#Oswald-Light') format('svg');
     font-weight: 400;
     font-style: normal;
