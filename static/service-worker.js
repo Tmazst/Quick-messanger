@@ -27,21 +27,29 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch: serve from cache, fallback to network
+
+// ✅ Safe Fetch Handler
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-      .catch(err => {
-        console.error('Fetch failed; returning offline page instead.', err);
-        // Notify client to unregister service worker
-        // self.clients.matchAll().then(clients => {
-        //   clients.forEach(client => {
-        //     client.postMessage({ type: 'SW_FETCH_ERROR' });
-        //   });
-        // });
-        // Optionally return a fallback response
-        // return new Response('', { status: 503, statusText: 'Service Unavailable' });
+    fetch(event.request)
+      .then(response => {
+        return response;
+      })
+      .catch(async error => {
+        console.warn('Fetch failed; returning fallback (if any):', error);
+
+        const cache = await caches.open(CACHE_NAME);
+        const cached = await cache.match(event.request);
+        if (cached) return cached;
+
+        // Optional: Return a simple fallback if no match found
+        if (event.request.mode === 'navigate') {
+          return new Response('<h1>You are offline</h1>', {
+            headers: { 'Content-Type': 'text/html' }
+          });
+        }
+
+        return new Response('', { status: 200 }); // Always return a valid response
       })
   );
 });
