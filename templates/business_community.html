@@ -841,7 +841,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function handleIntersection(entries, observer) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-            console.log('Element has entered the viewport:', entry.target);
+            // console.log('Element has entered the viewport:', entry.target);
             entry.target.classList.add("show-card");
             // You can add your logic here, for example:
             // entry.target.classList.add('visible'); // Modify the element's class
