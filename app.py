@@ -1755,6 +1755,33 @@ def send_message():
     # print("Messages: ", messages)
     return jsonify({'status': 'message_sent'}),200
 
+@app.route("/delete_news/<int:news_id>", methods=["POST", "GET"])
+@login_required
+def delete_news(news_id):
+    news = News.query.get_or_404(news_id)
+
+    try:
+        # Delete image files associated with this news post
+        for img in news.images_id:
+            if img.image:
+                image_path = os.path.join("static", "comp-images", secure_filename(img.image))
+                if os.path.exists(image_path):
+                    os.remove(image_path)
+            if img.main:
+                main_image_path = os.path.join("static", "comp-images", secure_filename(img.main))
+                if os.path.exists(main_image_path):
+                    os.remove(main_image_path)
+
+        # Delete the news object (and all images via cascade)
+        db.session.delete(news)
+        db.session.commit()
+        flash("News and associated images deleted successfully.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error deleting news: {str(e)}", "danger")
+
+    return jsonify({"del msg":"Deleted Successfully"}) 
+
 @app.route('/sendme_message', methods=['POST'])
 @login_required
 def sendme_message():

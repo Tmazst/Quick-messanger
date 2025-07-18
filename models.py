@@ -115,7 +115,7 @@ class News(db.Model):
     timestamp = db.Column(db.DateTime())
     images_id = relationship("NewsImages",backref="news", lazy=True)
     views = relationship("Views", backref="news", lazy=True)
-    comments = relationship("Comments", backref="news", lazy=True)
+    comments = relationship("Comments", backref="news", lazy=True,cascade="all, delete-orphan")
 
 class Views(db.Model):
     id = db.Column(db.Integer, primary_key=True)

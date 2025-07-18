@@ -340,6 +340,13 @@
                         </div>
                     </a>
                     {%endif%}
+                    {%if current_user.is_authenticated and current_user.id == first_post.usr_id %}
+                    <a href="/delete_news/{{first_post.id}}" target="_blank">
+                        <div class="social-media-cont">
+                            <img src="static/icons/linkedin-outline-icon.png" />
+                        </div>
+                    </a>
+                    {%endif%}
                 {%endif%}
             {%endfor%} 
         </div>
@@ -368,7 +375,17 @@
                 <div id="real-hashtags-mobile"></div>
                 <div id="cont-body-mobile" class="content-body">content-viewer-desktop</div>
                 <div style="flex-grow: 1;"></div>
-                <div style="position: relative;" class="hashtags gen-flex" style="color:#616161"></div>
+                <div style="position: relative;" class="hashtags gen-flex" style="color:#616161">
+                    <div id="deleteBtnHtml" style="display: none;">
+                        {% if current_user.is_authenticated and current_user.id == first_post.usr_id %}
+                        <a id="delete-news-{{news.id}}" href="/delete_news/{{news.id}}">
+                            <div class="social-media-cont">
+                                <img style="height:40px" src="static/icons/delete-icon.svg" />
+                            </div>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -647,6 +664,9 @@ function viewInMinPreview(postid, title, content, imglist, compid,hashtags) {
                     </div>
                 </a>`;
         }
+        const deleteBtn = document.getElementById("deleteBtnHtml").innerHTML;
+        hashtagsDiv.innerHTML += deleteBtn;
+        
     }
 
     // send get request to update views count
