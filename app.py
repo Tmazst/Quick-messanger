@@ -2004,15 +2004,17 @@ def business_community():
 
     return render_template("business_community.html",companies=company_objs,categories=categories,view=view)
 
+@csrf.exempt
 @app.route('/business_profile', methods=['POST',"GET"])
 def business_profile():
+    # print("business_profile Request: ")
     data = request.get_json()
     follow_status = False
-    print("ID Request: ", data)
+    # print("ID Request: ", data)
     if data:
         de_ser = ser.loads(data["cid"])
         id_ = de_ser.get('cid')
-        print("ID Request: ", id_)
+        # print("ID Request: ", id_)
         company_profile = company_info.query.get(id_).to_dict()
     
         follow_status = Followers.query.filter_by(ip_address=request.remote_addr,company_id=id_).first()

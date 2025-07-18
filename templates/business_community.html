@@ -235,6 +235,7 @@
   position: relative;
   animation: modalIn 0.22s cubic-bezier(.4,1.4,.6,1);
   border: 1.5px solid #e0e7ef;
+  max-height: 95vh;
 }
 @keyframes modalIn {
   from { transform: translateY(40px) scale(0.98); opacity: 0; }
@@ -891,16 +892,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Escape') closeModal();
     });
     
-
-
-
     // Attach click listeners to all cards in grid and list
     function attachCardListeners() {
         document.querySelectorAll('.company-logos-cards, .list-card').forEach(function(card) {
             card.onclick = function(e) {
+                
                 // Find the company logo img inside the card
                 let img = card.querySelector('img.comp-logos');
                 if (!img) return;
+                
                 // Get the company logo filename
                 let logo = img.getAttribute('src').split('/').pop();
                 // Find the company object in JS (optional: you can add a data attribute with company id)
@@ -912,6 +912,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 // Show modal and fetch details
                 openModal();
+                console.log("CID: ", cid);
                 fetch('/business_profile', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -926,8 +927,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         modalBody.innerHTML = '<div class="company-modal-loading">No details found.</div>';
                     }
                 })
-                .catch(() => {
-                    modalBody.innerHTML = '<div class="company-modal-loading">Error loading details.</div>';
+                .catch((err) => {
+                    console.log("Error Loading: ", err);
+                    modalBody.innerHTML = '<div class="company-modal-loading">Error loading details.  </div>' ;
                 });
             };
         });
