@@ -1358,6 +1358,7 @@ def logout():
     
     return redirect(url_for('home'))
 
+@csrf.exempt
 @app.route('/api/is_logged_in')
 def is_logged_in():
     return jsonify({'logged_in': current_user.is_authenticated})
@@ -1374,6 +1375,7 @@ def notify_all_subscribers_async(curr_user, msg, title="Q-Messanger", url="/"):
                     print(f"Notification failed for {sub.id}: {e}")
     threading.Thread(target=notify).start()
 
+@csrf.exempt
 @app.route('/register', methods=['POST','GET'])
 def register():
     # data = request.json
@@ -1533,6 +1535,7 @@ def register():
 
     return render_template('register.html')
 
+@csrf.exempt
 @app.route('/fetch_user_data', methods=['POST'])
 def fetch_user_data():
     data = request.get_json()
@@ -1604,6 +1607,7 @@ def user_account_form():
     return render_template("user_account.html", form=user_account_form,usr_acc=usr_acc)
 
 # ------------------------------COMPANIES DATA------------------------------- #
+@csrf.exempt
 @app.route("/company_account", methods=["POST", "GET"])
 @login_required
 def company_account():
@@ -1716,6 +1720,7 @@ def get_public_key(usrname):
     except Exception as e:
         print("get_public_key==Error fetching public key:", str(e))
         return jsonify({'error': 'Internal server error'}), 500
+
 
 @app.route('/send_message', methods=['POST'])
 @login_required
