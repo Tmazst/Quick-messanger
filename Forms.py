@@ -50,6 +50,15 @@ class MessagesForm(FlaskForm):
     
     submit = SubmitField('Send')
 
+class JobApplicationForm(FlaskForm):
+    name =  StringField('Name', validators=[DataRequired()])
+    email =  StringField('Email', validators=[DataRequired(), Email()])
+    cv = FileField('Upload ID (JPG,JPEG)', validators=[DataRequired()])
+    id = FileField('Upload CV (PDF/DOCX FILE)', validators=[DataRequired()])
+
+    submit = SubmitField('Send Application')
+
+
 
 HASHTAG_CHOICES = [
     ('public_relations', '#public_relations'),

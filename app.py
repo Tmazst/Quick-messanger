@@ -2175,6 +2175,11 @@ def update_company():
 
     return render_template("message_blueprint.html")
 
+@app.route('/download/job-advert')
+def download_job_advert():
+    return send_from_directory('static/business-images', 
+                               'Q-Messanger Job advert - Marketing Intern.pdf', 
+                               as_attachment=True)
 
 def reg_confirmation(email, company_name):
     """Send registration confirmation email."""
