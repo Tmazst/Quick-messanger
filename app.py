@@ -2177,9 +2177,12 @@ def update_company():
 
 @app.route('/download/job-advert')
 def download_job_advert():
-    return send_from_directory('static/business-images', 
-                               'Q-Messanger Job advert - Marketing Intern.pdf', 
-                               as_attachment=True)
+    return send_from_directory(
+        directory='static/business-images',
+        path='Q-Messanger_Job_advert_Marketing_Intern.pdf',
+        as_attachment=True,
+        mimetype='application/pdf'
+    )
 
 def reg_confirmation(email, company_name):
     """Send registration confirmation email."""
