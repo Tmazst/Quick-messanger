@@ -1721,7 +1721,6 @@ def get_public_key(usrname):
         print("get_public_key==Error fetching public key:", str(e))
         return jsonify({'error': 'Internal server error'}), 500
 
-
 @app.route('/send_message', methods=['POST'])
 @login_required
 def send_message():
@@ -1794,7 +1793,6 @@ def delete_news(news_id):
         flash(f"Error deleting news: {str(e)}", "danger")
 
     return redirect(url_for("news"))
-
 
 @app.route('/sendme_message', methods=['POST'])
 @login_required
@@ -2029,8 +2027,7 @@ def business_profile():
             follow_status = True
 
     return jsonify({"company":company_profile, "follow_status": follow_status}), 200
-
-    
+  
 @app.route('/get_messages', methods=['GET'])
 @login_required
 def get_messages():
@@ -2091,7 +2088,6 @@ def get_messages():
 
         return render_template("message_blueprint.html", chat_messages=messages_wcurrent_ukey, chat_user = chat_user, other_usrname =other_usrname,
                                other_usr_company_info=other_usr_company_dict, my_company_info=my_company_dict)
-
 
 @app.route('/update_field_user', methods=['POST','GET'])
 @login_required

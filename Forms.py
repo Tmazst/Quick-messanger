@@ -58,8 +58,6 @@ class JobApplicationForm(FlaskForm):
 
     submit = SubmitField('Send Application')
 
-
-
 HASHTAG_CHOICES = [
     ('public_relations', '#public_relations'),
     ('community_service', '#community_service'),
@@ -273,7 +271,6 @@ class Company_Register_Form(FlaskForm):
                                           ("pay_plan_2", "Pay Per Advert"), ("pay_plan_3", "Free For Now")])
 
     submit = SubmitField('Submit')
-
 
 class Company_UpdateAcc_Form(FlaskForm):
 
