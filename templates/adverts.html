@@ -94,11 +94,11 @@
                                     <a href="{{comp_obj.email}}"><img src="static/icons/ads-email-icon.png" class="ads-icons"/> </a>
                                 {%endif%}
                                 <div class=" qm-icon-adverts">
-                                    <a href="/compose?id={{ser.dumps({'data':comp_obj.id})}}" target="_blank">
+                                    <a id="msg-icon" class="imbc-icon"  href="/compose?id={{ser.dumps({'data':comp_obj.id})}}" target="_blank">
                                         <img src="static/icons/imbc-icon.png" style="height: 50px;width:50px ;" />
                                     </a>
                                     
-                                    <a id="href_route" href="/compose_mobile?id={{ser.dumps({'data':company.id})}}" >
+                                    <a style="display: none;"  id="msg-icon-mobile" class="imbc-icon-mobile" id="href_route" href="/compose_mobile?id={{ser.dumps({'data':company.id})}}" >
                                         <img src="static/icons/imbc-icon.png" />
                                     </a>
                                   
