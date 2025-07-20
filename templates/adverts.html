@@ -57,6 +57,12 @@
         /* height: max-content; */
         background-color: rgb(214, 214, 214);
     }
+    .imbc-icon-mobile{
+        display: block !important;
+    }
+    .imbc-icon{
+        display: none !important;
+    }
 }
 </style>
 
@@ -98,7 +104,7 @@
                                         <img src="static/icons/imbc-icon.png" style="height: 50px;width:50px ;" />
                                     </a>
                                     
-                                    <a style="display: none;"  id="msg-icon-mobile" class="imbc-icon-mobile" id="href_route" href="/compose_mobile?id={{ser.dumps({'data':company.id})}}" >
+                                    <a style="display: none;"  id="msg-icon-mobile" class="imbc-icon-mobile" href="/compose_mobile?id={{ser.dumps({'data':company.id})}}" >
                                         <img src="static/icons/imbc-icon.png" />
                                     </a>
                                   
