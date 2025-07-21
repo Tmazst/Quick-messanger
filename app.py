@@ -2193,7 +2193,7 @@ def download_job_advert():
     print("Downolading Advert: ",request.remote_addr)
     return send_from_directory(
         directory='static/business-images',
-        filename='Q-Messanger_Job_advert_Marketing_Intern.pdf',
+        path='Q-Messanger_Job_advert_Marketing_Intern.pdf',
         as_attachment=True,
         mimetype='application/pdf'
     )
