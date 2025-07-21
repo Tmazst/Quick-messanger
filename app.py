@@ -2190,9 +2190,10 @@ def update_company():
 
 @app.route('/download/job-advert')
 def download_job_advert():
+    print("Downolading Advert: ",request.remote_addr)
     return send_from_directory(
         directory='static/business-images',
-        path='Q-Messanger_Job_advert_Marketing_Intern.pdf',
+        filename='Q-Messanger_Job_advert_Marketing_Intern.pdf',
         as_attachment=True,
         mimetype='application/pdf'
     )
