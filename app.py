@@ -856,13 +856,14 @@ def subscribe():
 
         return jsonify({"success": True}), 201 
     
+    
 
     save_details = NotificationsAccess(
         endpoint = subscription_info.get("endpoint"),
         p256dh = subscription_info["keys"]["p256dh"],
         auth = subscription_info["keys"]["auth"],
         ip = request.remote_addr,
-        usr_id = current_user.id,
+        usr_id = current_user.id if current_user.is_authenticated else None,
         timestamp = current_time_wlzone()
     )
 
@@ -1166,8 +1167,11 @@ def compose_mobile():
 
     return render_template("compose_in_mobile.html", users=users,usr=curr_user,form=message_form, chat_with = chat_with,chat_with_company=chat_with_company )
 
-
 def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
+    pushed_num = 0
+    failed_num = 0
+    pushed_ip_list = []
+    failed_ip_list = []
 
     recipient_sub_info = {
             "endpoint": recipient_sub .endpoint,
@@ -1176,8 +1180,9 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
                 "auth": recipient_sub .auth
             }
         }
+    
     try:
-        print(f"Updates! {curr_user}")
+        print(f"Updates from! {curr_user}")
         webpush(
             recipient_sub_info,
             data=json.dumps({
@@ -1190,6 +1195,8 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
             vapid_claims=VAPID_CLAIMS,
             ttl=200
         )
+        pushed_num += 1
+        pushed_ip_list.append(recipient_sub_info.ip)
         print("Web Push Activated, Update!")
 
     except WebPushException as ex:
@@ -1200,6 +1207,14 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
             print(f"Removed expired subscription uid: {recipient_sub.usr_id}")
         else:
             print("Web push failed, update: {}", repr(ex))
+        failed_num += 1
+        failed_ip_list.append(recipient_sub_info.ip)
+
+    print("Q-MESSANGER NOTIFICATIONS - Successfully pushed notifications: ",pushed_num)
+    print("Q-MESSANGER NOTIFICATIONS - Failed notifications: ",failed_num)
+
+    with open("Push Notifications Report.txt", "rw") as file:
+        pass
 
 # Adverts Code 
 # {% for row in adverts|batch(3, '') %}

@@ -175,6 +175,8 @@ class qm_updates(db.Model):
     title = db.Column(db.String(20))
     content = db.Column(db.String(200))
     url = db.Column(db.String(200))
+    end_date = db.Column(db.DateTime)
+    start_date = db.Column(db.DateTime)
     timestamp = db.Column(db.DateTime)
 
 class company_info(db.Model):
@@ -334,7 +336,7 @@ class Visitors(db.Model):
 class NotificationsAccess(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    usr_id = db.Column(db.Integer, ForeignKey('user.id'),nullable=False)
+    usr_id = db.Column(db.Integer, ForeignKey('user.id'),nullable=True)
     endpoint = db.Column(db.Text, nullable=False)
     p256dh = db.Column(db.String(255))
     auth = db.Column(db.String(255))
