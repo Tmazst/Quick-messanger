@@ -165,14 +165,15 @@
         {%endfor%}
     </div>
 </div>
-
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
 <script>
-    var elem = document.querySelector('.masonry');
-    var msnry = new Masonry(elem, {
-        itemSelector: '.masonry-item',
-        columnWidth: '.masonry-item',
-        percentPosition: true
-    });
+document.addEventListener('DOMContentLoaded', function () {
+    // var elem = document.querySelector('.masonry');
+    // var msnry = new Masonry(elem, {
+    //     itemSelector: '.masonry-item',
+    //     columnWidth: '.masonry-item',
+    //     percentPosition: true
+    // });
 
     function revealDrawer(e,id){
         var ida = "m-ad00" + id.toString();
@@ -194,6 +195,7 @@
             });
         }
     }
+});
 </script>
 
 {%endblock%}

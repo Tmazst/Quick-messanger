@@ -66,6 +66,9 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=365)
 db.init_app(app)
 CORS(app)  # Allow cross-origin requests
 
+# export db after init 
+DB_INIT = db
+
 login_manager = LoginManager(app)
 login_manager.login_view = "register"
 
@@ -827,7 +830,7 @@ subscriptions = []
 
 @app.route('/subscribe', methods=['POST'])
 def subscribe():
-     
+    print('Q-MESSANGER PSUH NOTIFICATION SUBSCRIPTION - user subscribing...')
     # Save subscription info to your DB
     subscription_info = request.get_json()
     # Save subscription_info for the user
@@ -839,7 +842,7 @@ def subscribe():
         }
     })
 
-    sub = NotificationsAccess.query.filter_by(p256dh=subscription_info["keys"]["p256dh"]).first()
+    sub = NotificationsAccess.query.filter_by(ip=request.remote_addr).first()
     if sub:
         sub.endpoint = subscription_info.get("endpoint")
         sub.p256dh = subscription_info["keys"]["p256dh"]
@@ -849,7 +852,7 @@ def subscribe():
         sub.timestamp = current_time_wlzone()
 
         db.session.commit()
-        print("Subscription Already Exists!")
+        print("Updated Notification Subscription for ", request.remote_addr)
 
         return jsonify({"success": True}), 201 
     
@@ -865,6 +868,7 @@ def subscribe():
 
     db.session.add(save_details)
     db.session.commit()
+    print("new Notification Subscription for ", request.remote_addr)
     flash("✔Success!","success")
 
     return jsonify({"success": True}), 201
@@ -1015,7 +1019,9 @@ def compose():
             recipient_sub = NotificationsAccess.query.filter_by(usr_id=user.id).order_by(NotificationsAccess.timestamp.desc()).first()
 
             if not recipient_sub:
-                return redirect(url_for('compose'))
+                print("User Not Susbribed, ", request.remote_addr)
+                return redirect(url_for('home'))
+            
             # for sub in recipient_subs:
             recipient_sub_info = {
                 "endpoint": recipient_sub .endpoint,
@@ -1187,7 +1193,7 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
         print("Web Push Activated, Update!")
 
     except WebPushException as ex:
-        if '410' in str(ex) or 'unsubscribed or expired' in str(ex):
+        if 'unsubscribed or expired' in str(ex):
             # Remove subscription from DB
             db.session.delete(recipient_sub)
             db.session.commit()
@@ -1839,6 +1845,7 @@ def adverts_form():
     form_req = request.form.get('pinned-story')
 
     comp_news = News.query.filter_by(usr_id=current_user.id).all()
+    company = current_user.company_id[0]
 
     if request.method == "POST":
         advert = Advert(
@@ -1854,6 +1861,16 @@ def adverts_form():
         db.session.add(advert)
         db.session.commit()
         flash("Advert Uploaded Successfully","success")
+        msg = company.company_name +"  just dropped a brand-new advert — check it out and don’t miss your chance to be part of something exciting!"
+        title="Q-Messanger Adverts"
+        url = "/adverts"
+
+        try:
+            recipient_sub = NotificationsAccess.query.filter_by(usr_id=current_user.id).order_by(NotificationsAccess.timestamp.desc()).first()
+            app_notification(recipient_sub,current_user.name,msg,title,url=url)
+            print("Q-MESSANGER: NOTIFICATIONS LOGS - Pushed advert notification from: ",company.company_name)
+        except:
+            print("Advert Notification Push Error")
 
     return render_template("advert_form.html",form=form,comp_news=comp_news)
 
@@ -2009,7 +2026,7 @@ def business_community():
 
     return render_template("business_community.html",companies=company_objs,categories=categories,view=view)
 
-@csrf.exempt
+
 @app.route('/business_profile', methods=['POST',"GET"])
 def business_profile():
     # print("business_profile Request: ")

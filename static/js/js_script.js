@@ -47,6 +47,10 @@
 //}
 //window.onscroll = function() {handleScroll()};
 
+ function getXCSRFToken() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    };
+
 navigator.serviceWorker.addEventListener('message', function(event) {
   if (event.data && event.data.type === 'OPEN_REPLY_UI') {
     // Open the mini window
@@ -238,12 +242,13 @@ async function subscribeUser(registration) {
         applicationServerKey: convertedVapidKey
     })
     .then(function(subscription) {
+        console.log('Sending A subscription Request');
         // Send subscription to Flask backend
         fetch('/subscribe', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken()
+                'X-CSRFToken': getXCSRFToken()
             },
             body: JSON.stringify(subscription)
         });
@@ -324,7 +329,7 @@ async function subscribeToPush() {
         // Send subscription to your server via fetch/AJAX
         await fetch('/subscribe', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json','X-CSRFToken': getCSRFToken() },
+            headers: { 'Content-Type': 'application/json','X-CSRFToken': getXCSRFToken() },
             body: JSON.stringify(subscription)
         });
         document.getElementById('push-subscribe-modal').style.display = 'none';

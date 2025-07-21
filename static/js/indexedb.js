@@ -2,6 +2,10 @@
 
 let db;
 let Keys = {};
+
+ function getTCSRFToken() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    };
 // Create or Check if db created 
 //...if db found return the instance using the promise
 function initDB() {
@@ -540,7 +544,7 @@ async function preRegister(){
             // Check recovery status from server
             const response = await fetch("/auto_recovery_checker", {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json','X-CSRFToken': getCSRFToken() },
+                headers: { 'Content-Type': 'application/json','X-CSRFToken': getTCSRFToken() },
                 body: JSON.stringify({ username: myUsrname })
             });
 
@@ -657,7 +661,7 @@ async function registerNewKeys(){
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': getCSRFToken()
+                    'X-CSRFToken': getTCSRFToken()
                 },
                 body: JSON.stringify({ 
                     username: myUsername, 

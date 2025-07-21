@@ -1,6 +1,6 @@
 
 # from alchemy_db import db.Model
-from sqlalchemy import  MetaData, ForeignKey
+from sqlalchemy import  MetaData, ForeignKey,Text
 from flask_login import login_user, UserMixin
 from sqlalchemy.orm import backref, relationship
 from datetime import datetime
@@ -101,7 +101,6 @@ class Advert(db.Model):
     advert_days = db.Column(db.Integer)
     start_date = db.Column(db.DateTime)
     timestamp = db.Column(db.DateTime)
-
 
 class News(db.Model):
 
@@ -336,7 +335,7 @@ class NotificationsAccess(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     usr_id = db.Column(db.Integer, ForeignKey('user.id'),nullable=False)
-    endpoint = db.Column(db.String(255))
+    endpoint = db.Column(db.Text, nullable=False)
     p256dh = db.Column(db.String(255))
     auth = db.Column(db.String(255))
     ip = db.Column(db.String(100))

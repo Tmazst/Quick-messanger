@@ -696,6 +696,10 @@ var closeBtn = document.querySelector(".close-btn");
 var adContainer = document.querySelector('.advertise-here');
 var contanier = document.querySelector('.view-container');
 
+function getCSRFToken() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    };
+
 closeBtn.addEventListener('click', function(){
     adContainer.style.display = 'none';
     contanier.style.paddingTop = '7px';
