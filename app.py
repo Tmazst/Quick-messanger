@@ -1995,9 +1995,9 @@ def push_notif_form():
         content = form.content.data
         url = form.url.data
 
-        recipient_sub = NotificationsAccess.query.filter_by(usr_id=current_user.id).order_by(NotificationsAccess.timestamp.desc()).first()
-
-        app_notification(recipient_sub,current_user.name,content,title=title,url=url)
+        recipient_subs = NotificationsAccess.query.all()
+        for recipient_sub in recipient_subs:
+            app_notification(recipient_sub,current_user.name,content,title=title,url=url)
 
     return render_template("marketing_updates_form.html",form=form)
 

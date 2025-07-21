@@ -171,7 +171,7 @@ class clientuser(User):
 
 class qm_updates(db.Model):
 
-    id = db.Column(db.Integer, ForeignKey('user.id'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(20))
     content = db.Column(db.String(200))
     url = db.Column(db.String(200))
