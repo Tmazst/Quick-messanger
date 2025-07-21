@@ -141,7 +141,7 @@ section > div {
                 </div>
                 <div class="group">
                     <div class="acc-labels">{{ form.url.label(class="labels")}}</div>
-                    {{ form.url(class="form-control", style="min-height:150px", placeholder="URL")}}
+                    {{ form.url(class="form-control", placeholder="URL")}}
                     {% if form.url.errors %}
                         {% for error in form.url.errors %}
                             <span class="span-error" >*{{error}}</span>
