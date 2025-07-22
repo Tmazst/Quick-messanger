@@ -2276,7 +2276,7 @@ def email_prospective_companies(email,name, company_name):
                         <td style="padding:0 32px;">
                             
                             <div class="main_cont" style="background:#f1f1f1; border-radius:10px; padding:18px 20px; margin-bottom:24px;">
-                                <p style="color:#EF4036; font-size:1.1em; margin:0 0 24px 0; font-weight:600;"><span style="color:#222;">{name},</span></p>
+                                <p style="color:#EF4036; font-size:1.1em; margin:0 0 24px 0; font-weight:600;"><span style="color:#222;">Good day {name},</span></p>
 
                                 <p style="color:#353535; font-size:1em; margin:0 0 24px 0; font-weight:400;">I'm reaching out to introduce <b>Quick Messenger</b> — a fast-growing digital platform built to help businesses in Eswatini and beyond <b>increase brand awareness, 
                                     reach new audiences, and form valuable trading partnerships,</b> both locally and internationally.
