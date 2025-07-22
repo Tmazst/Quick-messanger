@@ -2247,7 +2247,7 @@ def email_prospective_companies(email,name, company_name):
         mail = Mail(app)
 
 
-        msg = Message(subject="Registration Confirmation", sender="no-reply@gmail.com", recipients=[email])
+        msg = Message(subject="Boost Brand Awareness", sender="no-reply@gmail.com", recipients=[email])
 
         msg.html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -2355,11 +2355,9 @@ def email_prospective_companies(email,name, company_name):
 </body>
 </html>
 """
-
-
         try:
             mail.send(msg)
-            flash(f'We have sent you an email to confirm your registration', 'success')
+            flash(f'Email Sent Successffully', 'success')
             print(f"reg_confirmation==Email sent to {email} for company {company_name}")
             return "Email Sent"
         except Exception as e:
