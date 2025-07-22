@@ -169,8 +169,8 @@ class QMUpdatesForm(FlaskForm):
 class EmailProspectsForm(FlaskForm):
 
     title = StringField('Title', validators=[DataRequired(), Length(min=4, max=20)])
-    name = TextAreaField('Person Name', validators=[DataRequired(), Length(min=10, max=200)])
-    email = DateField('Email', validators=[DataRequired()])
+    name = StringField('Person Name', validators=[DataRequired(), Length(min=10, max=200)])
+    email = StringField('Email', validators=[DataRequired()])
     company = StringField('Company Name', validators=[DataRequired(), Length(min=2, max=100)])
     submit = SubmitField('Send')
 
