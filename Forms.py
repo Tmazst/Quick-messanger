@@ -150,6 +150,19 @@ class QMUpdatesForm(FlaskForm):
 
     title = StringField('Update Title', validators=[DataRequired(), Length(min=4, max=20)])
     content = TextAreaField('Content', validators=[DataRequired(), Length(min=10, max=200)])
+    start_date = DateField('Start Date', validators=[DataRequired()])
+    end_date = DateField('End Date', validators=[DataRequired()])
+    days = SelectMultipleField('Days', choices=[
+        ('Monday', 'Monday'),
+        ('Tuesday', 'Tuesday'),
+        ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'),
+        ('Friday', 'Friday'),
+        ('Saturday', 'Saturday'),
+        ('Sunday', 'Sunday')],
+        option_widget=CheckboxInput(),
+        widget=ListWidget(prefix_label=False)
+    )
     url = URLField('Link')
     submit = SubmitField('Send')
 

@@ -2,10 +2,13 @@
 
 {% block content %}
 <style>
-  input[type="checkbox"]{
-    background: none;
-    border: 1px solid coral;
-  }
+#select-mult-class{
+  list-style-type: none;
+}
+input[type="checkbox"]{
+  background: none;
+  border: 1px solid coral;
+}
 section {
   display: flex;
   flex-flow: row wrap;
@@ -134,6 +137,36 @@ section > div {
                     {{ form.content(class="form-control", style="min-height:150px", placeholder="Content")}}
                     {% if form.content.errors %}
                         {% for error in form.content.errors %}
+                            <span class="span-error" >*{{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                    <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+                </div>
+                <div class="group">
+                    <div class="acc-labels">{{ form.start_date.label(class="labels")}}</div>
+                    {{ form.start_date(class="form-control", placeholder="start_date")}}
+                    {% if form.start_date.errors %}
+                        {% for error in form.start_date.errors %}
+                            <span class="span-error" >*{{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                    <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+                </div>
+                <div class="group">
+                    <div class="acc-labels">{{ form.end_date.label(class="labels")}}</div>
+                    {{ form.end_date(class="form-control", placeholder="end_date")}}
+                    {% if form.end_date.errors %}
+                        {% for error in form.end_date.errors %}
+                            <span class="span-error" >*{{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                    <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+                </div>
+                <div class="group">
+                    <div class="acc-labels">{{ form.days.label(class="labels")}}</div>
+                    {{ form.days(class="form-control",id="select-mult-class", placeholder="days")}}
+                    {% if form.days.errors %}
+                        {% for error in form.days.errors %}
                             <span class="span-error" >*{{error}}</span>
                         {% endfor %}
                     {% endif %}

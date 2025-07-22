@@ -855,8 +855,7 @@ def subscribe():
         print("Updated Notification Subscription for ", request.remote_addr)
 
         return jsonify({"success": True}), 201 
-    
-    
+     
 
     save_details = NotificationsAccess(
         endpoint = subscription_info.get("endpoint"),
@@ -1999,9 +1998,14 @@ def push_notif_form():
         notify = qm_updates(
             title = form.title.data,
             content = form.content.data,
+            start_date = form.start_date.data,
+            end_date = form.end_date.data,
             url = form.url.data,
             timestamp = current_time_wlzone()
         )
+
+        if form.days.data:
+            notify.days = form.days.data
 
         db.session.add(notify)
         db.session.commit()
@@ -2041,6 +2045,10 @@ def business_community():
 
     return render_template("business_community.html",companies=company_objs,categories=categories,view=view)
 
+@app.route('/email_prospects', methods=['POST',"GET"])
+def email_prospects():
+
+    render_template("email_prospects.html")
 
 @app.route('/business_profile', methods=['POST',"GET"])
 def business_profile():
@@ -2212,6 +2220,148 @@ def download_job_advert():
         as_attachment=True,
         mimetype='application/pdf'
     )
+
+def email_prospective_companies(email,name, company_name):
+    """Send registration confirmation email."""
+    if not email:
+        print("reg_confirmation==No Email Provided")
+        return jsonify({"error": "Email not sent, No email provided"}), 400
+
+    def send_veri_mail():
+
+        app.config["MAIL_SERVER"] = "smtp.googlemail.com"
+        app.config["MAIL_PORT"] = 587
+        app.config["MAIL_USE_TLS"] = True
+        # Creditentials saved in environmental variables
+        em = app.config["MAIL_USERNAME"] = creds.get('email')  # os.getenv("MAIL")
+        app.config["MAIL_PASSWORD"] = creds.get('gpass') #os.getenv("PWD")
+        app.config["MAIL_DEFAULT_SENDER"] = "noreply@gmail.com"
+
+        mail = Mail(app)
+
+
+        msg = Message(subject="Registration Confirmation", sender="no-reply@gmail.com", recipients=[email])
+
+        msg.html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invitation to Register on Quick Messanger!</title>
+</head>
+<body style="margin:0; padding:0; background:#f7f7f9; font-family:'Segoe UI', Arial, sans-serif;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7f7f9; min-height:100vh;max-width: 700px;margin:0 auto">
+        <tr>
+            <td align="center">
+                <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.07); margin:40px 0; max-width:480px;"></table>
+                    <tr>
+                        <td align="center" style="padding:32px 0 16px 0;">
+                            <img src="https://qm.techxolutions.com/static/images/logo-icon-white.png"  alt="Quick Messenger Logo" style="height:80px; border-radius:12px; background:#EF4036; padding:8px;">
+                            <h3 style="color:#222; margin:0 0 12px 0; letter-spacing:1px;">✉Invitation to Register on Quick Messenger!</h3>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td align="left" style="padding:0 32px;">
+                            <p style="color:#EF4036; font-size:1.1em; margin:0 0 24px 0; font-weight:600;"><span style="color:#222;"></span></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:0 32px;">
+                            
+                            <div class="main_cont" style="background:#f1f1f1; border-radius:10px; padding:18px 20px; margin-bottom:24px;">
+                                <p style="color:#EF4036; font-size:1.1em; margin:0 0 24px 0; font-weight:600;"><span style="color:#222;">{name},</span></p>
+
+                                <p style="color:#353535; font-size:1em; margin:0 0 24px 0; font-weight:400;">I'm reaching out to introduce <b>Quick Messenger</b> — a fast-growing digital platform built to help businesses in Eswatini and beyond <b>increase brand awareness, 
+                                    reach new audiences, and form valuable trading partnerships,</b> both locally and internationally.
+                                </p> 
+                                <a href="https://qm.techxolutions.com/business_community" target="_blank" style="display:inline-block; background:#EF4036; color:#fff; text-decoration:none; font-weight:500; padding:5px 15px; border-radius:15px; font-size:1em; margin-bottom:24px; box-shadow:0 2px 8px #ef403633;">Explore Platform</a>
+                                <div style="background:#f1f1f1; border-radius:10px; padding:18px 20px; margin-bottom:24px;">
+                                    <h2 style="color:#EF4036; font-size:1.1em; margin:0 0 10px 0;">Why Quick Messenger?</h2>
+                                    <ul style="color:#444; font-size:1em; padding-left:18px; margin:0;">
+                                        <li>📢 <b>Advertise & Promote</b> your products both on the platform and through digital
+                                        channels (Interactive Adverts, SMS, push notifications, email).
+                                        </li>
+                                        <li>🌐 <b>Through our Business Community,</b> showcase your profile and product offerings across Eswatini and internationally –
+                                        boosting brand awareness.
+                                        </li>
+                                        <li>🚀 <b>Instant Messaging</b> with your clients and partners</li>
+                                        <li>📌 <b>Brand Awareness</b> & products campaigns</li>
+                                        <li>🔒 <b>Secure & Private</b> communications</li>
+                                        <li>📱 <b>Mobile & Desktop</b>, Application - easy to install</li>
+                                        <li>📊 <b>Analytics</b> to track your engagement</li>
+                                    </ul>
+                                </div>
+                                <p style="margin:0 0 8px 0;font-weight: 500;color:#353535">Please Follow the link below to explore pricing:</p>
+                                <a href="https://qm.techxolutions.com/pricing" target="_blank" style="display:inline-block; background:#EF4036; color:#fff; text-decoration:none; font-weight:500; padding:5px 15px; border-radius:15px; font-size:1em; margin-bottom:24px; box-shadow:0 2px 8px #ef403633;">Pricing</a>
+                                
+                                <div style="background:#f1f1f1; border-radius:10px; padding:18px 20px; margin-bottom:24px;">
+                                    <h2 style="color:#EF4036; font-size:1.1em; margin:0 0 10px 0;">Unlock the full power of our digital marketing Features?</h2>
+                                    <ul style="color:#444; font-size:1em; padding-left:18px; margin:0;">
+                                        <li>📲 <b>Interactive Advertising:</b> We Boost engagement with smart, clickable call-to-action (CTA) links that drive traffic to your offers, services — directly from your post or message.
+                                        </li>
+                                        <li>✉ <b>SMS Marketing:</b> We help you reach your customers instantly with Bulk SMS Campaigns — ideal 
+                                            for promotions, reminders, and announcements. Reliable, fast, and mobile-first.
+                                        </li>
+                                        <li>🚀 <b>Push Note Marketing:</b> Send real-time push notifications straight to users’ devices or browsers. 
+                                            A powerful way to keep your audience updated and engaged — even when they’re not on your site.</li>
+                                        <li>📧 <b>Branded Email Marketing: </b> We take the hassle out of email design — you provide the content, we handle the branding. 
+                                            Your emails will always reflect your business identity professionally.</li>
+                                        <li>📌 <b>Advert Pinning Helper: </b> Give your ads more depth! Our Advert Pinning Helper lets you attach useful links to your 
+                                            messages — whether it's your product website, image galleries, reviews, or external platforms.</li>
+                                        <li>📊 <b>CRM System</b> – Gain valuable insights about your audience to make informed decisions and significantly reduce your marketing costs in the near future.</li></ul>
+                                </div>
+
+                                <p style="margin:0 0 8px 0;font-weight: 500;color:#353535">Join the Business Community for Free:</p>
+                                <a href="https://qm.techxolutions.com/register" target="_blank" style="display:inline-block; background:#3671ef; color:#fff; text-decoration:none; font-weight:500; padding:5px 15px; border-radius:15px; font-size:1em; margin-bottom:24px; box-shadow:0 2px 8px #ef403633;">Sign Up</a>
+                                <p style="margin:0 0 8px 0;color:#353535">🤝🏼We would love to have {company_name} on board.</p>
+                                <div style="background:#f1f1f1; border-radius:10px; padding:18px 20px; margin-bottom:24px;">
+                                    <ul style="color:#444; font-size:1em; padding-left:18px; margin:0;list-style-type: none;margin-left:-26px">
+                                        <li>Warm Regards, </li>
+                                        <li><b>Thabo Maziya, </b> Founder & CEO</li>
+                                        <li> <i>CEO - Quick Messanger</i> </li>
+                                        <li>✉ <a href="mailto:thabo@techxolutions.com" style="text-decoration: none;color:#2977c0"> thabo@techxolutions.com</a>  </li>
+                                        <li>📞 <a href="tel://+26876412255" style="text-decoration: none;color:#2977c0"> (+268) 7641 2255</a></li>
+                                        <li>🌐 <a href="https://qm.techxolutions.com" style="text-decoration: none;color:#2977c0"> techxolutions.com</a></li>
+                                        <div>
+                                            <span></span>
+                                            <span> </span>
+                                            <span> </span>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                 
+                    <tr>
+                        <td align="center" style="padding:0 32px 32px 32px; color:#888; font-size:0.95em; text-align:center;">
+                            <p style="margin:0 0 8px 0;">Need help? Our support team is here for you: <a href="mailto:thabo@techxolutions.com" style="color:#EF4036; text-decoration:none;">info@techxolutions.com</a></p>
+                            <p style="margin:0;">Welcome aboard,<br><b>The Quick Messenger Team</b></p>
+                        </td>
+                    </tr>
+                </table>
+                <p style="color:#bbb; font-size:0.9em; margin-top:16px;">&copy; 2025 Quick Messenger. All rights reserved.</p>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
+"""
+
+
+        try:
+            mail.send(msg)
+            flash(f'We have sent you an email to confirm your registration', 'success')
+            print(f"reg_confirmation==Email sent to {email} for company {company_name}")
+            return "Email Sent"
+        except Exception as e:
+            # flash(f'Email not sent here', 'error')
+            print(f"reg_confirmation==Error sending email: {str(e)}")
+            return "The mail was not sent"
+
+    # try:
+    send_veri_mail() 
 
 def reg_confirmation(email, company_name):
     """Send registration confirmation email."""

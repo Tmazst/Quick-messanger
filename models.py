@@ -177,6 +177,7 @@ class qm_updates(db.Model):
     url = db.Column(db.String(200))
     end_date = db.Column(db.DateTime)
     start_date = db.Column(db.DateTime)
+    days = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime)
 
 class company_info(db.Model):
