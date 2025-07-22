@@ -2055,7 +2055,7 @@ def email_prospects():
     if request.method == "POST":
         email_prospective_companies(email,name,company)
 
-    return render_template("email_prospects.html",form=form)
+    return render_template("marketing_updates_form.html",form=form)
 
 @app.route('/business_profile', methods=['POST',"GET"])
 def business_profile():
