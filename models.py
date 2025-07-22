@@ -337,7 +337,7 @@ class Visitors(db.Model):
 class NotificationsAccess(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
-    usr_id = db.Column(db.Integer, ForeignKey('user.id'),nullable=True)
+    usr_id = db.Column(db.Integer, nullable=True)
     endpoint = db.Column(db.Text, nullable=False)
     p256dh = db.Column(db.String(255))
     auth = db.Column(db.String(255))

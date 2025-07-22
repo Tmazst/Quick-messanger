@@ -166,6 +166,14 @@ class QMUpdatesForm(FlaskForm):
     url = URLField('Link')
     submit = SubmitField('Send')
 
+class EmailProspectsForm(FlaskForm):
+
+    title = StringField('Title', validators=[DataRequired(), Length(min=4, max=20)])
+    name = TextAreaField('Person Name', validators=[DataRequired(), Length(min=10, max=200)])
+    email = DateField('Email', validators=[DataRequired()])
+    company = StringField('Company Name', validators=[DataRequired(), Length(min=2, max=100)])
+    submit = SubmitField('Send')
+
 class AdvertForm(FlaskForm):
     
     advert_image = FileField('Upload Advert', validators=[FileAllowed(['jpg', 'png'])])

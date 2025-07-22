@@ -2045,8 +2045,15 @@ def business_community():
 
     return render_template("business_community.html",companies=company_objs,categories=categories,view=view)
 
-@app.route('/email_prospects', methods=['POST',"GET"])
+@app.route('/email_prospects_form', methods=['POST',"GET"])
 def email_prospects():
+    form = EmailProspectsForm()
+    email = form.email.data
+    name = form.name.data
+    company = form.company.data
+
+    if request.method == "POST":
+        email_prospective_companies(email,name,company)
 
     render_template("email_prospects.html")
 
