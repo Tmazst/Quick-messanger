@@ -64,7 +64,7 @@ class User(db.Model,UserMixin):
     db.Column(db.DateTime(), default=datetime.now)
     role = db.Column(db.String(120))
     company_id = relationship("company_info", backref='user', lazy=True)
-    notification_access = relationship("NotificationsAccess", backref='chat_user', lazy=True)
+    # notification_access = relationship("NotificationsAccess", backref='chat_user', lazy=True)
     key_id = relationship("UserKey", backref='user.id', lazy=True)
     following = relationship("Followers", backref='user', lazy=True)
 
