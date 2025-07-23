@@ -1389,11 +1389,22 @@ def notify_all_subscribers_async(curr_user, msg, title="Q-Messanger", url="/"):
             all_subs = NotificationsAccess.query.all()
             for sub in all_subs:
                 try:
-                    print(f"Sending Notification to failed for {curr_user} Message{msg}")
+                    print(f"Sending Notification to {curr_user} Message{msg}")
                     app_notification(sub, curr_user, msg, title, url)
                 except Exception as e:
                     print(f"Notification failed for {sub.id}: {e}")
     threading.Thread(target=notify).start()
+
+#Reporting Error
+@app.route('/log_sw_unregistration', methods=['POST'])
+def log_sw_unregistration():
+    data = request.get_json()
+    if not data:
+        return jsonify({"message":"No User Submitted"}),400
+    
+    print("Service Worker Unregistered due error cause in fetch a page URL", current_time_wlzone(), ", IP: ", request.remote_addr)
+
+    return jsonify({"success": True, "message": "Unregistration logged successfully"}), 201
 
 @csrf.exempt
 @app.route('/register', methods=['POST','GET'])

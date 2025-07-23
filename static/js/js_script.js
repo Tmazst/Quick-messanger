@@ -79,6 +79,29 @@ navigator.serviceWorker.addEventListener('message', function(event) {
   }
 });
 
+//Unregister sw.js when fetch errors occured, msg sent from sw.js
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data && event.data.action === 'UNREGISTER_SERVICE_WORKER') {
+      console.warn('Unregistering service worker due to fetch failure...');
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(reg => reg.unregister().then(() => {
+          location.reload(); // Reload page so new SW can re-register cleanly
+        }));
+      });
+      // send message to the backend to log the unregistration
+        fetch('/log_sw_unregistration', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getXCSRFToken()
+            },
+            body: JSON.stringify({ message: 'Service worker unregistered due to fetch failure' })
+        });
+    }
+  });
+}
+
 window.addEventListener('DOMContentLoaded', function() {
   const params = new URLSearchParams(window.location.search);
   if (params.has('openReply')) {

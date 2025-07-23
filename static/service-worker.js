@@ -39,6 +39,12 @@ self.addEventListener('fetch', event => {
         console.log('Fetch request for:', event.request.url);
         console.warn('Fetch failed; returning fallback (if any):', error);
 
+         // Tell the client (main thread) to unregister the SW
+        const allClients = await self.clients.matchAll({ includeUncontrolled: true });
+        for (const client of allClients) {
+          client.postMessage({ action: 'UNREGISTER_SERVICE_WORKER' });
+        }
+
         const cache = await caches.open(CACHE_NAME);
         const cached = await cache.match(event.request);
         if (cached) return cached;
