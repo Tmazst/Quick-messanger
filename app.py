@@ -1901,6 +1901,7 @@ def adverts():
     # print("All Cols: ",columns)
     return render_template("adverts.html",columns=columns,companies=companies,adverts=adverts)
 
+
 @app.route("/company_stories")
 @app.route("/news")
 def news():
