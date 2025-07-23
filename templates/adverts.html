@@ -99,6 +99,7 @@
                                 {%if comp_obj.email%}
                                     <a href="{{comp_obj.email}}"><img src="static/icons/ads-email-icon.png" class="ads-icons"/> </a>
                                 {%endif%}
+                                {%if comp_obj.id %}
                                 <div class=" qm-icon-adverts">
                                     <a id="msg-icon" class="imbc-icon"  href="/compose?id={{ser.dumps({'data':comp_obj.id})}}" target="_blank">
                                         <img src="static/icons/imbc-icon.png" style="height: 50px;width:50px ;" />
@@ -109,6 +110,7 @@
                                     </a>
                                   
                                 </div>
+                                {%endif%}
                             </div>
                             {%if ad.pinned_1%}
                                 <button onclick="window.location.href='/news_pinned?nid={{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
@@ -148,11 +150,13 @@
                         {%if comp_obj.email%}
                             <a href="{{comp_obj.email}}"><img src="static/icons/ads-email-icon.png" class="ads-icons"/> </a>
                         {%endif%}
+                        {% if comp_obj.id %}
                         <div class=" qm-icon-adverts">
                             <a href="/compose_mobile?id={{ser.dumps({'data':company.id})}}">
                                 <img src="static/icons/imbc-icon.png" style="height: 50px;width:50px ;" />
                             </a>
                         </div>
+                        {%endif%}
                     </div>
                     {%if ad.pinned_1%}
                         <button onclick="window.location.href='/news_pinned?nid={{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>

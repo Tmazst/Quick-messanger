@@ -2054,6 +2054,7 @@ def email_prospects():
 
     if request.method == "POST":
         email_prospective_companies(email,name,company)
+        # app_notification(recipient_sub,current_user.name,content,title=title,url=url)
 
     return render_template("email_prospects_form.html",form=form)
 
@@ -2074,7 +2075,12 @@ def business_profile():
             follow_status = True
 
     return jsonify({"company":company_profile, "follow_status": follow_status}), 200
-  
+
+@app.route('/digital_marketing', methods=['POST',"GET"])
+def digital_marketing():
+
+    return render_template("digital_marketing.html")
+
 @app.route('/get_messages', methods=['GET'])
 @login_required
 def get_messages():
@@ -2247,7 +2253,7 @@ def email_prospective_companies(email,name, company_name):
         mail = Mail(app)
 
 
-        msg = Message(subject="Boost Brand Awareness", sender="no-reply@gmail.com", recipients=[email])
+        msg = Message(subject="Quick Messanger - Eswatini", sender="no-reply@gmail.com", recipients=[email])
 
         msg.html = f"""<!DOCTYPE html>
 <html lang="en">
