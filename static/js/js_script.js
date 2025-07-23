@@ -46,6 +46,27 @@
 //    }
 //}
 //window.onscroll = function() {handleScroll()};
+function revealDrawer(e,id){
+        var ida = "m-ad00" + id.toString();
+        var sideDraw = document.getElementById(ida);
+        console.log("Click Event Recieved",sideDraw , "A",id);
+        if (!sideDraw) {
+            console.error("Element with id " + ida + " not found.");
+            return;
+        }
+        if(window.innerWidth <= "700"){
+            console.log("Click Event Recieved2");
+            sideDraw.classList.toggle('off-on');
+        }else{
+            var ida = "ad00" + id.toString();
+            var sideDraw = document.getElementById(ida);
+            sideDraw.classList.add('reveal-side-icons');
+            e.target.addEventListener("mouseleave", function(){
+                sideDraw.classList.remove('reveal-side-icons');
+            });
+        }
+    }
+
 
  function getXCSRFToken() {
         return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
