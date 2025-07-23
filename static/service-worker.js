@@ -36,6 +36,7 @@ self.addEventListener('fetch', event => {
         return response;
       })
       .catch(async error => {
+        console.log('Fetch request for:', event.request.url);
         console.warn('Fetch failed; returning fallback (if any):', error);
 
         const cache = await caches.open(CACHE_NAME);
