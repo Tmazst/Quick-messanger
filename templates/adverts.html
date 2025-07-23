@@ -94,10 +94,10 @@
                                     <a href="{{comp_obj.website}}"><img src="static/icons/ads-web-icon.png" class="ads-icons"/> </a>
                                 {%endif%}
                                 {%if comp_obj.company_contacts%}
-                                    <a href="{{comp_obj.company_contacts}}"><img src="static/icons/ads-tel-icon.png" class="ads-icons"/> </a>
+                                    <a href="tel:{{comp_obj.company_contacts}}"><img src="static/icons/ads-tel-icon.png" class="ads-icons"/> </a>
                                 {%endif%}
                                 {%if comp_obj.email%}
-                                    <a href="{{comp_obj.email}}"><img src="static/icons/ads-email-icon.png" class="ads-icons"/> </a>
+                                    <a href="mailto:{{comp_obj.email}}"><img src="static/icons/ads-email-icon.png" class="ads-icons"/> </a>
                                 {%endif%}
                                 {%if comp_obj.id %}
                                 <div class=" qm-icon-adverts">
