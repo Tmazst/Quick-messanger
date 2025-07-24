@@ -7,16 +7,87 @@
         padding: 2em 0;
         /* flex-wrap: wrap; */
         justify-content: flex-start;
+        align-self: stretch;
         border:none
+    }
+    #feature-cont{
+        position: relative;
+        
+    }
+    #push-note-bg{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width:500px;
+        height:500px;
+        z-index: 0;
+        background-image: url('../static/icons/sms-icon.png');
+        background-size: cover;
+        background-position: right center;
+        background-repeat: no-repeat;
+    }
+    #sms-bg{
+        position: absolute;
+        top: 100px;
+        right: 0;
+        width:500px;
+        height:500px;
+        z-index: 1;
+        background-image: url('../static/icons/digital-notifictaion-icon.png');
+        background-size: cover;
+        background-position: right center;
+        background-repeat: no-repeat;
+    }
+    #email-bg{
+        position: absolute;
+        top: 600px;
+        left: 0;
+        width:500px;
+        height:500px;
+        z-index: 1;
+        background-image: url('../static/icons/email-bg-icon.png');
+        background-size: cover;
+        background-position: right center;
+        background-repeat: no-repeat;
+    }
+    #pinning{
+        position: absolute;
+        bottom: 10px;
+        right: -80px;
+        width:150px;
+        height:150px;
+        z-index: 1;
+        background-image: url('../static/icons/3d-pin.png');
+        background-size: cover;
+        background-position: right center;
+        background-repeat: no-repeat;
+    }
+    .marketing-card{
+        border:1px solid #EF4036;
+    }
+    @media (max-width: 768px) {
+        .container-dm {
+            flex-direction: column;
+            align-items: center;
+        }
+        #push-note-bg, #sms-bg, #email-bg, #pinning {
+            width: 100%;
+            min-height: 300px;
+            background-size: contain;
+            background-position: center;
+        }
+        #pinning{
+            display: none; /* Hide pinning background on smaller screens */
+        }
     }
 
 </style>
-<div class="container" style="max-width:900px;margin:auto;padding:2em 0;">
+<div class="container" style="max-width:900px;margin:auto;padding:2em 0;background: none;border:none">
     <h1 style="text-align:center;color:#EF4036;font-family:Montserrat;">Digital Marketing Tools</h1>
     <p style="text-align:center;color:#555;">Empower your business with instant communication and engagement tools.</p>
     <div class="gen-flex container-dm" style="gap:2em;justify-content:center;">
         <!-- SMS Marketing Card -->
-        <div class="marketing-card" style="background:#fff;border-radius:18px;box-shadow:0 2px 12px #eee;padding:2em;max-width:350px;flex:1;">
+        <div class="marketing-card" style="z-index:5;background:#fdeeed;border-radius:18px;box-shadow:0 2px 12px #eee;padding:2em;max-width:350px;flex:1;">
             <img src="/static/icons/sms-icon.png" alt="SMS Marketing" style="height:48px;margin-bottom:1em;">
             <h2 style="color:#EF4036;">SMS Marketing</h2>
             <ul style="color:#444;font-size:1em;line-height:1.7;">
@@ -25,24 +96,29 @@
                 <li>Reliable, fast, and mobile-first</li>
                 <li>High open rates</li>
             </ul>
+            <!-- <button onclick="window.location.href='/sms_marketing_form'" class="btns" style="background:#EF4036;color:#fff;border-radius:30px;font-size:1em;box-shadow:0 2px 8px #eee;">Enqiure</button> -->
         </div>
+        <div id="sms-bg"></div>
         <!-- Push Note Marketing Card -->
-        <div class="marketing-card" style="background:#fff;border-radius:18px;box-shadow:0 2px 12px #eee;padding:2em;max-width:350px;flex:1;">
-            <img src="/static/icons/push-icon.png" alt="Push Notifications" style="height:48px;margin-bottom:1em;">
-            <h2 style="color:#EF4036;">Push Note Marketing</h2>
-            <ul style="color:#444;font-size:1em;line-height:1.7;">
-                <li>Send real-time notifications to devices or browsers</li>
-                <li>Engage users even when they're not on your site</li>
-                <li>Instant updates for offers, news, and events</li>
-                <li>Boost retention and engagement</li>
-            </ul>
-        </div>
+            <div id="push-note" class="marketing-card" style="z-index:6;background:#fdeeed;border-radius:18px;box-shadow:0 2px 12px #eee;padding:2em;max-width:350px;flex:1;">
+                <img src="/static/icons/push-icon.png" alt="Push Notifications" style="height:48px;margin-bottom:1em;">
+                <h2 style="color:#EF4036;">Push Note Marketing</h2>
+                <ul style="color:#444;font-size:1em;line-height:1.7;">
+                    <li>Send real-time notifications to devices or browsers</li>
+                    <li>Engage users even when they're not on your site</li>
+                    <li>Instant updates for offers, news, and events</li>
+                    <li>Boost retention and engagement</li>
+                </ul>
+                <!-- <button onclick="window.location.href='/push_notif_form'" class="btns" style="background:#EF4036;color:#fff;border-radius:30px;font-size:1em;box-shadow:0 2px 8px #eee;">Enqiure</button> -->
+            </div>
+            <div id="push-note-bg"></div>
+
         
     </div>
     <div class="gen-flex container-dm" style="gap:2em;justify-content:center;">
 
         <!-- Branded Email Marketing Card -->
-        <div class="marketing-card" style="background:#fff;border-radius:18px;box-shadow:0 2px 12px #eee;padding:2em;max-width:350px;flex:1;">
+        <div class="marketing-card" style="z-index:7;background:#fdeeed;border-radius:18px;box-shadow:0 2px 12px #eee;padding:2em;max-width:350px;flex:1;">
             <img src="/static/icons/email-icon.png" alt="Email Marketing" style="height:48px;margin-bottom:1em;">
             <h2 style="color:#EF4036;">Branded Email Marketing</h2>
             <ul style="color:#444;font-size:1em;line-height:1.7;">
@@ -51,9 +127,11 @@
                 <li>Consistent business identity in every email</li>
                 <li>Reach inboxes directly</li>
             </ul>
+            <!-- <button onclick="window.location.href='/email_prospects'" class="btns" style="background:#EF4036;color:#fff;border-radius:30px;font-size:1em;box-shadow:0 2px 8px #eee;">Enqiure</button> -->
         </div>
+        <div id="email-bg"></div>
         <!-- Advert Pinning Helper Card -->
-        <div class="marketing-card" style="background:#fff;border-radius:18px;box-shadow:0 2px 12px #eee;padding:2em;max-width:350px;flex:1;">
+        <div class="marketing-card" style="position:relative;z-index: 8;background:#fdeeed;border-radius:18px;box-shadow:0 2px 12px #eee;padding:2em;max-width:350px;flex:1;">
             <img src="/static/icons/pin-icon.png" alt="Advert Pinning" style="height:48px;margin-bottom:1em;">
             <h2 style="color:#EF4036;">Advert Pinning Helper</h2>
             <ul style="color:#444;font-size:1em;line-height:1.7;">
@@ -62,10 +140,12 @@
                 <li>Make it easy for your audience to explore and take action</li>
                 <li>Increase ad engagement and conversions</li>
             </ul>
+            <!-- <button onclick="window.location.href='/pinning_helper_form'" class="btns" style="background:#EF4036;color:#fff;border-radius:30px;font-size:1em;box-shadow:0 2px 8px #eee;">Enqiure</button> -->
+            <div id="pinning"></div>
         </div>
     </div>
-    <div style="text-align:center;margin-top:2em;">
+    <!-- <div style="text-align:center;margin-top:2em;">
         <button onclick="window.location.href='/marketing_tools_form'" class="btns" style="background:#EF4036;color:#fff;padding:1em 2em;border-radius:30px;font-size:1.2em;box-shadow:0 2px 8px #eee;">Get Started</button>
-    </div>
+    </div> -->
 </div>
 {% endblock %}

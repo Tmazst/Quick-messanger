@@ -97,6 +97,10 @@
         </div>
         <div  class="mobile-menu-links gen-flex-col">
             <a href="/"><div class="mobile-menu-link">Home</div></a>
+            <a href="/business_community"><div class="mobile-menu-link">Business Community</div></a>
+            <a href="/adverts"><div class="mobile-menu-link">Adverts</div></a>
+            <a href="/news"><div class="mobile-menu-link">Business Buzz</div></a>
+            <a href="/digital_marketing"><div class="mobile-menu-link">Digital Marketing</div></a>
             {%if current_user.is_authenticated and current_user.company_id[0].company_name %}
                 <a href="/company_account"><div class="mobile-menu-link">Company Details</div></a>
             {%else%}
@@ -282,6 +286,10 @@
             <a href="/"><div class="app-nav-icons gen-flex">
                 <img src="{{ url_for('static', filename='icons/home-icon.png') }}" alt="Logo" class="app-nav-icon">
                 <div class="nav-label">Home</div>
+            </div></a>
+            <a href="/digital_marketing"><div class="app-nav-icons gen-flex">
+                <img src="{{ url_for('static', filename='icons/digital-marketing-icon.png') }}" alt="Logo" class="app-nav-icon">
+                <div class="nav-label">Digital marketing</div>
             </div></a>
             <a href="/company_account"><div class="app-nav-icons gen-flex">
                 <img src="{{ url_for('static', filename='icons/profile-icon.png') }}" alt="Logo" class="app-nav-icon">
