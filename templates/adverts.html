@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             if (data.success) {
                 const countSpan = document.getElementById('like-count-' + adId);
-                if (countSpan) countSpan.textContent = data.likes;
+                // if (countSpan) countSpan.textContent = data.likes;
                 var likedIcon = document.getElementById('likes-' + adId);
                 if (likedIcon) {
                     likedIcon.src = "static/icons/liked-icon.png";
