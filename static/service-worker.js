@@ -6,13 +6,13 @@ const urlsToCache = [
 ];
 
 // Install: cache new files
-self.addEventListener('install', event => {
-  self.skipWaiting();
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
-  );
-});
+// self.addEventListener('install', event => {
+//   self.skipWaiting();
+//   event.waitUntil(
+//     caches.open(CACHE_NAME)
+//       .then(cache => cache.addAll(urlsToCache))
+//   );
+// });
 
 // Activate: delete old caches
 self.addEventListener('activate', event => {
@@ -30,6 +30,7 @@ self.addEventListener('activate', event => {
 
 // ✅ Safe Fetch Handler
 self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
   event.respondWith(
     fetch(event.request)
       .then(response => {
@@ -40,10 +41,10 @@ self.addEventListener('fetch', event => {
         console.warn('Fetch failed; returning fallback (if any):', error);
 
          // Tell the client (main thread) to unregister the SW
-        const allClients = await self.clients.matchAll({ includeUncontrolled: true });
-        for (const client of allClients) {
-          client.postMessage({ action: 'UNREGISTER_SERVICE_WORKER' });
-        }
+        // const allClients = await self.clients.matchAll({ includeUncontrolled: true });
+        // for (const client of allClients) {
+        //   client.postMessage({ action: 'UNREGISTER_SERVICE_WORKER' });
+        // }
 
         const cache = await caches.open(CACHE_NAME);
         const cached = await cache.match(event.request);

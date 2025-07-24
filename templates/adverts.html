@@ -49,6 +49,16 @@
         background-size: contain;
         background-repeat: no-repeat;
     }
+    .like-action-btn {
+        background: none;
+        color: #EF4036;
+        border: 1px solid #EF4036 !important;
+        border: none;
+        padding: 7px 20px;
+        border-radius: 12px;
+        cursor: pointer;
+        font-size: 16px;
+    }
     @media (max-width: 700px) {
     html,body{
         width:100% !important;
@@ -108,9 +118,23 @@
                                 </div>
                                 {%endif%}
                             </div>
-                            {%if ad.pinned_1%}
-                                <button onclick="window.location.href='/news_pinned?nid={{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
-                            {%endif%}
+                            <div style="justify-content: flex-start;" class="left-side-icons gen-flex">
+
+                                {% if ad.likes|liked_by_ip(remote_ip) %}
+                                    <img src="static/icons/liked-icon.png" style="height:40px" />
+                                {% else %}
+                                    <div class="ad-like-btns">
+                                        <button style="background: none;border:none" class="like-btn" data-ad-id="{{ ad.id }}">
+                                            <img id="likes-{{ad.id}}"  src="static/icons/like-icon.png" style="height:40px"  />
+                                            <span id="like-count-{{ ad.id }}"></span>
+                                        </button>
+                                    </div>
+                                {% endif %}
+                                
+                                {%if ad.pinned_1%}
+                                    <button onclick="window.location.href='/news_pinned?nid={{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
+                                {%endif%}
+                            </div>
                         </div>
                     {% endif %}
                     {% if ad.video %}
@@ -154,9 +178,23 @@
                         </div>
                         {%endif%}
                     </div>
-                    {%if ad.pinned_1%}
-                        <button onclick="window.location.href='/news_pinned?nid={{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
-                    {%endif%}
+                    <div style="justify-content: flex-start;" class="left-side-icons gen-flex">
+
+                        {% if ad.likes|liked_by_ip(remote_ip) %}
+                            <img src="static/icons/liked-icon.png" style="height:40px" />
+                        {% else %}
+                            <div class="ad-like-btns">
+                                <button style="background: none;border:none" class="like-btn" data-ad-id="{{ ad.id }}">
+                                    <img id="likes-{{ad.id}}"  src="static/icons/like-icon.png" style="height:40px"  />
+                                    <span id="like-count-{{ ad.id }}"></span>
+                                </button>
+                            </div>
+                        {% endif %}
+                        
+                        {%if ad.pinned_1%}
+                            <button onclick="window.location.href='/news_pinned?nid={{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
+                        {%endif%}
+                    </div>
                 </div>
             {% endif %}
             {% if ad.video %}
@@ -165,9 +203,108 @@
         {%endfor%}
     </div>
 </div>
-<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<!-- Like Action Modal -->
+<div id="like-action-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+    <div style="background:#fff;padding:2em;border-radius:15px;max-width:350px;margin:auto;text-align:center;position:relative;">
+        <h3 style="color:#EF4036;">Tell us more</h3>
+        <p>What best describes your interest?</p>
+        <button class="like-action-btn" data-action="need" style="margin:8px 0;">I need this</button><br>
+        <button class="like-action-btn" data-action="info" style="margin:8px 0;">I need more info</button><br>
+        <button class="like-action-btn" data-action="wish" style="margin:8px 0;">Just a wish</button><br>
+        <button class="btns" onclick="document.getElementById('like-action-modal').style.display='none'" style="margin-top:10px;">Cancel</button>
+        <!-- Hidden guest form -->
+        <form id="like-guest-form" style="display:none;margin-top:1.5em;">
+            <input type="text" id="like-guest-name" placeholder="Your Name" style="margin-bottom:8px;width:90%;padding:8px;border-radius:6px;border:1px solid #ccc;"><br>
+            <input type="text" id="like-guest-phone" placeholder="Your Phone" style="margin-bottom:8px;width:90%;padding:8px;border-radius:6px;border:1px solid #ccc;"><br>
+            <button type="submit" style="background:#EF4036;color:#fff;padding:8px 20px;border:none;border-radius:8px;">Submit</button>
+        </form>
+        <div id="like-guest-error" style="color:#EF4036;margin-top:8px;display:none;"></div>
+    </div>
+</div>
+<!-- <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script> -->
 <script>
+let selectedAdId = null;
+let selectedAction = null;
+let isAuthenticated = {{ 'true' if current_user.is_authenticated else 'false' }};
+
 document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.like-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            selectedAdId = btn.getAttribute('data-ad-id');
+            selectedAction = null;
+            document.getElementById('like-action-modal').style.display = 'flex';
+            document.getElementById('like-guest-form').style.display = 'none';
+            document.getElementById('like-guest-error').style.display = 'none';
+        });
+    });
+
+    document.querySelectorAll('.like-action-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const action = btn.getAttribute('data-action');
+            selectedAction = action;
+            // If not authenticated and action is "need" or "info", show guest form
+            if (!isAuthenticated && (action === 'need' || action === 'info')) {
+                document.getElementById('like-guest-form').style.display = 'block';
+                document.getElementById('like-guest-error').style.display = 'none';
+            } else {
+                document.getElementById('like-action-modal').style.display = 'none';
+                sendLike(selectedAdId, action);
+            }
+        });
+    });
+
+    // Guest form submit
+    document.getElementById('like-guest-form').addEventListener('submit', function(e) {
+        console.log("Guest form submitted 1");
+        e.preventDefault();
+        console.log("Guest form submitted 2");
+        const name = document.getElementById('like-guest-name').value.trim();
+        const phone = document.getElementById('like-guest-phone').value.trim();
+        if (!name || !phone) {
+            document.getElementById('like-guest-error').textContent = "Please enter your name and phone.";
+            document.getElementById('like-guest-error').style.display = 'block';
+            return;
+        }
+        console.log("Guest form submitted 3");
+        document.getElementById('like-action-modal').style.display = 'none';
+        sendLike(selectedAdId, selectedAction, name, phone);
+        console.log("Guest form submitted 4");
+    });
+
+    function sendLike(adId, action, name=null, phone=null) {
+        let payload = { ad_id: adId, action: action };
+        if (name) payload.name = name;
+        if (phone) payload.contacts = phone;
+        fetch('/like_ad', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(resp => resp.json())
+        .then(data => {
+            
+            if (data.success) {
+                const countSpan = document.getElementById('like-count-' + adId);
+                if (countSpan) countSpan.textContent = data.likes;
+                var likedIcon = document.getElementById('likes-' + adId);
+                if (likedIcon) {
+                    likedIcon.src = "static/icons/liked-icon.png";
+                    likedIcon.style.height = "40px";
+                }
+                console.log("Like response:", data);
+                var loader = document.getElementById('global-loader');
+                if (loader) loader.style.display = 'none';
+                // window.location.reload(); // Reload to update likes
+            } else {
+                alert(data.message || "Ooops! Could not like this ad.");
+            }
+        })
+        .catch(err => {
+            alert("Network error. Please try again.");
+        });
+    }
+
     // var elem = document.querySelector('.masonry');
     // var msnry = new Masonry(elem, {
     //     itemSelector: '.masonry-item',

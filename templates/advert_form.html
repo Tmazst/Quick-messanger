@@ -109,6 +109,30 @@ section > div {
                 <h3 style="font-size:25px" class="">Upload Advert</h3>
 
                 <hr>
+                <p class="paras-subtopics">Upload your advert and set the duration for how long it should be displayed.</p>
+
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul>
+                            {% for field, errors in form.errors.items() %}
+                                {% for error in errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <div class="group">
+                    <div class="acc-labels">{{ form.advert_title.label(class="labels")}}</div>
+                    {{ form.advert_title(class="form-control",placeholder="Advert Title",id="ImageInput")}}
+                    {% if form.advert_title.errors %}
+                        {% for error in form.advert_title.errors %}
+                            <span class="span-error" >* {{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                <!--<input type="text" class="form-control" id="name" name="nm" placeholder="Name">-->
+                </div>
 
                 <div class="group">
                     {{form.hidden_tag()}}
@@ -136,7 +160,7 @@ section > div {
                 <div class="group">
                     <!-- <label for="pinned-story">Pin Product Campign</label> -->
                     {%for story in comp_news%}
-                    <label for="pinned-story">Pin Product Campign</label>
+                    <div class="acc-labels">{{ form.advert_days.label(class="labels")}}</div>
                     <select id="pinned-story" name="pinned-story" class="form-control" >
                         <option value="" disabled selected>Pin Product Info</option>
                         {%if story %}

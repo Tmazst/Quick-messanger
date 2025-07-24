@@ -175,7 +175,7 @@ class EmailProspectsForm(FlaskForm):
     submit = SubmitField('Send')
 
 class AdvertForm(FlaskForm):
-    
+    advert_title = StringField('Advert Title', validators=[DataRequired(), Length(min=4, max=100)])
     advert_image = FileField('Upload Advert', validators=[FileAllowed(['jpg', 'png'])])
     start_date = DateField('Start Date', validators=[DataRequired()])
     advert_days = IntegerField('How manys days?', validators=[DataRequired()])

@@ -83,17 +83,16 @@ class User(db.Model,UserMixin):
         'polymorphic_on':role
     }
 
-
 class UserKey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, ForeignKey('user.id'))
     salt = db.Column(db.String(2048))
 
-
 class Advert(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     usr_id = db.Column(db.Integer)
     comp_id = db.Column(db.Integer,ForeignKey('company_info.id'))
+    advert_title = db.Column(db.String(100), nullable=False)
     advert_image = db.Column(db.String(100))
     advert_image = db.Column(db.String(100))
     pinned_1 = db.Column(db.Integer)
@@ -101,6 +100,7 @@ class Advert(db.Model):
     advert_days = db.Column(db.Integer)
     start_date = db.Column(db.DateTime)
     timestamp = db.Column(db.DateTime)
+    likes = relationship("Likes", backref="advert", lazy=True)
 
 class News(db.Model):
 
@@ -343,3 +343,24 @@ class NotificationsAccess(db.Model):
     auth = db.Column(db.String(255))
     ip = db.Column(db.String(100))
     timestamp = db.Column(db.DateTime)
+
+class Likes(db.Model):
+    """Model for storing likes on adverts by users."""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=True)
+    ip= db.Column(db.String(100))  # IP address of the user
+    ad_id = db.Column(db.Integer, ForeignKey('advert.id'))
+    action = db.Column(db.String(50))  # "need", "info", or "wish"
+    name = db.Column(db.String(100))  # Name of the user if not authenticated
+    contacts = db.Column(db.String(100))  # Contact info of the user if not authenticated
+    timestamp = db.Column(db.DateTime, default=datetime.now)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "ad_id": self.ad_id,
+            "ip": self.ip,
+            "action": self.action,
+            "timestamp": self.timestamp.strftime("%H:%M - %d %b %y") if self.timestamp else None
+        }

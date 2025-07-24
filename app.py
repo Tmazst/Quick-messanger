@@ -75,6 +75,10 @@ login_manager.login_view = "register"
 # Encrypt Password
 encrypt_password = Bcrypt(app)
 
+@app.template_filter('liked_by_ip')
+def liked_by_ip(likes, remote_ip):
+    return any(like.ip == remote_ip for like in likes)
+
 # Log in
 @login_manager.user_loader
 def load_user(user_id):
@@ -848,7 +852,7 @@ def subscribe():
         sub.p256dh = subscription_info["keys"]["p256dh"]
         sub.auth = subscription_info["keys"]["auth"]
         sub.ip = request.remote_addr
-        sub.usr_id = current_user.id
+        sub.usr_id = current_user.id if current_user.is_authenticated else None
         sub.timestamp = current_time_wlzone()
 
         db.session.commit()
@@ -1876,6 +1880,7 @@ def adverts_form():
         advert = Advert(
             usr_id = current_user.id,
             comp_id = current_user.company_id[0].id,
+            advert_title = form.advert_title.data,
             pinned_1 = form_req
         )
 
@@ -1901,7 +1906,7 @@ def adverts_form():
 
 @app.route("/adverts")
 def adverts():
-
+    remote_ip = request.remote_addr
     adverts = Advert.query.all()
     companies = {c.id: c for c in company_info.query.all()}
     num_columns = 3
@@ -1910,7 +1915,51 @@ def adverts():
         print("idx % num_columns: ",idx % num_columns)
         columns[idx % num_columns].append(ad)
     # print("All Cols: ",columns)
-    return render_template("adverts.html",columns=columns,companies=companies,adverts=adverts)
+    return render_template("adverts.html",columns=columns,companies=companies,adverts=adverts,remote_ip=remote_ip)
+
+
+
+@csrf.exempt
+@app.route('/like_ad', methods=['POST'])
+def like_ad():
+    already_liked = None
+    data = request.get_json()
+    ad_id = data.get('ad_id')
+    action = data.get('action')
+    name = data.get('name')
+    contacts = data.get('contacts')
+    ad = Advert.query.get(ad_id)
+    if not ad:
+        return jsonify({'success': False, 'message': 'Ad not found.'}), 404
+
+    # Check if user already liked this ad
+    if current_user.is_authenticated:
+        already_liked = Likes.query.filter_by(user_id=current_user.id, ad_id=ad_id).first()
+    else:
+        already_liked = Likes.query.filter_by(ip=request.remote_addr, ad_id=ad_id).first()
+    
+    if already_liked:
+        print("Already Liked: ", already_liked)
+        return jsonify({'success': False, 'message': 'You already liked this ad.', 'likes': len(ad.likes) or 0})
+
+    # Add like
+    
+    like = Likes(ad_id=ad_id)
+    if current_user.is_authenticated:
+        like.user_id = current_user.id
+        like.action = action
+    else:
+        like.ip = request.remote_addr
+        like.action = action
+        like.name = name
+        like.contacts = contacts
+        print("Like Action 2: ", like.action,name,contacts)
+    db.session.add(like)
+    db.session.commit()
+    db.session.refresh(ad) 
+    print("Like Action 3: ", like.action,name,contacts)
+
+    return jsonify({'success': True, 'likes': len(ad.likes)})
 
 
 @app.route("/company_stories")
