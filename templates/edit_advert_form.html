@@ -101,15 +101,15 @@ section > div {
             <form _lpchecked="1" action="" method="post"  enctype="multipart/form-data" >
                 <!-- <div id="cmpny-acc-prl-cont" style="width:100%;background-color:" class="my-card"> -->
                 <div style=""  class="img-cont">
-                    <img class="prf-image" id="ad-image" src="static/uploads/logo-icon-white.png"/>
+                    <img class="prf-image" id="ad-image" src="static/ad-images/{{advert.advert_image}}"/>
                     <img class="prf-image" id="preview-image" style="display:none;"/>
                  </div>
                 <!-- </div> -->
 
-                <h3 style="font-size:25px" class="">Upload Advert</h3>
+                <h3 style="font-size:25px" class="">Edit Advert</h3>
 
                 <hr>
-                <p class="paras-subtopics">Upload your advert and set the duration for how long it should be displayed.</p>
+                <p class="paras-subtopics">Set a pin link on your Advert</p>
 
                 {% if form.errors %}
                     <div class="alert alert-danger">
@@ -125,7 +125,8 @@ section > div {
 
                 <div class="group">
                     <div class="acc-labels">{{ form.advert_title.label(class="labels")}}</div>
-                    {{ form.advert_title(class="form-control",placeholder="Advert Title",id="ImageInput")}}
+                    {{ form.advert_title(class="form-control",placeholder="Advert Title",id="ImageInput",value=advert.advert_title)}}
+            
                     {% if form.advert_title.errors %}
                         {% for error in form.advert_title.errors %}
                             <span class="span-error" >* {{error}}</span>
@@ -148,7 +149,7 @@ section > div {
 
                 <div class="group">
                     <div class="acc-labels">{{ form.advert_days.label(class="labels")}}</div>
-                    {{ form.advert_days(class="form-control",placeholder="Advert Duration")}}
+                    {{ form.advert_days(class="form-control",placeholder="Advert Duration",value=advert.advert_days,id="advert_days")}}
                     {% if form.advert_days.errors %}
                         {% for error in form.advert_days.errors %}
                             <span class="span-error" >*{{error}}</span>
@@ -159,23 +160,31 @@ section > div {
                 
                 <div class="group">
                     <!-- <label for="pinned-story">Pin Product Campign</label> -->
-                    {%for story in comp_news%}
+                    
                     <div class="acc-labels">{{ form.advert_days.label(class="labels")}}</div>
-                    <select id="pinned-story" name="pinned-story" class="form-control" >
+                    <!-- <select id="pinned-story" name="pinned-story" class="form-control" >
                         <option value="" disabled selected>Pin Product Info</option>
-                        {%if story %}
-                            <option value="{{story.id}}">{{story.story_title}}</option>
-                        {%endif%}
+                        -->
                         <!-- Add more countries as needed -->
-                    </select>
-                    {%endfor%}
+                    <!-- </select> -->
+                    
                     <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+                </div>
+                <div class="group">
+                    <!--<input type="password" class="form-control" id="confirm-password" name="confirm_pass" placeholder="confirm-password">-->
+                    <div class="acc-labels">{{ form.url.label(class="labels")}}</div>
+                    {{ form.url(class="form-control",placeholder="Pin URL",value=advert.url)}}
+                    {% if form.url.errors %}
+                        {% for error in form.url.errors %}
+                            <span class="span-error" >*{{error}}</span>
+                        {% endfor %}
+                    {% endif %}
                 </div>
 
                 <div class="group">
                     <!--<input type="password" class="form-control" id="confirm-password" name="confirm_pass" placeholder="confirm-password">-->
                     <div class="acc-labels">{{ form.start_date.label(class="labels")}}</div>
-                    {{ form.start_date(class="form-control",placeholder="Starting Date")}}
+                    {{ form.start_date(class="form-control",placeholder="Starting Date",value=advert.start_date,id="start_date")}}
                     {% if form.start_date.errors %}
                         {% for error in form.start_date.errors %}
                             <span class="span-error" >*{{error}}</span>
@@ -229,6 +238,10 @@ section > div {
                     });
                    
                 };
+            var daysDuration = document.getElementById('advert_days');
+            daysDuration.required = false; // Make the field required
+            var startDate = document.getElementById('start_date');
+            startDate.required = false; 
             });
         
     </script>

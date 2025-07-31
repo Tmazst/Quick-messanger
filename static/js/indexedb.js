@@ -308,7 +308,7 @@ async function decryptNavMessage(encryptedBase64,elmsgDiv) {
     const tx = db.transaction("keys","readwrite");
     const store = tx.objectStore("keys");
     const request = store.getAll();
-
+    try {
     request.onsuccess = async function() {
         if (request.result && request.result.length > 0) {
             const myUsrname = request.result[0].Usernames;// Get the username from the first record
@@ -351,8 +351,12 @@ async function decryptNavMessage(encryptedBase64,elmsgDiv) {
         }else{
             // console.log("Error @decryptMessage");
         }
+    }  
+    }catch (err) {
+        console.error("Decryption failed:", err);
+        elmsgDiv.innerHTML = "<i style='color:red'>Decryption Error</i>";
     }
-    
+
 }
 
 // Decrypt the message using the recipient's private key - Mini Window Messages
@@ -486,13 +490,13 @@ async function preRegister(){
     const request = store.getAll();
 
     request.onsuccess = async function() {
-        // // console.log("Request Success: ", store);
+        console.log("Request Success 1: ");
         if (request.result && request.result.length > 0) {
             const { Usernames: myUsrname, publicKey: Pkey, privateKey: Prkey } = request.result[0];
             // console.log("CURRENT FROM BROWSER: ", myUsrname);
 
             if (!myUsrname) {
-                // console.log("Username Not Found from Browser");
+                console.log("Username Not Found from Browser");
                 return;
             }
 
@@ -550,7 +554,7 @@ async function preRegister(){
 
             const data = await response.json();
             // console.log("---Rec_Status_Check: ", data.status);
-
+            
             if (data.status === "False") {
                 autoRecoverCheck({ myUsrname, Pkey, Prkey });
             } else {

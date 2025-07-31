@@ -38,7 +38,7 @@ self.addEventListener('fetch', event => {
       })
       .catch(async error => {
         console.log('Fetch request for:', event.request.url);
-        console.warn('Fetch failed; returning fallback (if any):', error);
+        // console.warn('Fetch failed; returning fallback (if any):', error);
 
          // Tell the client (main thread) to unregister the SW
         // const allClients = await self.clients.matchAll({ includeUncontrolled: true });

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-16">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content="Quick Messanger (QM) allows companies and professionals across the globe to connect, exchange messages,and share business information in a both private & public, organized environment.">
     <meta name="key words" content="Quick Messanger (QM) is a secure, fast and reliable business communication and networking platform.">
@@ -307,6 +307,10 @@
                 <img src="{{ url_for('static', filename='icons/download-pwa-icon.png') }}" alt="Logo" class="app-nav-icon">
                 <div class="nav-label">Install App</div>
             </div>
+            <a href="/qm_partnership"><div class="app-nav-icons gen-flex">
+                <img src="{{ url_for('static', filename='icons/partnership-icon.png') }}" alt="Logo" class="app-nav-icon">
+                <div class="nav-label">Partnership Programs</div>
+            </div></a>
             {%if current_user.is_authenticated%}
             <div style="" id="open-reply-unit"  class="app-nav-icons gen-flex">
                 <img  style="height:32px" src="static/icons/mini-window.png" class="app-nav-icon" />

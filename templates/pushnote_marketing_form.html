@@ -2,10 +2,13 @@
 
 {% block content %}
 <style>
-  input[type="checkbox"]{
-    background: none;
-    border: 1px solid coral;
-  }
+#select-mult-class{
+  list-style-type: none;
+}
+input[type="checkbox"]{
+  background: none;
+  border: 1px solid coral;
+}
 section {
   display: flex;
   flex-flow: row wrap;
@@ -26,9 +29,6 @@ section > div {
     cursor: not-allowed;
   }
 }
-.modal-backdrop{
-  display: none !important;
-}
 #pay-opt-div label {
   height: 100%;
   display: block;
@@ -37,15 +37,14 @@ section > div {
   border-radius: 20px;
   padding: 1rem;
   margin-bottom: 1rem;
-  //margin: 1rem;
   text-align: center;
   box-shadow: 0px 3px 10px -2px hsla(150, 5%, 65%, 0.5);
   position: relative;
 }
+
 #pay-opt-div input[type="radio"]:checked + label {
   background: coral;
   color: hsla(215, 0%, 100%, 1);
-  //box-shadow: 0px 0px 20px hsla(150, 100%, 50%, 0.75);
   &::after {
     color: coral;
     font-family: FontAwesome;
@@ -62,7 +61,6 @@ section > div {
     text-align: center;
     border-radius: 50%;
     background: white;
-    //box-shadow: 0px 2px 5px -2px hsla(0, 0%, 0%, 0.25);
   }
 }
 
@@ -85,9 +83,7 @@ section > div {
     height:auto !important;
 }
 
-.form-account-container{
-  border:none
-}
+
 @media only screen and (max-width: 700px) {
   section {
     flex-direction: column;
@@ -95,7 +91,7 @@ section > div {
 }
 
 </style>
-<div style="" class="form-account-container">
+<div style="" class="form-account-container gen-flex-col">
         <h3><br> <span class="spans"></span></h3>
             <!-- <div class="flash-messages">
                 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -109,7 +105,7 @@ section > div {
 
         <p class="paras-subtopics"></p>
 
-
+        <div style="position:absolute;top:0px;right:30px;z-index:-1;opacity:0.3"><img style="height:200px" src="static/icons/digital-notifictaion-icon.png" /> </div>
         <div style="width:80%;margin-left:1px" class="card-body py-md-4">
 
         <form _lpchecked="1" action="" method="post"  enctype="multipart/form-data" >
@@ -119,21 +115,17 @@ section > div {
                 </div>
             <!-- </div> -->
 
-            <h3 style="font-size:25px" class="">Upload Story</h3>
+            <h3 style="font-size:25px" class="">Q-Messanger Push Notification</h3>
 
             <hr>
 
-            <div style="width:80%;min-width:350px" class="form-group">
-                    <h5>Images</h5>
-                    {{ form.images(id="imageInput", class="acc-form-control",placeholder="reference_2")}}
-            </div><br>
 
             <div class="group">
                 {{form.hidden_tag()}}
-                <div class="acc-labels">{{ form.story_title.label(class="labels")}}</div>
-                    {{ form.story_title(class="form-control",placeholder="Story Title",id="ImageInput")}}
-                    {% if form.story_title.errors %}
-                        {% for error in form.story_title.errors %}
+                <div class="acc-labels">{{ form.title.label(class="labels")}}</div>
+                    {{ form.title(class="form-control",placeholder="Story Title",id="ImageInput")}}
+                    {% if form.title.errors %}
+                        {% for error in form.title.errors %}
                             <span class="span-error" >* {{error}}</span>
                         {% endfor %}
                     {% endif %}
@@ -141,56 +133,61 @@ section > div {
               </div>
 
                 <div class="group">
-                    <div class="acc-labels">{{ form.story.label(class="labels")}}</div>
-                    {{ form.story(class="form-control", style="min-height:150px", placeholder="Story")}}
-                    {% if form.story.errors %}
-                        {% for error in form.story.errors %}
+                    <div class="acc-labels">{{ form.content.label(class="labels")}}</div>
+                    {{ form.content(class="form-control", style="min-height:150px", placeholder="Content")}}
+                    {% if form.content.errors %}
+                        {% for error in form.content.errors %}
+                            <span class="span-error" >*{{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                    <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+                </div>
+                <div class="group">
+                    <div class="acc-labels">{{ form.start_date.label(class="labels")}}</div>
+                    {{ form.start_date(class="form-control", placeholder="start_date")}}
+                    {% if form.start_date.errors %}
+                        {% for error in form.start_date.errors %}
+                            <span class="span-error" >*{{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                    <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+                </div>
+                <div class="group">
+                    <div class="acc-labels">{{ form.end_date.label(class="labels")}}</div>
+                    {{ form.end_date(class="form-control", placeholder="end_date")}}
+                    {% if form.end_date.errors %}
+                        {% for error in form.end_date.errors %}
+                            <span class="span-error" >*{{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                    <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+                </div>
+                <div class="group">
+                    <div class="acc-labels">{{ form.days.label(class="labels")}}</div>
+                    {{ form.days(class="form-control",id="select-mult-class", placeholder="days")}}
+                    {% if form.days.errors %}
+                        {% for error in form.days.errors %}
+                            <span class="span-error" >*{{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+                    <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+                </div>
+                <div class="group">
+                    <div class="acc-labels">{{ form.url.label(class="labels")}}</div>
+                    {{ form.url(class="form-control", placeholder="URL")}}
+                    {% if form.url.errors %}
+                        {% for error in form.url.errors %}
                             <span class="span-error" >*{{error}}</span>
                         {% endfor %}
                     {% endif %}
                     <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
                 </div>
 
-            <!-- Button to open modal -->
-            <button id="openHashtagModal" type="button" class="btn" style="border:1px solid grey;border-radius: 12px;" data-bs-toggle="modal" data-bs-target="#hashtagModal">
-            Hashtags
-            </button>
-            <small>Pick Hashtags That Summarize Your Story for the Audience</small><br><br><br>
-            <!-- Modal -->
-            <div class="modal fade" id="hashtagModal" tabindex="-1" aria-labelledby="hashtagModalLabel" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-scrollable modal-lg">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="hashtagModalLabel">Choose Hashtags</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body">
-                    <div class="row">
-                      {% for batch in form.hashtags.choices|batch(3) %}
-                        <div class="col-md-4">
-                          {% for v, l in batch %}
-                            <div class="form-check">
-                              <input class="form-check-input" type="checkbox" name="{{ form.hashtags.name }}" value="{{ v }}"
-                                id="hashtag-{{ v }}"
-                                {% if v in (form.hashtags.data or []) %}checked{% endif %}>
-                              <label class="form-check-label" for="hashtag-{{ v }}">{{ l }}</label>
-                            </div>
-                          {% endfor %}
-                        </div>
-                      {% endfor %}
-                    </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Done</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             <div style="width:40% !important;" class="d-flex flex-row align-items-center justify-content-between">
                  {{ form.submit(class="btns") }}
                  <!--<input class="btns" type="submit" value="Create Account" />-->
             </div>
+
             <br><br>
 
          </form>
@@ -200,9 +197,9 @@ section > div {
 
 
 
- <script src="https://unpkg.com/cropperjs"></script>
-    <script>
-         // Add event listener to the image input field
+<script src="https://unpkg.com/cropperjs"></script>
+<script>
+    // Add event listener to the image input field
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('imageInput').addEventListener('change', function() {
             var image = this.files[0];
@@ -222,8 +219,6 @@ section > div {
             reader.readAsDataURL(image);
         });
 
-
-     
         var hashtagModal = document.getElementById('hashtagModal');
         var openBtn = document.getElementById('openHashtagModal');
         if (hashtagModal && openBtn) {
@@ -233,5 +228,5 @@ section > div {
         }
 
         });
-    </script>
+</script>
 {% endblock %}

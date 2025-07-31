@@ -1,0 +1,242 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.partnership-landing {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 2em;
+    border-radius: 12px;
+    /* box-shadow: 0 2px 12px rgba(0,0,0,0.07); */
+}
+.partnership-landing h1, .partnership-landing h2, .partnership-landing h3 {
+    color: #EF4036;
+    font-family: Montserrat;
+    font-weight: 500;
+}
+.partnership-section {
+    margin-top: 2.5em;
+    width: 450px;
+    border-radius: 15px;
+    border:1px solid #EF4036;
+    padding: 2em;
+    padding-top: 3em;
+}
+.partnership-section-container {
+    align-items: stretch !important;
+}
+.partnership-landing p, .partnership-landing ol {
+    color: #444;
+    font-size: 1.08em;
+    font-family: Montserrat;
+    font-weight: 500;
+}
+.partnership-landing button {
+    margin: 1em 0;
+    padding: 10px 30px;
+    background: #1a3c6b;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.partnership-landing button:hover {
+    background: #16305a;
+}
+.partnership-landing form {
+    background: #f7f9fb;
+    padding: 1.5em 1em;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+    margin-top: 1em;
+}
+.partnership-landing input[type="text"],
+.partnership-landing input[type="email"],
+.partnership-landing textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #c3cfe2;
+    border-radius: 5px;
+    margin-bottom: 12px;
+    font-size: 1em;
+    background: #fff;
+    box-sizing: border-box;
+}
+.partnership-landing textarea {
+    resize: vertical;
+}
+@media (max-width: 768px) {
+    .partnership-landing {
+        padding: 1em;
+    }
+    .partnership-landing form {
+        padding: 1em 0.5em;
+    }
+    .partnership-section-container {
+        flex-direction: column !important;
+    }
+    .partnership-section {
+        width:95%;
+    }
+}
+</style>
+
+<div class="partnership-landing ">
+    <h1><b>Partner With Us</b></h1>
+    <img src="/static/images/pprogrms-01.jpg" alt="Partnership Banner" style="width:100%; height:auto; border-radius: 12px; margin-bottom: 1.5em;">
+    
+    <p style="text-align:center;">
+        Join our partnership programs and help shape the future of business networking and promotion. Whether you’re a business consultant, registration agency, or an organization with unique promotional needs, we have a partnership opportunity for you!
+    </p>
+
+    <div class="partnership-section-container gen-flex">
+        <div style="display: flex;flex-direction: column;" class="partnership-section ">
+            <h3>Business Referral Partners</h3>
+            <hr>
+            <p>
+                Are you a business <b>consultancy, company registration agency, or a professional who works with businesses?</b> Become a Referral Partner and help us grow our business community. When you introduce new businesses to our platform and they become active members, you’ll receive exclusive partner benefits.
+            </p>
+            <ol>
+                <li><strong>Register as a Referral Partner</strong> using the form below.</li>
+                <li><strong>Invite businesses</strong> to join our platform using your unique referral link (provided after approval).</li>
+                <li><strong>Track your referrals</strong> and enjoy special partner rewards as your network grows.</li>
+            </ol>
+            <div style="flex-grow:1;"></div>
+            <a style="color:#2b2b2b;text-decoration: underline;font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;" href="/download_referrals_doc">Download The Business Referral Partners Document here</a>
+            <button onclick="document.querySelector('.referral-form').scrollIntoView({behavior:'smooth'});">Become a Referral Partner</button>
+        </div>
+
+
+        <div style="display: flex;flex-direction: column;" class="partnership-section">
+            <h3>Strategic & Custom Solutions Partners</h3>
+            <hr>
+            <p>
+                Are you an <b style="color:#EF4036">NGO, business, or organization with unique promotional needs?</b> Our Strategic Partnership program is designed for those who want more than a standard subscription. We offer tailored solutions such as custom advert formats, branded action buttons, API integrations, and more—so your campaigns can have maximum impact.
+            </p>
+            <ol>
+                <li><strong>Submit your interest</strong> using the form below.</li>
+                <li><strong>Our team will contact you</strong> to discuss your needs and propose a custom solution.</li>
+                <li><strong>Collaborate with us</strong> to design and launch your unique campaign or integration.</li>
+            </ol>
+            <a style="color:#2b2b2b;text-decoration: underline;font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;" href="/download_referrals_doc">Download The Strategic & Custom Solutions Partners Document here</a>
+            <button onclick="document.getElementById('referral-form').scrollIntoView({behavior:'smooth'});">Request a Custom Partnership</button>
+        </div>
+    </div>
+
+    <hr style="margin:2.5em 0;">
+
+    <div id="referral-form" class="referral-form" style="margin:2.5em auto !important;">
+        <h3>Partnership Registration</h3>
+        <form method="post" action="/register_referral_partner" style="max-width:500px;">
+            
+                <!-- Jinja2 form  -->
+                 <div class="group">
+                {{form.hidden_tag()}}
+                <div class="acc-labels">{{ form.name.label(class="labels")}}</div>
+                    {{ form.name(class="form-control",placeholder="Full Name",id="name")}}
+                    {% if form.name.errors %}
+                        {% for error in form.name.errors %}
+                            <span class="span-error" >* {{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+              </div>
+
+              <div class="acc-labels">{{ form.email.label(class="labels")}}</div>
+                    {{ form.email(class="form-control",placeholder="Email",id="email")}}
+                    {% if form.email.errors %}
+                        {% for error in form.email.errors %}
+                            <span class="span-error" >* {{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+              </div>
+
+               <div class="acc-labels">{{ form.phone.label(class="labels")}}</div>
+                    {{ form.phone(class="form-control",placeholder="Chone",id="phone")}}
+                    {% if form.phone.errors %}
+                        {% for error in form.email.errors %}
+                            <span class="span-error" >* {{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+              </div>
+
+              <div class="acc-labels">{{ form.company.label(class="labels")}}</div>
+                    {{ form.company(class="form-control",placeholder="Company",id="company")}}
+                    {% if form.company.errors %}
+                        {% for error in form.company.errors %}
+                            <span class="span-error" >* {{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+              </div>
+
+              <div class="acc-labels">{{ form.partnership_program.label(class="labels")}}</div>
+                    {{ form.partnership_program(class="form-control",placeholder="",id="partnership_program")}}
+                    {% if form.partnership_program.errors %}
+                        {% for error in form.partnership_program.errors %}
+                            <span class="span-error" >* {{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+              </div>
+
+              <div class="acc-labels">{{ form.organization.label(class="labels")}}</div>
+                    {{ form.organization(class="form-control",placeholder="",id="organization")}}
+                    {% if form.organization.errors %}
+                        {% for error in form.organization.errors %}
+                            <span class="span-error" >* {{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+              </div>
+
+              <div class="acc-labels">{{ form.organization.label(class="labels")}}</div>
+                    {{ form.organization(class="form-control",placeholder="",id="organization")}}
+                    {% if form.organization.errors %}
+                        {% for error in form.organization.errors %}
+                            <span class="span-error" >* {{error}}</span>
+                        {% endfor %}
+                    {% endif %}
+              </div>
+
+              <div class="acc-labels">{{ form.submit.label(class="labels")}}</div>
+                    {{ form.submit(class="btns",placeholder="",id="submit")}}
+              </div>
+
+           
+        </form>
+    </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scroll for anchor buttons (already handled inline, but this is for keyboard accessibility)
+    document.querySelectorAll('.partnership-landing button').forEach(function(btn) {
+        btn.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                btn.click();
+            }
+        });
+    });
+
+    // Optional: Simple client-side validation feedback
+    document.querySelectorAll('.partnership-landing form').forEach(function(form) {
+        form.addEventListener('submit', function(e) {
+            let valid = true;
+            form.querySelectorAll('input[required], textarea[required]').forEach(function(input) {
+                if (!input.value.trim()) {
+                    input.style.borderColor = '#EF4036';
+                    valid = false;
+                } else {
+                    input.style.borderColor = '#c3cfe2';
+                }
+            });
+            if (!valid) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

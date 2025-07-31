@@ -91,7 +91,7 @@ section > div {
 }
 
 </style>
-<div style="" class="form-account-container">
+<div style="" class="form-account-container gen-flex-col">
         <h3><br> <span class="spans"></span></h3>
             <!-- <div class="flash-messages">
                 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -115,10 +115,9 @@ section > div {
                 </div>
             <!-- </div> -->
 
-            <h3 style="font-size:25px" class="">Q-Messanger Push Notification</h3>
-
+            <h3 style="font-size:25px" class="">Q-Messanger Email Marketing Form</h3>
+            <p>Kindly upload your marketing campaign content file. We will get in touch with you soon.</p>
             <hr>
-
 
             <div class="group">
                 {{form.hidden_tag()}}
@@ -129,24 +128,24 @@ section > div {
                             <span class="span-error" >* {{error}}</span>
                         {% endfor %}
                     {% endif %}
-               <!--<input type="text" class="form-control" id="name" name="nm" placeholder="Name">-->
-              </div>
+                <!--<input type="text" class="form-control" id="name" name="nm" placeholder="Name">-->
+                </div>
 
                 <div class="group">
-                    <div class="acc-labels">{{ form.content.label(class="labels")}}</div>
-                    {{ form.content(class="form-control", style="min-height:150px", placeholder="Content")}}
-                    {% if form.content.errors %}
-                        {% for error in form.content.errors %}
+                    <div class="acc-labels">{{ form.content_file.label(class="labels")}}</div>
+                    {{ form.content_file(class="form-control",  placeholder="content_file")}}
+                    {% if form.content_file.errors %}
+                        {% for error in form.content_file.errors %}
                             <span class="span-error" >*{{error}}</span>
                         {% endfor %}
                     {% endif %}
                     <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
                 </div>
                 <div class="group">
-                    <div class="acc-labels">{{ form.start_date.label(class="labels")}}</div>
-                    {{ form.start_date(class="form-control", placeholder="start_date")}}
-                    {% if form.start_date.errors %}
-                        {% for error in form.start_date.errors %}
+                    <div class="acc-labels">{{ form.description.label(class="labels")}}</div>
+                    {{ form.description(class="form-control", placeholder="description")}}
+                    {% if form.description.errors %}
+                        {% for error in form.description.errors %}
                             <span class="span-error" >*{{error}}</span>
                         {% endfor %}
                     {% endif %}
@@ -162,26 +161,8 @@ section > div {
                     {% endif %}
                     <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
                 </div>
-                <div class="group">
-                    <div class="acc-labels">{{ form.days.label(class="labels")}}</div>
-                    {{ form.days(class="form-control",id="select-mult-class", placeholder="days")}}
-                    {% if form.days.errors %}
-                        {% for error in form.days.errors %}
-                            <span class="span-error" >*{{error}}</span>
-                        {% endfor %}
-                    {% endif %}
-                    <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
-                </div>
-                <div class="group">
-                    <div class="acc-labels">{{ form.url.label(class="labels")}}</div>
-                    {{ form.url(class="form-control", placeholder="URL")}}
-                    {% if form.url.errors %}
-                        {% for error in form.url.errors %}
-                            <span class="span-error" >*{{error}}</span>
-                        {% endfor %}
-                    {% endif %}
-                    <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
-                </div>
+                
+               
 
             <div style="width:40% !important;" class="d-flex flex-row align-items-center justify-content-between">
                  {{ form.submit(class="btns") }}

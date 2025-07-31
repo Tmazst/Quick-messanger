@@ -97,6 +97,12 @@
     width: 100%;
 }
 
+.content-body{
+    padding-bottom: 55px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
 .content-viewer {
     flex: 1;
     display: flex;
@@ -309,7 +315,7 @@
            <!-- <div id="r-hashtags" class="hashtags real-hashtags"></div> hashtags-->
         {%endif%}
         <div id="cont-body" class="content-body">{{ news[0].story }}</div>
-        <div class="hashtags gen-flex" style="color:#616161">
+        <div class="hashtags gen-flex" style="color:#616161;background:white">
             {% for company in companies %}
                 {%if company.id == news[0].comp_id %}
                     {%if company.website %}
@@ -399,7 +405,7 @@
     <div class="content-viewer content-viewer-desktop">
         <div id="cont-title-2" class="cont-title"></div>
         <div id="real-hashtags-2"></div>
-        <div id="cont-body-2" class="content-body"></div>
+        <div id="cont-body-2" style="padding:20px" class="content-body"></div>
             <div style="flex-grow: 1;"></div>
             <div class="hashtags gen-flex" style="color:#616161"></div>
     </div>

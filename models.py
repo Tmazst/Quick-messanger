@@ -67,6 +67,7 @@ class User(db.Model,UserMixin):
     # notification_access = relationship("NotificationsAccess", backref='chat_user', lazy=True)
     key_id = relationship("UserKey", backref='user.id', lazy=True)
     following = relationship("Followers", backref='user', lazy=True)
+    password_reset = relationship("PasswordResetCode", backref='user', lazy=True)
 
     def to_dict(self):
         return {
@@ -83,6 +84,23 @@ class User(db.Model,UserMixin):
         'polymorphic_on':role
     }
 
+class PasswordResetCode(db.Model):
+    """Model for storing password reset tokens."""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey('user.id'), nullable=False)
+    token = db.Column(db.String(100), nullable=False, unique=True)
+    ip = db.Column(db.String(100), nullable=False)  # IP address of the user
+    expiration = db.Column(db.DateTime, nullable=False)
+    phone = db.Column(db.String(20), nullable=False)  # Phone number for SMS reset
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "token": self.token,
+            "expiration": self.expiration.strftime("%Y-%m-%d %H:%M:%S") if self.expiration else None
+        }
+
 class UserKey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, ForeignKey('user.id'))
@@ -93,7 +111,6 @@ class Advert(db.Model):
     usr_id = db.Column(db.Integer)
     comp_id = db.Column(db.Integer,ForeignKey('company_info.id'))
     advert_title = db.Column(db.String(100), nullable=False)
-    advert_image = db.Column(db.String(100))
     advert_image = db.Column(db.String(100))
     pinned_1 = db.Column(db.Integer)
     pinned_2 = db.Column(db.Integer)
@@ -363,4 +380,29 @@ class Likes(db.Model):
             "ip": self.ip,
             "action": self.action,
             "timestamp": self.timestamp.strftime("%H:%M - %d %b %y") if self.timestamp else None
+        }
+
+class SMSMarketing(db.Model):
+    """Model for storing SMS marketing entries."""
+    id = db.Column(db.Integer, primary_key=True)
+    sender = db.Column(db.String(100))  # Sender's name or identifier
+    company = db.Column(db.String(100))  # Company name
+    date = db.Column(db.DateTime, default=current_time_wlzone())  # Date of the entry
+    title = db.Column(db.String(200))  # Title of the message
+    message = db.Column(db.Text)  # Message content
+    url = db.Column(db.String(200), nullable=True)  # Optional URL
+    start_date = db.Column(db.DateTime, nullable=True)  # Optional start date
+    end_date = db.Column(db.DateTime, nullable=True)  # Optional end date
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "sender": self.sender,
+            "company": self.company,
+            "date": self.date.strftime("%H:%M - %d %b %y") if self.date else None,
+            "title": self.title,
+            "message": self.message,
+            "url": self.url,
+            "start_date": self.start_date.strftime("%Y-%m-%d") if self.start_date else None,
+            "end_date": self.end_date.strftime("%Y-%m-%d") if self.end_date else None
         }

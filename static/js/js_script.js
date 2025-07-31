@@ -255,7 +255,7 @@ window.addEventListener("unhandledrejection", function (event) {
         event.reason.message.includes("message channel closed")) {
         event.preventDefault(); // Suppress extension-related issue
     } else {
-        console.error("Unhandled rejection:", event.reason);
+        console.log("Unhandled rejection:");
     }
 });
 

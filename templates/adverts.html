@@ -26,6 +26,15 @@
         transition: all 0.3s ease-out;
         transition-delay: 0.3s;
     }
+    .pinned-btn{
+        background-color: #00A79D;
+        color: white;
+        border: none;
+        border-radius: 15px;
+        padding-left: 10px;
+        padding-right: 10px;
+        box-shadow: 0 2px 3px rgba(0,0,0,0.5);
+    }
     .ad_image{
         width:100%;
         box-shadow:  0px 1px 3px rgba(0, 0, 0, 0.46);
@@ -74,6 +83,28 @@
         display: none !important;
     }
 }
+.form-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+}
+.form-modal {
+    /* position: absolute;
+    top: 50%;
+    left: 50%; */
+    /* transform: translate(-50%, -50%); */
+    background: #fdf1e6ff;
+    border: 1px solid #f79f2dff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 500px;
+}
 </style>
 
 <div class="view-container">
@@ -97,6 +128,76 @@
                 {% for ad in column %}
                     {% if ad.advert_image %}
                         {% set comp_obj = companies[ad.comp_id] if ad.comp_id in companies else None %}
+                        <!-- World Vision  -->
+                        {%if comp_obj.company_name == "World Vision"%}
+                        <div onmouseenter="revealDrawer(event,'{{ad.id}}')" class="img-contain" style="position:relative;">
+                            <img src="static/ad-images/{{ ad.advert_image }}" alt="Ad Image" class="ad_image">
+                            <div id="ad00{{ad.id}}" style="justify-content: flex-end;gap:2px" class="ad-comp-details gen-flex-col">
+                                {%if comp_obj.website%}
+                                    <a href="{{comp_obj.website}}"><img src="static/icons/ads-web-icon.png" class="ads-icons"/> </a>
+                                {%endif%}
+                                {%if comp_obj.company_contacts%}
+                                    <a href="tel:{{comp_obj.company_contacts}}"><img src="static/icons/ads-tel-icon.png" class="ads-icons"/> </a>
+                                {%endif%}
+                                {%if comp_obj.email%}
+                                    <a href="mailto:{{comp_obj.email}}"><img src="static/icons/ads-email-icon.png" class="ads-icons"/> </a>
+                                {%endif%}
+                                {%if comp_obj.id %}
+                                <div class=" qm-icon-adverts">
+                                    <a id="msg-icon" class="imbc-icon"  href="/compose?id={{ser.dumps({'data':comp_obj.id})}}" target="_blank">
+                                        <img src="static/icons/imbc-icon.png" style="height: 50px;width:50px ;" />
+                                    </a>
+                                  
+                                </div>
+                                {%endif%}
+                            </div>
+                            <div style="justify-content: flex-start;background:rgba(255,255,255,0.5);width:78%;border-radius:12px" class="left-side-icons gen-flex">
+
+                                {% if ad.likes|liked_by_ip(remote_ip) %}
+                                    <img src="static/icons/liked-icon.png" style="height:40px" />
+                                {% else %}
+                                    <div class="ad-like-btns">
+                                        <button style="background: none;border:none" class="like-btn" data-ad-id="{{ ad.id }}">
+                                            <img id="likes-{{ad.id}}"  src="static/icons/like-icon.png" style="height:40px"  />
+                                            <span id="like-count-{{ ad.id }}"></span>
+                                        </button>
+                                    </div>
+                                {% endif %}
+                                
+                                {%if ad.pinned_1%}
+                                    <button onclick="window.location.href='{{ ad.pinned_1 }}'" style="background:none" class="pinned-btn" class="btns"><span style="font-size:20px">📌</span></button>
+                                {%endif%}
+                                <button onclick="document.querySelector('.form-overlay').style.display='flex'" class="pinned-btn" style="padding:6px 15px" class="btns">Donate</button>
+                            </div>
+                        </div>
+                        <!-- Modal for World Vision -->
+                        <div class="form-overlay gen-flex" style="display:none;">
+                            
+                            <div style="position:relative"  class="form-modal">
+                                <img id="ad-image" src="static/uploads/{{comp_obj.image}}" style="width:100px;height:100px;display:block;margin:auto;border-radius:12px" />
+                                <!-- form information  -->
+                                 <br>
+                                <label style="color:#222;font-family:Montserrat;width:90%;text-align:center" class="paras-subtopics">With ENOUGH food, we can conquer child hunger in Eswatini, paving the way for a future where every child thrives and hunger becomes a distant memory.</label>
+                                <hr>
+                                <p class="paras-subtopics" style="color:#111">To support this cause, please fill in your details below:</p>
+                                <form method="POST" action="/advert_form" enctype="multipart/form-data">
+                                    <div class="group">
+                                        <input type="text" class="form-control" id="user_name" name="name" placeholder="Name" required>
+                                        <input type="text" class="form-control" id="user-email" name="email" placeholder="Email" required>
+                                        <input type="text" class="form-control" id="contacts" name="contacts" placeholder="Contacts" required>
+                                        
+                                        <!-- Submit button  -->
+                                        <button type="submit" class="btns" style="width:100%;margin-top:10px;">Submit</button>
+                                    </div>
+                                </form>
+                                <a href="https://www.wvi.org/ENOUGH" class="paras-subtopics" style="width:100%;margin-top:10px;color:grey;font-size:12px">Use site form instead</a> 
+                                <img src="static/icons/add-icon.png" class="close-btn" style="cursor:pointer;top:10px !important" onclick="document.querySelector('.form-overlay').style.display='none'" />
+                        
+                            </div>
+                            </div> 
+                        <!-- End World Vision  -->
+                        {%else%}
+                        <!-- All Companies -->
                         <div onmouseenter="revealDrawer(event,'{{ad.id}}')" class="img-contain" style="position:relative;">
                             <img src="static/ad-images/{{ ad.advert_image }}" alt="Ad Image" class="ad_image">
                             <div id="ad00{{ad.id}}" style="justify-content: flex-end;gap:2px" class="ad-comp-details gen-flex-col">
@@ -132,10 +233,12 @@
                                 {% endif %}
                                 
                                 {%if ad.pinned_1%}
-                                    <button onclick="window.location.href='/news_pinned?nid={{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
+                                    <button onclick="window.location.href='{{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
                                 {%endif%}
                             </div>
                         </div>
+                        <!-- End All Companies -->
+                        {%endif%}
                     {% endif %}
                     {% if ad.video %}
                         <iframe src="{{ ad.video }}" allowfullscreen></iframe>
@@ -144,6 +247,7 @@
             </div>
         {% endfor %}
     </div>
+      
 
     <!-- Mobile Screens  -->
     <div class="welcome-ad-mobile" style="display: none;position:relative;height:inherit;width:90%;margin:10px auto">
@@ -192,7 +296,7 @@
                         {% endif %}
                         
                         {%if ad.pinned_1%}
-                            <button onclick="window.location.href='/news_pinned?nid={{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
+                            <button onclick="window.location.href='{{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
                         {%endif%}
                     </div>
                 </div>

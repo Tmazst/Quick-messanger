@@ -83,7 +83,7 @@ section > div {
 }
 
 </style>
-<div style="border:none" class="form-account-container">
+<div style="" class="form-account-container">
         <h3><br> <span class="spans"></span></h3>
             <!-- <div class="flash-messages">
                 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -101,15 +101,15 @@ section > div {
             <form _lpchecked="1" action="" method="post"  enctype="multipart/form-data" >
                 <!-- <div id="cmpny-acc-prl-cont" style="width:100%;background-color:" class="my-card"> -->
                 <div style=""  class="img-cont">
-                    <img class="prf-image" id="ad-image" src="static/uploads/logo-icon-white.png"/>
+                    <img class="prf-image" id="ad-image" src="static/uploads/{{advert.advert_image}}"/>
                     <img class="prf-image" id="preview-image" style="display:none;"/>
                  </div>
                 <!-- </div> -->
 
-                <h3 style="font-size:25px" class="">Upload Advert</h3>
+                <h3 style="font-size:25px" class="">Edit Advert</h3>
 
                 <hr>
-                <p class="paras-subtopics">Upload your advert and set the duration for how long it should be displayed.</p>
+                <p class="paras-subtopics">You can also pin 📌 url for content your audience to refer to for more information about the advert</p>
 
                 {% if form.errors %}
                     <div class="alert alert-danger">
@@ -125,7 +125,8 @@ section > div {
 
                 <div class="group">
                     <div class="acc-labels">{{ form.advert_title.label(class="labels")}}</div>
-                    {{ form.advert_title(class="form-control",placeholder="Advert Title",id="ImageInput")}}
+                    {{ form.advert_title(class="form-control",placeholder="Advert Title",id="ImageInput",value=advert.advert_title)}}
+                    
                     {% if form.advert_title.errors %}
                         {% for error in form.advert_title.errors %}
                             <span class="span-error" >* {{error}}</span>
@@ -165,11 +166,21 @@ section > div {
                         <option value="" disabled selected>Pin Product Info</option>
                         {%if story %}
                             <option value="{{story.id}}">{{story.story_title}}</option>
+                            <option value="other">Other</option>
                         {%endif%}
                         <!-- Add more countries as needed -->
                     </select>
                     {%endfor%}
                     <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+                </div>
+
+                <div style="display: none;" class="group">
+                    <div class="acc-labels">{{ form.url.label(class="labels")}}</div>
+                    {{ form.url(class="form-control", placeholder="URL", value=advert.url)}}
+                    {% if form.url.errors %}
+                        {% for error in form.url.errors %}
+                            <span class="span-error" >*{{error}}</span>
+                        {% endfor %}
                 </div>
 
                 <div class="group">
@@ -230,6 +241,18 @@ section > div {
                    
                 };
             });
+                // Show/hide URL field when "Other" is selected
+        var pinnedSelect = document.getElementById('pinned-story');
+        if (pinnedSelect) {
+            pinnedSelect.addEventListener('change', function() {
+                var urlGroup = document.querySelector('.group[style*="display: none;"]');
+                if (this.value === 'other') {
+                    if (urlGroup) urlGroup.style.display = 'block';
+                } else {
+                    if (urlGroup) urlGroup.style.display = 'none';
+                }
+            });
+        }
         
     </script>
 {% endblock %}

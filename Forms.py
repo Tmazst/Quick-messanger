@@ -4,6 +4,8 @@ from wtforms.validators import DataRequired,Length,Email, EqualTo, ValidationErr
 from flask_login import current_user
 from flask_wtf.file import FileField , FileAllowed
 from wtforms.widgets import ListWidget, CheckboxInput
+# from app import db, User
+import re
 # from wtforms.fields.html5 import DateField,DateTimeField
 
 
@@ -164,12 +166,12 @@ class QMUpdatesForm(FlaskForm):
         widget=ListWidget(prefix_label=False)
     )
     url = URLField('Link')
-    submit = SubmitField('Send')
+    submit = SubmitField('Submit')
 
 class SMSMarketingForm(FlaskForm):
 
     title = StringField('Title', validators=[DataRequired(), Length(min=4, max=20)])
-    content = TextAreaField('Message', validators=[DataRequired(), Length(min=10, max=200)])
+    message = TextAreaField('Message', validators=[DataRequired(), Length(min=10, max=200)])
     start_date = DateField('Start Date', validators=[DataRequired()])
     end_date = DateField('End Date', validators=[DataRequired()])
     days = SelectMultipleField('Days', choices=[
@@ -184,7 +186,7 @@ class SMSMarketingForm(FlaskForm):
         widget=ListWidget(prefix_label=False)
     )
     url = URLField('Link (Do you want to add link to your SMS?)', validators=[Optional()])
-    submit = SubmitField('Send')
+    submit = SubmitField('Submit')
 
 class EmailProspectsForm(FlaskForm):
 
@@ -199,6 +201,7 @@ class AdvertForm(FlaskForm):
     advert_image = FileField('Upload Advert', validators=[FileAllowed(['jpg', 'png'])])
     start_date = DateField('Start Date', validators=[DataRequired()])
     advert_days = IntegerField('How manys days?', validators=[DataRequired()])
+    url= URLField('Pin URL (Optional)', validators=[Optional(), Length(max=200)])
     submit = SubmitField("Submit")
 
 class Update_account_form(FlaskForm):
@@ -527,3 +530,65 @@ class Reset_Request(FlaskForm):
 
     # def validate_email(self,email):
     #     user = user.query.filter_by
+
+class EmailMarketingForm(FlaskForm):
+    title = StringField('Title', validators=[DataRequired(), Length(min=4, max=20)])
+    description = TextAreaField('Other Info', validators=[DataRequired(), Length(min=10, max=200)])
+    content_file = FileField('Upload Content', validators=[DataRequired()])
+    days = SelectMultipleField('Which days would you like us to send your campaign or advert?', choices=[
+        ('Monday', 'Monday'),
+        ('Tuesday', 'Tuesday'),
+        ('Wednesday', 'Wednesday'),
+        ('Thursday', 'Thursday'),
+        ('Friday', 'Friday'),
+        ('Saturday', 'Saturday'),
+        ('Sunday', 'Sunday')],
+        option_widget=CheckboxInput(),
+        widget=ListWidget(prefix_label=False)
+    )
+    
+    start_date = DateField('Start Date', validators=[Optional()])
+    end_date = DateField('End Date', validators=[Optional()])
+    submit = SubmitField('Submit')
+
+class QMPartnershipForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(), Length(min=2, max=50)])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    phone = StringField('Phone', validators=[DataRequired(), Length(min=8, max=20)])
+    company = StringField('Company Name', validators=[DataRequired(), Length(min=2, max=100)])
+    partnership_program = SelectField('Partnership Program',choices=[
+        ("referral","Referral Partnership"),
+        ("custom_partnership","Custom Partnership Inquiry")
+        ], validators=[DataRequired(), Length(min=10, max=500)])
+    organization = SelectField('Partnership Program',choices=[
+        ("consultant","Business Consultant"),
+        ("agency","Registration Agency"),
+        ("freelance","Marketing Freelancer")
+        ], validators=[DataRequired(), Length(min=10, max=500)])
+    
+    submit = SubmitField('Send Partnership Request')
+
+class EmailPasswordResetForm(FlaskForm):
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Submit')
+
+    def validate_email(self, email):
+        from app import db, User
+        user = User.query.filter_by(email=self.email.data).first()
+        if not user:
+            raise ValidationError("No account found with that email address.")
+        
+class SMSPasswordResetForm(FlaskForm):
+    phone = StringField('Registered Phone Number', validators=[DataRequired()])
+    submit = SubmitField('Get Code')
+
+
+class SMSCodeVerificationForm(FlaskForm):
+    code = StringField('Verification Code', validators=[DataRequired(), Length(min=5, max=5)])
+    submit = SubmitField('Verify Code')
+
+    def validate_code(self, code):
+        # Here you would typically check the code against a database or cache
+        if not re.match(r'^\d{5}$', self.code.data):
+            raise ValidationError("Invalid verification code. Please enter a 5-digit code.")
+

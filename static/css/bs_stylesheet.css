@@ -97,6 +97,21 @@ body, h1, p, div {
     font-size: 25px;
 }
 
+.form-account-container{
+    backdrop-filter: blur(5px);
+    border-radius: 15px;
+    border: 1px solid #ffd3d3;
+    position: relative;
+}
+
+.form-account-container h3{
+    color: var(--theme-color);
+}
+
+.form-account-container h3 span div{
+    font-family: Montserrat,Oswald, 'Times New Roman', Times, serif;
+}
+
 body {
     font-family: 'Oswald',"Franklin Gothic Medium Cond","Gill Sans MT Condensed","Microsoft Yi Baiti" !important;
     background-color: #a8a8a8;

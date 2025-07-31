@@ -2,7 +2,9 @@
 
 
 // --- Crypto Helper Functions ---
-
+ function getTCSRFToken() {
+        return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    };
 // Encrypts a JSON object with a password using AES-GCM
 async function encryptData(dataObj, password) {
     const enc = new TextEncoder();
@@ -126,11 +128,11 @@ async function AutoSaveKeys(){
         return;
     };
         
-
+    console.log("User Object: ", userObj.myUsrname);
     // Get Key using Password and salt (in Backend)
     const response = await fetch('/get_key', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json','X-CSRFToken': getTCSRFToken() },
         body: JSON.stringify({
             username: userObj.myUsrname,
             password: password
@@ -150,7 +152,7 @@ async function AutoSaveKeys(){
     // Send encrypted JSON and recovery key to backend
     await fetch('/save_recovery_data', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json','X-CSRFToken': getTCSRFToken() },
         body: JSON.stringify({
             username: userObj.myUsrname,
             encrypted_json: encrypted
@@ -176,7 +178,8 @@ async function updateRecoveryStatus(usrname){
     var response = await fetch("/recovery_status_update",{
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getTCSRFToken()
                 },
                 body: JSON.stringify({ username: usrname })
             });
@@ -267,11 +270,11 @@ async function autoRecoverKeys() {
         document.getElementById("error-field").textContent = "Username not found, please login again if you have an account";
         return;
     }
-
+    // console.log("User Object: ", username);
     // Get Key using Password and salt (in Backend)
     const res = await fetch('/get_key', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json','X-CSRFToken': getTCSRFToken() },
         body: JSON.stringify({
             username: username,
             password: password
@@ -290,7 +293,7 @@ async function autoRecoverKeys() {
     document.getElementById("error-field").textContent = 'Please wait.....';
     const response = await fetch('/get_recovery_data', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getTCSRFToken() },
         body: JSON.stringify({ username })
     });
     const data = await response.json();

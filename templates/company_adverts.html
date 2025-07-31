@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    /* body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f4f4f4;
+    } */
+     .imbc-icon{
+            /* position: absolute;
+            bottom:120px;
+            right:15px; */
+        }
+     .category-title-animated {
+        display: inline-block;
+        font-weight: 600;
+        font-size: 25px;
+        font-family: "Montserrat";
+        color: #333;
+        letter-spacing: 1px;
+        overflow: hidden;
+        }
+
+    .category-char {
+        opacity: 0;
+        display: inline-block;
+        transition: opacity 0.3s, transform 0.3s;
+        transform: translateY(20px);
+        /* min-width: 1ch; */
+    }
+
+    .category-char.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .business-card {
+        max-width: 450px;
+        width:100%;
+        /* background: #ffffff; */
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.4);
+        padding: 20px;
+        text-align: center;
+    }
+
+    .community-logo {
+        /* width: 80px; */
+        height: 80px;
+        margin: 0 auto 15px;
+        border-radius: 15px;
+        /* background-color: #0078d7; */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        font-size: 24px;
+        font-weight: bold;
+        /* position: absolute; */
+        /* top:15px;
+        right:15px; */
+    }
+    .imbc-icon-comm{
+        position: relative !important;
+        bottom:none !important;
+        right:none !important;
+    }
+    .imbc-icon-comm img{
+        height:65px;
+        box-shadow:  0px 1px 3px rgba(0, 0, 0, 0.16);
+        border-radius: 15px;
+        background-color:#fde7e6;
+        transition: all 0.3s ease;
+    }
+    .company-name {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+        text-align: left;
+    }
+    .company-details {
+        font-size: 14px;
+        color: #555;
+        margin-bottom: 20px;
+    }
+    .company-modal-body-content {
+    max-height: 90vh;
+    overflow-y: auto;
+    /* Optional for better look: */
+    padding-right: 8px;
+    /* Hide scrollbar on Chrome/Safari */
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 #f8fafc;
+    }
+    .company-modal-body-content::-webkit-scrollbar {
+        width: 7px;
+        background: #f8fafc;
+    }
+    .company-modal-body-content::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 6px;
+    }
+    .links a {
+        display: block;
+        text-decoration: none;
+        color: #0078d7;
+        font-size: 14px;
+        margin: 5px 0;
+    }
+    .links a:hover {
+        text-decoration: underline;
+    }
+    .cards-container {
+    scroll-behavior: smooth;
+    /* Optional: */
+    /* scroll-snap-type: x mandatory; */
+    }
+    .business-card {
+    /* scroll-snap-align: start; */
+    }
+    .grid-view{
+        width:95%;
+        margin: 0 auto;
+        flex-wrap: wrap;justify-content: flex-start;
+        /* max-width: ; */
+    }
+    .company-logos-cards{
+        height:120px;
+        width:max-content;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .comp-logos{
+        height: inherit !important;
+    }
+    .list-card{
+        min-height: 80px;
+        height:max-content;
+        width:max-content;
+    }
+    .toggle-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+    }
+    .link-overflow-x{
+        overflow-x: auto;
+    }
+.toggle-btn {
+    background: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 6px 18px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s, border 0.2s;
+}
+.toggle-btn span{
+    font-size: 15px;
+    cursor: pointer;
+}
+.toggle-btn img{
+    height: 25px;
+}
+.list-view{
+    flex-wrap: wrap;justify-content: flex-start;
+}
+.toggle-btn[aria-pressed="true"] {
+    background: #e0e7ff;
+    border-color: #3667ef;
+    font-weight: bold;
+}
+.grid-view, .list-view {
+    width: 100%;
+}
+.grid-view .company-logos-cards {
+    display: inline-block;
+    margin: 10px;
+    gap:3px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.2);
+}
+.list-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px 18px;
+    margin: 10px 0;
+    min-width: 250px;
+    max-width: 300px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+    align-items: center;
+}
+.comp-logos {
+    /* width: 60px;
+    height: 60px; */
+    object-fit: contain;
+    border-radius: 12px;
+    background: #f8f8f8;
+    /* margin-right: 16px; */
+}
+.comp_name {
+    font-size: 15px;
+    font-weight: 600;
+}
+.comp_services {
+    color: #575656;
+    font-size: 11px;
+    font-weight: 500;
+}
+/* --- Modern Modal Styles --- */
+.company-modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0; top: 0; width: 100vw; height: 100vh;
+  background: rgba(30, 41, 59, 0.55); /* slate-800/60 */
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(2px);
+}
+.company-modal-content {
+  background: linear-gradient(135deg, #f8fafc 60%, #e0e7ef 100%);
+  border-radius: 18px;
+  max-width: 410px;
+  width: 95vw;
+  padding: 36px 28px 28px 28px;
+  box-shadow: 0 8px 32px rgba(30,41,59,0.18), 0 1.5px 8px rgba(80,80,120,0.08);
+  position: relative;
+  animation: modalIn 0.22s cubic-bezier(.4,1.4,.6,1);
+  border: 1.5px solid #e0e7ef;
+}
+@keyframes modalIn {
+  from { transform: translateY(40px) scale(0.98); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}
+.company-modal-close {
+  position: absolute;
+  right: 18px; top: 12px;
+  font-size: 2.1rem;
+  color: #64748b;
+  cursor: pointer;
+  transition: color 0.18s, transform 0.18s;
+  font-weight: 400;
+  z-index: 2;
+}
+.company-modal-close:hover {
+  color: #1e293b;
+  transform: scale(1.15);
+}
+.company-modal-loading {
+  text-align: center;
+  color: #64748b;
+  font-size: 1.13em;
+  margin: 32px 0 24px 0;
+  letter-spacing: 0.02em;
+}
+.company-modal-body-content {
+  text-align: left;
+  padding-top: 6px;
+}
+.company-modal-body-content h2 {
+  margin-top: 0.5em;
+  font-size: 1.45em;
+  color: #1e293b;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin-bottom: 0.2em;
+}
+.company-modal-body-content .modal-logo {
+  width: 84px; height: 84px; object-fit: contain; border-radius: 16px; background: #f1f5f9; margin-bottom: 10px; box-shadow: 0 2px 12px rgba(80,80,120,0.07);
+  border: 1.5px solid #e0e7ef;
+}
+.company-modal-body-content .modal-fields {
+  margin-top: 18px;
+}
+.company-modal-body-content .modal-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 13px;
+  font-size: 1.04em;
+  color: #334155;
+  background: #f8fafc;
+  border-radius: 7px;
+  padding: 7px 10px 7px 8px;
+  box-shadow: 0 1px 4px rgba(80,80,120,0.04);
+}
+.company-modal-body-content .modal-label {
+  font-weight: 600;
+  color: #475569;
+  margin-right: 4px;
+  min-width: 28px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.company-modal-body-content .modal-label img {
+  width: 30px; height: 30px; object-fit: contain; margin-right: 2px; filter: grayscale(0.2) brightness(0.95);
+}
+.company-modal-body-content .modal-field a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.18s;
+}
+.company-modal-body-content .modal-field a:hover {
+  color: #1e40af;
+  text-decoration: underline;
+}
+.company-logos-cards{
+    transition:all 0.3s ease;
+}
+.company-logos-cards:hover{
+    cursor: pointer;
+    transform: scale(1.02);
+}
+@media (max-width: 700px) {
+    .list-card { min-width: 90vw; }
+}
+</style>
+
+<br>
+
+
+<!-- List View  -->
+<div  class="list-view gen-flex">
+
+        <div >Please select the advert you want to pin your content to.</div>
+        <div  class="list-view gen-flex">  
+            {%for advert in adverts%}
+                    <div onclick="window.location.href='/edit_advert_form?advert_id={{ advert.id }}'" class="company-logos-cards"> 
+                        <div data-cid="{{ser.dumps({'aid':advert.id})}}" style="justify-content: flex-start;" class="list-card gen-flex">
+                            <img style="height:80px !important" src="static/ad-images/{{advert.advert_image}}" class="comp-logos" />
+                            <div class="gen-flex-col">
+                                <div  class="comp-name">{{advert.advert_title}}-{{ advert.id }} <span style="font-family: Montserrat;color:#868686;font-weight: 500;font-size:16px"> - {{company.country}}</span></div>
+                                    <!-- <div style="color:coral"></div> -->
+                                <div><img src="static/icons/pin-icon.png" style="height:45px" /> </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+            {%endfor%}
+        </div>
+
+
+    <div style="width:100%;height: 250px;"></div>
+</div>
+
+
+{%endblock%}

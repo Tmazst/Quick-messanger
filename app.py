@@ -27,6 +27,7 @@ import base64
 import threading
 from datetime import timedelta
 from flask_wtf.csrf import CSRFProtect
+import random
 
 
 
@@ -45,11 +46,12 @@ app.config["ADVERTS_IMAGES"] = 'static/ad-images'
 app.config["NEWS_IMAGES"] = 'static/comp-images'
 app.config["VAPID_PRIVATE_KEY"] = "tACNLzOyTBgxLxmT7A9ZDhdhA-9y3l6DHMrLuMoBvYM"
 app.config["VAPID_PUBLIC_KEY"] = "BF-IKMwncA7cR08RWECfzfmYHFCeXFx97-P2_ZFxd5DDHHryXyjBC6bzKa5oYkmN-DhjNYtyoEP4yYCQ38aIVjI"
+app.config.update(SESSION_COOKIE_SECURE=True,SESSION_COOKIE_HTTPONLY=True,SESSION_COOKIE_SAMESITE='Lax')
 
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db" 
 # Local
 if os.environ.get('EMAIL_INFO') == 'info@techxolutions.com':
-    app.config['SQLALCHEMY_DATABASE_URI'] ='mysql+pymysql://root:tmazst41@localhost/quick_messanger' #"sqlite:///business_chat_db3.db"
+    app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db_wv.db" #'mysql+pymysql://root:tmazst41@localhost/quick_messanger'
 else:#Online
     app.config[
     "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db" 
@@ -113,6 +115,22 @@ def current_time_wlzone():
     local_time = timestamp.astimezone(local_tz)
 
     return local_time
+
+# Normalize phone number by removing non-digit characters
+def normalize_phone(phone):
+        return re.sub(r'\D', '', phone) 
+
+# Phone Number Validator 
+def validate_phone_number(number):
+    phone = number.strip()
+    
+    # Basic pattern: allows +countrycode and 9–15 digits
+    if not re.match(r'^\+?\d{9,15}$', phone):
+        flash("Invalid phone number format. Please enter a valid phone number with country code (e.g., +26876xxxxxx)", "error")
+        raise ValidationError("Enter a valid phone number with country code (e.g., +26876xxxxxx)")
+
+    return phone
+
 
 
 ALLOWED_EXTENSIONS = {"txt", "xlxs",'docx', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
@@ -337,38 +355,114 @@ def send_af_sms():
 
 
 @app.route('/sms_marketing_form') #, methods=['POST']
+@login_required
 def sms_marketing():
     print("Phone Number to Validate:xxx ")
     # data = request.get_json()sender="20404" 
-    all_companies = company_info.query.all()
+    
     form = SMSMarketingForm()
-    # if not phone or not message:
-    #     return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
+    phone_validator = PhoneValidator
     results = []
     sent_numbers = set()
-    for company in all_companies:
-        if company and company.company_contacts:
-            print("Company: ", company, "Company Contacts: ", company.company_contacts)
-            company_name = company.company_name
-            if len(company_name) > 17:
-                company_name = company_name[:17] + "..."
-            phone = company.company_contacts
-            phone_validator = PhoneValidator
-            try:
-                val_phone = phone_validator(phone).validate()
-                # Only send if this number hasn't been sent to yet
-                if val_phone in sent_numbers:
-                    continue
-                sent_numbers.add(val_phone)
-                message = f"Welcome to Quick Messanger {company_name}! Grow your market presence, improve B2B/B2C communication & build networks. Visit: https://qm.techxolutions.com"
-                result = send_sms_via_africastalking(val_phone, message)
-                results.append({"company": company_name, "status": "success", "response": result})
-            except PhoneNumberError as e:
-                flash(f"Invalid phone number: {e}", "danger")
-                results.append({"company": company_name, "status": "error", "error": str(e)})
-                continue
-    return jsonify(results)
 
+    if request.method == 'POST':
+        if not form.validate_on_submit():
+            flash("Please fill in all required fields", "warning")
+            return render_template("sms_marketing.html", form=form)
+
+        if not current_user.is_authenticated:
+            flash("You must be logged in to send SMS marketing messages", "warning")
+            return redirect(url_for('login'))
+
+        all_companies = company_info.query.all()
+        users = User.query.all()
+
+        message = form.message.data
+        title = form.title.data
+        start_date = form.start_date.data
+        end_date = form.end_date.data
+        url = form.url.data    
+
+        # SMS Marketing Entries 
+        sms_maerketing_entry = SMSMarketing(
+            title=title,
+            message=message,
+            url=url,
+            start_date=start_date,
+            end_date=end_date,
+            sender=current_user.name if current_user.is_authenticated else "Anonymous",
+            company_id=current_user.company_id[0].company_name if current_user.company_id else "N/A"
+        )
+
+        db.session.add(sms_maerketing_entry)
+        db.session.commit()
+        # if not phone or not message:
+        #     return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
+
+        # Company Contacts 
+        for company in all_companies:
+            if company and company.company_contacts:
+                phone = company.company_contacts
+                try:
+                    val_phone = phone_validator(phone).validate()
+                    # Only send if this number hasn't been sent to yet
+                    if val_phone in sent_numbers:
+                        continue
+                    sent_numbers.add(val_phone)
+                except PhoneNumberError as e:
+                    flash(f"Invalid phone number: {e}", "danger")
+                    results.append({"company": company.company_name, "status": "appending error", "error": str(e)})
+                    continue
+
+        # User Contacts
+        for user in users:
+            if user and user.contacts:
+                phone = user.contacts
+                try:
+                    val_phone = phone_validator(phone).validate()
+                    # Only send if this number hasn't been sent to yet
+                    if val_phone in sent_numbers:
+                        continue
+                    sent_numbers.add(val_phone)
+                    
+                except PhoneNumberError as e:
+                    flash(f"Invalid phone number: {e}", "danger")
+                    results.append({"user": user.name, "status": "appending error", "error": str(e)})
+                    continue
+
+        # Send SMS to all validated phone numbers
+        for val_phone in sent_numbers:
+            if val_phone and message:
+                # Send SMS to each validated phone number
+                try:
+                    result = send_sms_via_africastalking(val_phone, message)
+                    results.append({"phone": val_phone, "status": "success", "response": result})
+                except :
+                    print(f"Error sending SMS: {e}", "danger")
+                    results.append({"user": user.name, "status": "error", "error": str(e)})
+                    continue
+
+        date = current_time_wlzone()
+        date_str = date.strftime("%Y-%m-%d %H:%M:%S")
+        company_name = current_user.company_id[0].company_name if current_user.company_id else "N/A"
+        file_name = f"{company_name}__sms_marketing__results-{date_str.replace(' ', '_').replace(':', '-')}.txt"
+        format_date_to_string = lambda date: date.strftime("%Y-%m-%d") if date else "N/A"
+
+        results.append({"SENDER": current_user.name, "COMPANY": company_name, "DATE": format_date_to_string, "TITLE": title, "MESSAGE": message, "URL": url, "START_DATE": start_date, "END_DATE": end_date})
+        with open(os.path.join('static', file_name), 'w', encoding='utf-8') as f:
+            json.dump(results, f, ensure_ascii=False, indent=2)
+        print(f"SMS marketing results saved to {file_name}")
+        
+        return jsonify(results)
+    
+    return render_template("sms_marketing_form.html", form=form, results=results)
+
+@app.route('/email_marketing_form') #, methods=['POST']
+@login_required
+def email_marketing():
+    print("Email Marketing Form")
+
+    return render_template("email_marketing_form.html", form=EmailMarketingForm())
 
 @app.route('/send_to_one') #, methods=['POST']
 def send_af_one():
@@ -468,11 +562,11 @@ def home():
     # compress_folder(app.config["ADVERTS_IMAGES"])
     # compress_folder(app.config["UPLOADED"])
 
-    msd_del = Messages.query.get(81)
+    # msd_del = Messages.query.get(81)
 
-    if msd_del:
-        db.session.delete(msd_del)
-        db.session.commit()
+    # if msd_del:
+    #     db.session.delete(msd_del)
+    #     db.session.commit()
 
     with app.app_context():
         db.create_all()
@@ -570,16 +664,15 @@ def log_notification_permission():
     return jsonify({'status': 'success'})
 
 # Get salt from db and derive key using password 
-@app.route('/get_key', methods=['POST'])
+@app.route('/get_key', methods=['POST',"GET"])
 def save_recovery_data():
     data = request.get_json()
+
     if not data or 'username' not in data or 'password' not in data:
         return jsonify({'status': 'error', 'msg': 'Username and password required'}), 400
     if not data.get('username') or not data.get('password'):
         return jsonify({'status': 'error', 'msg': 'Username and password cannot be empty'}), 400
     
-    print("Data Received: ", data)
-
     username = data.get('username')
     password = data.get('password')
 
@@ -602,7 +695,6 @@ def save_recovery_data():
         print("Check Salt Object in UserKey == save_recovery_data: ", salt_obj)
         salt = base64.b64decode(salt_obj.salt) if salt_obj else None
 
-
         print("Salt Retrieved: ", salt)
         print("Check Password First == save_recovery_data: ", password)
         # salt_b64 = base64.b64encode(salt).decode('utf-8')
@@ -616,10 +708,12 @@ def save_recovery_data():
         #     db.session.commit()
 
         if not key_:
+            print("Key not found for user: ", username)
             return jsonify({'status': 'error', 'msg': 'Key not found'}), 404
-
+        print("Key Derived Successfully for user: ", username, "Key: ", key_.decode('utf-8'))
         return jsonify({'key': key_.decode('utf-8')}), 200
     else:
+        print("Invalid username or password for user: ", username)
         return jsonify({'status': 'error', 'msg': 'Invalid username or password'}), 401
 
 
@@ -1234,7 +1328,7 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
             ttl=200
         )
         pushed_num += 1
-        pushed_ip_list.append(recipient_sub_info.ip)
+        pushed_ip_list.append(recipient_sub.ip)
         print("Web Push Activated, Update!")
 
     except WebPushException as ex:
@@ -1246,12 +1340,12 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="/"):
         else:
             print("Web push failed, update: {}", repr(ex))
         failed_num += 1
-        failed_ip_list.append(recipient_sub_info.ip)
+        failed_ip_list.append(recipient_sub.ip)
 
     print("Q-MESSANGER NOTIFICATIONS - Successfully pushed notifications: ",pushed_num)
     print("Q-MESSANGER NOTIFICATIONS - Failed notifications: ",failed_num)
 
-    with open("Push Notifications Report.txt", "rw") as file:
+    with open("Push Notifications Report.txt", "w") as file:
         pass
 
 # Adverts Code 
@@ -1347,6 +1441,7 @@ def login(id=None):
     return jsonify({"message":"User Logged in"}),200
 
 # Login using indexedDB's Username'
+@csrf.exempt
 @app.route('/manual_login', methods=['GET',"POST"])
 def manual_login(id=None):
     form = Login()
@@ -1939,6 +2034,43 @@ def adverts_form():
 
     return render_template("advert_form.html",form=form,comp_news=comp_news)
 
+@app.route('/edit_advert_form', methods=['POST',"GET"])
+@login_required
+def edit_advert_form():
+
+    
+    form_req = request.form.get('pinned-story')
+
+    comp_news = News.query.filter_by(usr_id=current_user.id).all()
+    company = current_user.company_id[0]
+    advert_id = request.args.get('advert_id')
+    advert = Advert.query.get(advert_id)
+    form = AdvertForm(obj=advert)
+    print("Edit Advert Form==No Advert Found with ID: ", advert_id)
+
+    if not advert:
+        print("Edit Advert Form==No Advert Found with ID: ", advert_id)
+        flash("Advert not found", "warning")
+        return redirect(url_for('adverts'))
+
+    if request.method == "POST":
+        advert.advert_title = form.advert_title.data
+        advert.pinned_1 = form.url.data
+        if form.advert_days.data:
+            advert.advert_days = form.advert_days.data
+        if form.start_date.data:
+            advert.start_date = form.start_date.data
+
+        # if form.advert_image.data:
+        #     advert_img = process_ads(form.advert_image.data)
+        #     advert.advert_image = advert_img
+
+        db.session.commit()
+        flash("Edit Successful","success")
+
+    return render_template("edit_advert_form.html",form=form,comp_news=comp_news,advert=advert)
+
+
 @app.route("/adverts")
 def adverts():
     remote_ip = request.remote_addr
@@ -1952,7 +2084,12 @@ def adverts():
     # print("All Cols: ",columns)
     return render_template("adverts.html",columns=columns,companies=companies,adverts=adverts,remote_ip=remote_ip)
 
-
+@app.route("/company-adverts")
+@login_required
+def company_adverts():
+    adverts = Advert.query.filter_by(usr_id=current_user.id).all()
+    # print("All Cols: ",columns)
+    return render_template("company_adverts.html",adverts=adverts)
 
 @csrf.exempt
 @app.route('/like_ad', methods=['POST'])
@@ -1995,6 +2132,28 @@ def like_ad():
     print("Like Action 3: ", like.action,name,contacts)
 
     return jsonify({'success': True, 'likes': len(ad.likes)})
+
+@csrf.exempt
+@app.route('/qm_partnership', methods=['POST','GET'])
+def qm_partnership():
+    form = QMPartnershipForm()
+    # if request.method == 'POST':
+    #     if form.validate_on_submit():
+    #         partnership = Partnership(
+    #             name=form.name.data,
+    #             email=form.email.data,
+    #             company_name=form.company_name.data,
+    #             message=form.message.data,
+    #             timestamp=current_time_wlzone()
+    #         )
+    #         db.session.add(partnership)
+    #         db.session.commit()
+    #         flash("Partnership request submitted successfully!", "success")
+    #         return redirect(url_for('home'))
+    #     else:
+    #         flash("Please fill out all fields correctly.", "danger")
+
+    return render_template('qm_partnership_program.html',form=form)
 
 
 @app.route("/company_stories")
@@ -2101,7 +2260,10 @@ def push_notif_form():
         )
 
         if form.days.data:
-            notify.days = form.days.data
+            days = ""
+            for day in form.days.data:
+                days += day + ", "
+            notify.days = days
 
         db.session.add(notify)
         db.session.commit()
@@ -2114,7 +2276,7 @@ def push_notif_form():
         for recipient_sub in recipient_subs:
             app_notification(recipient_sub,current_user.name,content,title=title,url=url)
 
-    return render_template("marketing_updates_form.html",form=form)
+    return render_template("pushnote_marketing_form.html",form=form)
 
 class CompanyObj:
     def __init__(self, **kwargs):
@@ -2584,6 +2746,114 @@ def get_reviews():
         ]
     })
 
+
+def handle_email_password_reset(form):
+    email = form.email.data
+    user = User.query.filter_by(email=email).first()
+    
+    if not user:
+        flash("No account found with that email address.", "danger")
+        return redirect(url_for('password_reset'))
+
+    # Generate a password reset token
+    token = user.get_reset_token()
+    
+    # Send the reset email
+    send_password_reset_email(user, token)
+    
+    flash("A password reset link has been sent to your email.", "success")
+    return redirect(url_for('login'))
+
+def handle_sms_password_reset(sms_form):
+    phone = sms_form.phone.data
+    if not phone:
+        flash("Please enter a valid phone number.", "danger")
+        return redirect(url_for('password_reset'))
+    
+    # Validate the phone number
+    validated_phone = validate_phone_number(phone)
+
+    # Check if phone exists in DB
+    users = User.query.all()
+    user = next((u for u in users if normalize_phone(u.contacts) == normalize_phone(validated_phone)), None)
+    if not user:
+        raise ValidationError("No account found with that phone number.")
+    
+    if not user:
+        flash("No account found with that phone number.", "danger")
+        return redirect(url_for('password_reset'))
+
+    # Generate a 5 random digit token
+    digit_token = str(random.randint(10000, 99999))
+
+    # Store the token in the database or send it via SMS
+    store_token_for_sms = PasswordResetCode(
+        user_id=user.id,
+        token=digit_token,
+        ip=request.remote_addr,
+        phone=validated_phone,
+        expiration=current_time_wlzone() + timedelta(minutes=5)  # Token valid for 10 minutes
+    )
+    db.session.add(store_token_for_sms)
+    db.session.commit()
+
+    message = f"Your Quick Messanger password reset code is: {digit_token}. Expires in 5 min. Please ignore this, if you haven't requested"
+    # Send the reset SMS
+    send_sms_via_africastalking(phone, message,)
+    
+    flash("A password reset link has been sent to your phone.", "success")
+
+    return redirect(url_for('sms_code_verification', phone=validated_phone, token=digit_token))
+
+
+@app.route('/sms_code_verification', methods=['POST', 'GET'])
+def sms_code_verification():
+
+    curr_ip = request.remote_addr
+    token = request.args.get('token')
+
+    verified_code = token
+
+    if not phone or not token:
+        flash("Invalid request.", "danger")
+        return redirect(url_for('password_reset'))
+
+    form = SMSCodeVerificationForm()
+
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            if not form.validate(token):
+                flash("Invalid token format.", "danger")
+                return redirect(url_for('sms_code_verification', phone=phone, token=token))
+            
+            user = User.query.filter_by(contacts=phone).first()
+            if user and form.code.data == token:
+                # Token is valid, allow the user to reset their password
+                flash("Token verified successfully. You can now reset your password.", "success")
+                return redirect(url_for('reset_password', phone=phone))
+            else:
+                flash("Invalid token or phone number.", "danger")
+                return redirect(url_for('sms_code_verification', phone=phone, token=token))
+
+    return render_template('sms_code_verification.html', form=form, phone=phone)
+
+
+@app.route('/password_reset', methods=['POST','GET'])
+def password_reset():
+    form = EmailPasswordResetForm()
+    sms_form = SMSPasswordResetForm()
+
+    if request.method == 'POST':
+        if form.email.data:
+            # Handle email password reset
+            return handle_email_password_reset(form)
+        elif sms_form.phone.data:
+            # Handle SMS password reset
+            return handle_sms_password_reset(sms_form)
+       
+
+    return render_template('password_reset.html', form=form)
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
@@ -2591,6 +2861,6 @@ if __name__ == '__main__':
         db.create_all()
         db.session.commit()
 
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5000)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
