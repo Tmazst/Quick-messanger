@@ -364,96 +364,97 @@ def sms_marketing():
     phone_validator = PhoneValidator
     results = []
     sent_numbers = set()
-
+    # Temporally closed 
     if request.method == 'POST':
-        if not form.validate_on_submit():
-            flash("Please fill in all required fields", "warning")
-            return render_template("sms_marketing.html", form=form)
+        # if not form.validate_on_submit():
+        #     flash("Please fill in all required fields", "warning")
+        #     return render_template("sms_marketing.html", form=form)
 
-        if not current_user.is_authenticated:
-            flash("You must be logged in to send SMS marketing messages", "warning")
-            return redirect(url_for('login'))
+        # if not current_user.is_authenticated:
+        #     flash("You must be logged in to send SMS marketing messages", "warning")
+        #     return redirect(url_for('login'))
 
-        all_companies = company_info.query.all()
-        users = User.query.all()
+        # all_companies = company_info.query.all()
+        # users = User.query.all()
 
-        message = form.message.data
-        title = form.title.data
-        start_date = form.start_date.data
-        end_date = form.end_date.data
-        url = form.url.data    
+        # message = form.message.data
+        # title = form.title.data
+        # start_date = form.start_date.data
+        # end_date = form.end_date.data
+        # url = form.url.data    
 
-        # SMS Marketing Entries 
-        sms_maerketing_entry = SMSMarketing(
-            title=title,
-            message=message,
-            url=url,
-            start_date=start_date,
-            end_date=end_date,
-            sender=current_user.name if current_user.is_authenticated else "Anonymous",
-            company_id=current_user.company_id[0].company_name if current_user.company_id else "N/A"
-        )
+        # # SMS Marketing Entries 
+        # sms_maerketing_entry = SMSMarketing(
+        #     title=title,
+        #     message=message,
+        #     url=url,
+        #     start_date=start_date,
+        #     end_date=end_date,
+        #     sender=current_user.name if current_user.is_authenticated else "Anonymous",
+        #     company_id=current_user.company_id[0].company_name if current_user.company_id else "N/A"
+        # )
 
-        db.session.add(sms_maerketing_entry)
-        db.session.commit()
-        # if not phone or not message:
-        #     return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
+        # db.session.add(sms_maerketing_entry)
+        # db.session.commit()
+        # # if not phone or not message:
+        # #     return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
 
-        # Company Contacts 
-        for company in all_companies:
-            if company and company.company_contacts:
-                phone = company.company_contacts
-                try:
-                    val_phone = phone_validator(phone).validate()
-                    # Only send if this number hasn't been sent to yet
-                    if val_phone in sent_numbers:
-                        continue
-                    sent_numbers.add(val_phone)
-                except PhoneNumberError as e:
-                    flash(f"Invalid phone number: {e}", "danger")
-                    results.append({"company": company.company_name, "status": "appending error", "error": str(e)})
-                    continue
+        # # Company Contacts 
+        # for company in all_companies:
+        #     if company and company.company_contacts:
+        #         phone = company.company_contacts
+        #         try:
+        #             val_phone = phone_validator(phone).validate()
+        #             # Only send if this number hasn't been sent to yet
+        #             if val_phone in sent_numbers:
+        #                 continue
+        #             sent_numbers.add(val_phone)
+        #         except PhoneNumberError as e:
+        #             flash(f"Invalid phone number: {e}", "danger")
+        #             results.append({"company": company.company_name, "status": "appending error", "error": str(e)})
+        #             continue
 
-        # User Contacts
-        for user in users:
-            if user and user.contacts:
-                phone = user.contacts
-                try:
-                    val_phone = phone_validator(phone).validate()
-                    # Only send if this number hasn't been sent to yet
-                    if val_phone in sent_numbers:
-                        continue
-                    sent_numbers.add(val_phone)
+        # # User Contacts
+        # for user in users:
+        #     if user and user.contacts:
+        #         phone = user.contacts
+        #         try:
+        #             val_phone = phone_validator(phone).validate()
+        #             # Only send if this number hasn't been sent to yet
+        #             if val_phone in sent_numbers:
+        #                 continue
+        #             sent_numbers.add(val_phone)
                     
-                except PhoneNumberError as e:
-                    flash(f"Invalid phone number: {e}", "danger")
-                    results.append({"user": user.name, "status": "appending error", "error": str(e)})
-                    continue
+        #         except PhoneNumberError as e:
+        #             flash(f"Invalid phone number: {e}", "danger")
+        #             results.append({"user": user.name, "status": "appending error", "error": str(e)})
+        #             continue
 
-        # Send SMS to all validated phone numbers
-        for val_phone in sent_numbers:
-            if val_phone and message:
-                # Send SMS to each validated phone number
-                try:
-                    result = send_sms_via_africastalking(val_phone, message)
-                    results.append({"phone": val_phone, "status": "success", "response": result})
-                except :
-                    print(f"Error sending SMS: {e}", "danger")
-                    results.append({"user": user.name, "status": "error", "error": str(e)})
-                    continue
+        # # Send SMS to all validated phone numbers
+        # for val_phone in sent_numbers:
+        #     if val_phone and message:
+        #         # Send SMS to each validated phone number
+        #         try:
+        #             result = send_sms_via_africastalking(val_phone, message)
+        #             results.append({"phone": val_phone, "status": "success", "response": result})
+        #         except :
+        #             print(f"Error sending SMS: {e}", "danger")
+        #             results.append({"user": user.name, "status": "error", "error": str(e)})
+        #             continue
 
-        date = current_time_wlzone()
-        date_str = date.strftime("%Y-%m-%d %H:%M:%S")
-        company_name = current_user.company_id[0].company_name if current_user.company_id else "N/A"
-        file_name = f"{company_name}__sms_marketing__results-{date_str.replace(' ', '_').replace(':', '-')}.txt"
-        format_date_to_string = lambda date: date.strftime("%Y-%m-%d") if date else "N/A"
+        # date = current_time_wlzone()
+        # date_str = date.strftime("%Y-%m-%d %H:%M:%S")
+        # company_name = current_user.company_id[0].company_name if current_user.company_id else "N/A"
+        # file_name = f"{company_name}__sms_marketing__results-{date_str.replace(' ', '_').replace(':', '-')}.txt"
+        # format_date_to_string = lambda date: date.strftime("%Y-%m-%d") if date else "N/A"
 
-        results.append({"SENDER": current_user.name, "COMPANY": company_name, "DATE": format_date_to_string, "TITLE": title, "MESSAGE": message, "URL": url, "START_DATE": start_date, "END_DATE": end_date})
-        with open(os.path.join('static', file_name), 'w', encoding='utf-8') as f:
-            json.dump(results, f, ensure_ascii=False, indent=2)
-        print(f"SMS marketing results saved to {file_name}")
+        # results.append({"SENDER": current_user.name, "COMPANY": company_name, "DATE": format_date_to_string, "TITLE": title, "MESSAGE": message, "URL": url, "START_DATE": start_date, "END_DATE": end_date})
+        # with open(os.path.join('static', file_name), 'w', encoding='utf-8') as f:
+        #     json.dump(results, f, ensure_ascii=False, indent=2)
+        # print(f"SMS marketing results saved to {file_name}")
         
-        return jsonify(results)
+        # return jsonify(results)
+        pass
     
     return render_template("sms_marketing_form.html", form=form, results=results)
 
