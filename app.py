@@ -1556,7 +1556,6 @@ def register():
 
     if request.method == 'POST':
         form = request.form
-        print("USER DATA",form)
         # Check If Username Exists 
         if chat_user.query.filter_by(username=form['username']).all():
             flash("Username already exists, please use a different Username","warning")
@@ -1696,7 +1695,6 @@ def register():
         
         print("Registration Successful")
 
-        print("USER DATA: ",reg_usr_db)
         # Save the public key to the database or any persistent storage
 
     return render_template('register.html')
