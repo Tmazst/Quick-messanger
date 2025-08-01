@@ -262,6 +262,7 @@ class Company_Register_Form(FlaskForm):
             ("Freelance & Gig Economy", "Freelance & Gig Economy"),
             ("Gaming", "Gaming"),
             ("Government", "Government"),
+            ("Graphic Design", "Graphic Design"),
             ("Healthcare", "Healthcare"),
             ("Home Services", "Home Services"),
             ("Hospitality", "Hospitality"),
