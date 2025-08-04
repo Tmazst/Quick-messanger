@@ -461,7 +461,7 @@ class EmailPasswordResetForm(FlaskForm):
             raise ValidationError("No account found with that email address.")
         
 class SMSPasswordResetForm(FlaskForm):
-    phone = NormalizedPhoneField('Enter Registered Cell Number', validators=[DataRequired()])
+    phone = NormalizedPhoneField('Enter Registered Cell Number (Include Country Code)', validators=[DataRequired()])
     submit = SubmitField('Get Code')
 
     def validate_phone(self, field):

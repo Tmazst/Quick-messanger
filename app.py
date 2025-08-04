@@ -2918,20 +2918,33 @@ def password_reset_req():
                 # if not user:
                 #     flash("No account found with that phone number.", "error")
                 #     return redirect(url_for('password_reset'))
-
+                MAX_RETRIES = 5
+                attempts = 0
                 # Generate a 5 random digit token
-                digit_token = str(random.randint(10000, 99999))
-                print("Generated Token: ", digit_token)
-                # Store the token in the database or send it via SMS
-                store_token_for_sms = PasswordResetCode(
-                    user_id=user.id,
-                    token=digit_token,
-                    ip=request.remote_addr,
-                    phone=validated_phone,
-                    expiration=current_time_wlzone() + timedelta(minutes=5)  # Token valid for 10 minutes
-                )
-                db.session.add(store_token_for_sms)
-                db.session.commit()
+                while attempts < MAX_RETRIES:
+                    digit_token = str(random.randint(10000, 99999))
+                    print("Generated Token: ", digit_token)
+                    # Store the token in the database or send it via SMS
+                    existing = PasswordResetCode.query.filter_by(token=digit_token).first()
+                    if not existing:
+                        store_token_for_sms = PasswordResetCode(
+                            user_id=user.id,
+                            token=digit_token,
+                            ip=request.remote_addr,
+                            phone=validated_phone,
+                            expiration=current_time_wlzone() + timedelta(minutes=5)  # Token valid for 10 minutes
+                        )
+                        db.session.add(store_token_for_sms)
+                        db.session.commit()
+                        break
+                    else:
+                        print(f"Token {digit_token} already exists. Retrying...")
+                        attempts +=1
+
+                if attempts == MAX_RETRIES:
+                    flash("Something went wrong. Please try again.", "error")
+                    return redirect(url_for('password_reset_req'))
+
 
 
                 message = f"Your Quick Messanger password reset code is: {digit_token}. Expires in 5 min. Please ignore this, if you haven't requested"
