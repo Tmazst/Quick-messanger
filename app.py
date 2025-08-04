@@ -423,9 +423,12 @@ AT_API_KEY = "atsk_8f084216094ad2630840078202328804584781195f017493341390e99016c
 africastalking.initialize(AT_USERNAME, AT_API_KEY)
 sms = africastalking.SMS
 
-def send_sms_via_africastalking(phone, message,):
+def send_sms_via_africastalking(phone, message):
     try:
-        response = sms.send(message, [phone])  # Replace with your sender ID
+        if not phone.startswith('+'):
+            phone = '+' + phone  # Ensure phone is in proper international format
+
+        response = sms.send(message, [phone])
         print("SMS sent:", response)
         return {"status": "success", "response": response}
     except Exception as e:
