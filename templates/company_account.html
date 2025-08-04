@@ -99,7 +99,7 @@ form{
                 {% endif %}
             {% endwith %}
         </div> -->
-
+ {{ company_update.hidden_tag() }}
         <form _lpchecked="1" action="" id="updateForm" method="post"  enctype="multipart/form-data" onsubmit="return confirmSubmit();">
               <div style=""  class="img-cont">
                 {% if current_user.image %}
@@ -252,7 +252,7 @@ form{
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/places.js@1.19.0/dist/cdn/places.min.css">
 <script src="https://cdn.jsdelivr.net/npm/places.js@1.19.0"></script>
 <script src="https://unpkg.com/cropperjs"></script>
-<script>
+<script nonce="{{ nonce }}">
 // Add event listener to the image input field
 document.addEventListener('DOMContentLoaded', function() {
     // Cropper.js logic

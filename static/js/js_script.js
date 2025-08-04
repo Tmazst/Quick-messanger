@@ -670,6 +670,7 @@ quoteBtns.forEach(function(btn){
 });
 
 
+
 //#Menu
 //const navSlide = () => {
 const burger = document.querySelector(".menu-icon");

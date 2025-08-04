@@ -17,7 +17,7 @@
         gap:10px;
         /* float: left; */
     }
-    .column .img-contain {
+    .column .img-contain-ads {
         width: 100%; 
         /* height: 100%;  Set the maximum height for the image */
         /* object-fit: cover; Ensures the image fits within the container without distortion */
@@ -34,6 +34,8 @@
         padding-left: 10px;
         padding-right: 10px;
         box-shadow: 0 2px 3px rgba(0,0,0,0.5);
+        min-width: max-content !important;
+
     }
     .ad_image{
         width:100%;
@@ -115,7 +117,7 @@
                 <span style="font-weight: 400;color:rgb(96, 120, 139)">Don’t wait another day — take your products and services across regions.  
                 Start promoting your business today!</span>
             </div>
-            <button onclick="window.location.href='/advert_form'" class="advert-btn" >+ Advertise</button>
+            <a href="/advert_form" class="advert-btn" >+ Advertise</a>
             <img src="static/icons/add-icon.png" class="close-btn" />
         </div>
         
@@ -130,7 +132,7 @@
                         {% set comp_obj = companies[ad.comp_id] if ad.comp_id in companies else None %}
                         <!-- World Vision  -->
                         {%if comp_obj.company_name == "World Vision"%}
-                        <div onmouseenter="revealDrawer(event,'{{ad.id}}')" class="img-contain" style="position:relative;">
+                        <div class="img-contain-ads ad-container" data-ad-id="{{ ad.id }}">
                             <img src="static/ad-images/{{ ad.advert_image }}" alt="Ad Image" class="ad_image">
                             <div id="ad00{{ad.id}}" style="justify-content: flex-end;gap:2px" class="ad-comp-details gen-flex-col">
                                 {%if comp_obj.website%}
@@ -165,9 +167,10 @@
                                 {% endif %}
                                 
                                 {%if ad.pinned_1%}
-                                    <button onclick="window.location.href='{{ ad.pinned_1 }}'" style="background:none" class="pinned-btn" class="btns"><span style="font-size:20px">📌</span></button>
+                                <a href="{{ ad.pinned_1 }}" class="pinned-btn btns">📌</a>
+                                    
                                 {%endif%}
-                                <button onclick="document.querySelector('.form-overlay').style.display='flex'" class="pinned-btn" style="padding:6px 15px" class="btns">Donate</button>
+                                <button class="pinned-btn open-form-btn" style="padding:6px 15px" class="btns">Donate</button>
                             </div>
                         </div>
                         <!-- Modal for World Vision -->
@@ -191,14 +194,14 @@
                                     </div>
                                 </form>
                                 <a href="https://www.wvi.org/ENOUGH" class="paras-subtopics" style="width:100%;margin-top:10px;color:grey;font-size:12px">Use site form instead</a> 
-                                <img src="static/icons/add-icon.png" class="close-btn" style="cursor:pointer;top:10px !important" onclick="document.querySelector('.form-overlay').style.display='none'" />
+                                <img src="static/icons/add-icon.png" class="close-btn close-form-btn" style="cursor:pointer;top:10px !important"  />
                         
                             </div>
                             </div> 
                         <!-- End World Vision  -->
                         {%else%}
                         <!-- All Companies -->
-                        <div onmouseenter="revealDrawer(event,'{{ad.id}}')" class="img-contain" style="position:relative;">
+                        <div class="img-contain-ads ad-container" data-ad-id="{{ ad.id }}">
                             <img src="static/ad-images/{{ ad.advert_image }}" alt="Ad Image" class="ad_image">
                             <div id="ad00{{ad.id}}" style="justify-content: flex-end;gap:2px" class="ad-comp-details gen-flex-col">
                                 {%if comp_obj.website%}
@@ -233,7 +236,7 @@
                                 {% endif %}
                                 
                                 {%if ad.pinned_1%}
-                                    <button onclick="window.location.href='{{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
+                                    <a href="{{ ad.pinned_1 }}" class="pinned-btn btns">📌</a>
                                 {%endif%}
                             </div>
                         </div>
@@ -262,7 +265,7 @@
         {%for ad in adverts%}
             {% if ad.advert_image %}
                 {% set comp_obj = companies[ad.comp_id] if ad.comp_id in companies else None %}
-                <div onclick="revealDrawer(event,'{{ad.id}}')" class="img-contain" style="position:relative;">
+                <div class="img-contain-ads ad-container" data-ad-id="{{ ad.id }}">
                     <img src="static/ad-images/{{ ad.advert_image }}" alt="Ad Image" class="ad_image">
                     <div id="m-ad00{{ad.id}}" style="justify-content: flex-end;gap:2px" class="ad-comp-details gen-flex-col">
                         {%if comp_obj.website%}
@@ -296,7 +299,7 @@
                         {% endif %}
                         
                         {%if ad.pinned_1%}
-                            <button onclick="window.location.href='{{ ad.pinned_1 }}'" class="pinned-btn" class="btns">📌More Info</button>
+                            <a href="{{ ad.pinned_1 }}" class="pinned-btn btns">📌</a>
                         {%endif%}
                     </div>
                 </div>
@@ -315,7 +318,8 @@
         <button class="like-action-btn" data-action="need" style="margin:8px 0;">I need this</button><br>
         <button class="like-action-btn" data-action="info" style="margin:8px 0;">I need more info</button><br>
         <button class="like-action-btn" data-action="wish" style="margin:8px 0;">Just a wish</button><br>
-        <button class="btns" onclick="document.getElementById('like-action-modal').style.display='none'" style="margin-top:10px;">Cancel</button>
+        <button class="btns cancel-like-modal">Cancel</button>
+        
         <!-- Hidden guest form -->
         <form id="like-guest-form" style="display:none;margin-top:1.5em;">
             <input type="text" id="like-guest-name" placeholder="Your Name" style="margin-bottom:8px;width:90%;padding:8px;border-radius:6px;border:1px solid #ccc;"><br>
@@ -325,8 +329,8 @@
         <div id="like-guest-error" style="color:#EF4036;margin-top:8px;display:none;"></div>
     </div>
 </div>
-<!-- <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script> -->
-<script>
+
+<script nonce="{{ nonce }}">
 let selectedAdId = null;
 let selectedAction = null;
 let isAuthenticated = {{ 'true' if current_user.is_authenticated else 'false' }};
@@ -416,26 +420,57 @@ document.addEventListener('DOMContentLoaded', function () {
     //     percentPosition: true
     // });
 
-    function revealDrawer(e,id){
-        var ida = "m-ad00" + id.toString();
-        var sideDraw = document.getElementById(ida);
-        console.log("Click Event Recieved",sideDraw , "A",id);
-        if (!sideDraw) {
-            console.error("Element with id " + ida + " not found.");
-            return;
-        }
-        if(window.innerWidth <= "700"){
-            console.log("Click Event Recieved2");
-            sideDraw.classList.toggle('off-on');
-        }else{
-            var ida = "ad00" + id.toString();
-            var sideDraw = document.getElementById(ida);
-            sideDraw.classList.add('reveal-side-icons');
-            e.target.addEventListener("mouseleave", function(){
-                sideDraw.classList.remove('reveal-side-icons');
+    //Refactored code to align with the csp rules
+    document.querySelectorAll('.ad-container').forEach(function (el) {
+        el.addEventListener('mouseenter', function (e) {
+            const id = el.dataset.adId;
+            let sideDraw;
+
+            if (window.innerWidth <= 700) {
+                const ida = "m-ad00" + id;
+                sideDraw = document.getElementById(ida);
+                if (!sideDraw) {
+                    console.error("Element with id " + ida + " not found.");
+                    return;
+                }
+                console.log("Click Event Received 2");
+                sideDraw.classList.toggle('off-on');
+            } else {
+                const ida = "ad00" + id;
+                sideDraw = document.getElementById(ida);
+                if (!sideDraw) {
+                    console.error("Element with id " + ida + " not found.");
+                    return;
+                }
+                sideDraw.classList.add('reveal-side-icons');
+                el.addEventListener('mouseleave', function () {
+                    sideDraw.classList.remove('reveal-side-icons');
+                }, { once: true });
+            }
+        });
+    });
+
+    const closeBtn = document.querySelector('.close-form-btn');
+    const formOverlay = document.querySelector('.form-overlay');
+
+    if (closeBtn && formOverlay) {
+        closeBtn.addEventListener('click', () => {
+            formOverlay.style.display = 'none';
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const openBtn = document.querySelector('.open-form-btn');
+        const overlay = document.querySelector('.form-overlay');
+
+        if (openBtn && overlay) {
+            openBtn.addEventListener('click', () => {
+                overlay.style.display = 'flex';
             });
         }
-    }
+    });
+
+
 });
 </script>
 

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<style>
+<style nonce="{{ nonce }}">
     /* body {
         font-family: Arial, sans-serif;
         display: flex;
@@ -320,7 +320,7 @@
 }
 </style>
 
-<script>
+<script nonce="{{ nonce }}">
 function randomChar() {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     return chars[Math.floor(Math.random() * chars.length)];
@@ -691,7 +691,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
   </div>
 </div>
 
-<script>
+<script nonce="{{ nonce }}">
 
 var closeBtn = document.querySelector(".close-btn");
 var adContainer = document.querySelector('.advertise-here');

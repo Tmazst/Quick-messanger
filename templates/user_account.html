@@ -10,6 +10,9 @@ section > div {
   flex: 1;
   padding: 0.5rem;
 }
+.form-account-container{
+  border:none
+}
 #pay-opt-div input[type="radio"] {
   display: none;
   &:not(:disabled) ~ label {
@@ -130,6 +133,16 @@ section > div {
                  {% endif %}
                <!--<input type="text" class="form-control" id="name" name="nm" placeholder="Name">-->
               </div>
+              <div class="group">
+                  <div class="acc-labels">{{ form.phone.label(class="labels")}}</div>
+                  {{ form.phone(class="form-control",placeholder="Phone Number",value=current_user.contacts)}}
+                  {% if form.phone.errors %}
+                    {% for error in form.phone.errors %}
+                        <span class="span-error" >*{{error}}</span>
+                    {% endfor %}
+                 {% endif %}
+                <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+            </div>
 
             <div class="group">
                   <div class="acc-labels">{{ form.position.label(class="labels")}}</div>
@@ -142,16 +155,6 @@ section > div {
                 <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
             </div>
 
-            <div class="group">
-                <!--<input type="password" class="form-control" id="confirm-password" name="confirm_pass" placeholder="confirm-password">-->
-                <div class="acc-labels">{{ form.contacts.label(class="labels")}}</div>
-                 {{ form.contacts(class="form-control",placeholder="Contacts",value=current_user.contacts)}}
-                 {% if form.contacts.errors %}
-                    {% for error in form.contacts.errors %}
-                        <span class="span-error" >*{{error}}</span>
-                    {% endfor %}
-                 {% endif %}
-            </div>
 
 
          </div>
@@ -173,7 +176,7 @@ section > div {
 
 </div>
  <script src="https://unpkg.com/cropperjs"></script>
-    <script>
+    <script nonce="{{ nonce }}">
          // Add event listener to the image input field
          document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('imageInput').addEventListener('change', function() {

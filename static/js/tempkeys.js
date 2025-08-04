@@ -114,27 +114,30 @@ function autoRecoverCheck(userObject){
 
 
 // Call this function after successful registration
-async function AutoSaveKeys(){
+async function AutoSaveKeys(userObj){
+    console.log("Running Auto Save Keys");
     // userObj = {username, publicKey, privateKey}
     // Generate a random recovery key
     // const recoveryKey = Array.from(crypto.getRandomValues(new Uint8Array(16)))
     //     .map(b => b.toString(16).padStart(2, '0')).join('');
     // Send encrypted JSON and recovery key to backend
 
-    const password = document.getElementById("password-rec-id-sv").value;
+    // userObj = {myUsername, exportedPublicKey, exportedPublicKey}
 
+    const password = document.getElementById("password-rec-id").value;
+    console.log("Running Auto Save Keys - Password: ",password);
     if(!password){
         document.getElementById("error-field-sv").textContent = "Please Enter Your Password to Proceed";
         return;
     };
-        
-    console.log("User Object: ", userObj.myUsrname);
+
+    console.log("User Object: ", userObj.myUsername);
     // Get Key using Password and salt (in Backend)
     const response = await fetch('/get_key', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json','X-CSRFToken': getTCSRFToken() },
         body: JSON.stringify({
-            username: userObj.myUsrname,
+            username: userObj.myUsername,
             password: password
         })
     });
@@ -143,7 +146,7 @@ async function AutoSaveKeys(){
 
     // Encrypt user data
     if (!data.key) {
-        console.error('Failed to get key:', data.key);
+        console.log('Failed to get key:', data.key);
         return;
     }
 
@@ -154,7 +157,7 @@ async function AutoSaveKeys(){
         method: 'POST',
         headers: { 'Content-Type': 'application/json','X-CSRFToken': getTCSRFToken() },
         body: JSON.stringify({
-            username: userObj.myUsrname,
+            username: userObj.myUsername,
             encrypted_json: encrypted
         })
     }).then(response => {
@@ -291,6 +294,7 @@ async function autoRecoverKeys() {
     recovery_key = dat.key;
     // // console.log("Recovery Key: ", recovery_key);
     document.getElementById("error-field").textContent = 'Please wait.....';
+    // The encypted file will be fetched from the backend if the user has saved it before
     const response = await fetch('/get_recovery_data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getTCSRFToken() },
@@ -302,9 +306,10 @@ async function autoRecoverKeys() {
         document.getElementById("error-field").textContent = data.msg;
         return;
     }
-    
+    console.log("to Decrypt: "data.encrypted_json)
     const encryptedJson = data.encrypted_json;
     const userObj = await decryptData(encryptedJson, recovery_key);
+    console.log("Decrypted: ",userObj)
     await saveCredentialsToIndexedDB(userObj);
     document.getElementById("error-field").textContent = 'Your account keys restored';
     document.querySelector("#auto-recovery-modal").style.display = "none";

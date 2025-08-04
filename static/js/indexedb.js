@@ -507,7 +507,7 @@ async function preRegister(){
                     // proceed to open login modal 
                 } else {
                     // console.log("Alert!! Username Mismatch");
-                    autoRecoverKeysModal();
+                    // autoRecoverKeysModal();
                     return;
                 }
                 
@@ -571,7 +571,7 @@ async function preRegister(){
                     // console.log("No Username Found on Server 3");
                 } else {
                     // console.log("Alert!! Username Mismatch");
-                    autoRecoverKeysModal();
+                    // autoRecoverKeysModal();
                 }
                 return;
         }
@@ -676,8 +676,9 @@ async function registerNewKeys(){
             .then(data => {
                 // console.log("Server Response:", data);
                 if (data.success) {
-                    alert("Keys registered successfully!");
-                    window.location.href = "/login?id=" + myUsername;
+                    // alert("Keys registered successfully!");
+                    AutoSaveKeys({myUsername, exportedPublicKey, exportedPrivateKey});
+                    // window.location.href = "/login?id=" + myUsername;
                 } else {
                     alert("Failed to register keys: " + data.message);
                 }
@@ -892,7 +893,9 @@ function savePublicKey(username, publicJwk, privateJwk) {
         });
         };
     };
-
+    console.log("U: ",username);
+    console.log("P: ",publicJwk);
+    console.log("Pr: ",privateJwk);
     // Add the new entry after deleting all old ones
     store.put({ 
       "Usernames":username,

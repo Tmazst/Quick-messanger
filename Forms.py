@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField,PasswordField,SubmitField, TextAreaField,BooleanField, SelectField,DateField, URLField, RadioField, TelField, MultipleFileField,IntegerField,SelectMultipleField
+from wtforms import StringField,PasswordField,SubmitField, TextAreaField,BooleanField, SelectField,DateField, URLField, RadioField, HiddenField, TelField, MultipleFileField,IntegerField,SelectMultipleField
 from wtforms.validators import DataRequired,Length,Email, EqualTo, ValidationError, Optional
 from flask_login import current_user
 from flask_wtf.file import FileField , FileAllowed
@@ -8,6 +8,11 @@ from wtforms.widgets import ListWidget, CheckboxInput
 import re
 # from wtforms.fields.html5 import DateField,DateTimeField
 
+class NormalizedPhoneField(TelField):
+    def process_formdata(self, valuelist):
+        if valuelist:
+            # Normalize the number here before validation
+            self.data = valuelist[0].replace(" ", "").replace("-", "")
 
 class Register(FlaskForm):
 
@@ -16,7 +21,7 @@ class Register(FlaskForm):
     position= StringField('position', validators=[DataRequired()])
     password = PasswordField('password', validators=[DataRequired(), Length(min=8, max=64)])
     confirm = PasswordField('confirm', validators=[DataRequired(),EqualTo('password'), Length(min=8, max=64)])
-    contacts = StringField('Contact(s)', validators=[Length(min=8, max=64)])
+    phone = NormalizedPhoneField('Contact (Please include country code)', validators=[Length(min=8, max=64)])
     zip_code = StringField('Zip Code / Postal Code', validators=[Length(min=0, max=64)])
     address = StringField('Physical Address', validators=[DataRequired(), Length(min=8, max=100)])
     image= FileField('Profile Image', validators=[FileAllowed(['jpg','png'])])
@@ -150,8 +155,8 @@ class StoryForm(FlaskForm):
 
 class QMUpdatesForm(FlaskForm):
 
-    title = StringField('Title', validators=[DataRequired(), Length(min=4, max=20)])
-    content = TextAreaField('Content', validators=[DataRequired(), Length(min=10, max=200)])
+    title = StringField('Title', validators=[DataRequired(), Length(min=4, max=40)])
+    content = TextAreaField('Content', validators=[DataRequired(), Length(min=10, max=100)])
     start_date = DateField('Start Date', validators=[DataRequired()])
     end_date = DateField('End Date', validators=[DataRequired()])
     days = SelectMultipleField('Days', choices=[
@@ -212,7 +217,7 @@ class Company_Register_Form(FlaskForm):
 
     company_name = StringField('Company Name', validators=[DataRequired(), Length(min=2, max=120)])
     company_email = StringField('Email', validators=[DataRequired(), Email(), Length(min=6, max=100)])
-    company_contacts = TelField('Contact(s)', validators=[Length(min=8, max=64)])
+    company_contacts = NormalizedPhoneField('Contact(s)', validators=[Length(min=8, max=64)])
     company_address = StringField('Physical Address', validators=[DataRequired(), Length(min=8, max=100)])
     abbreviation = StringField("Abbreviation",validators=[Optional(), Length(min=1, max=20)])
     category_other = StringField("Please Specify")
@@ -351,76 +356,6 @@ class Company_UpdateAcc_Form(FlaskForm):
 
     company_submit = SubmitField('Update')
 
-class Logo_Options(FlaskForm):
-
-    email_signature = BooleanField("Email Signature")
-    letterhead = BooleanField("Letterhead")
-    mock_up = BooleanField("Mock Up")
-    artwork = BooleanField("Logo Artwork",default=True)
-    file_types = BooleanField("EPS, PDF, JPG, PNG",default=True)
-
-class Poster_Options(FlaskForm):
-
-    poster_types = SelectField('Type of Poster',
-                                  choices=[("Travel Poster", "Travel Poster"), ("Advertising Poster", "Advertising Poster"),
-                                           ("Event Poster", "Event Poster"),("Campaign Poster", "Campaign Poster"),
-                                           ("Research Poster", "Research Poster"),("Promotional Poster", "Promotional Poster"),("Fashion Poster", "Fashion Poster")
-                                           ,("Product Promo", "Product Promo")])
-    theme_color = StringField("Theme Color(s)")
-    poster_title = StringField("Poster Title")
-    tag_line = StringField("Tag Line (Optional)")
-    hash_tags = StringField("#tag(s)")
-    poster_content = TextAreaField("Poster Content")
-    instructional_info = TextAreaField("Poster Design Instructions")
-    file_type1 = BooleanField("EPS")
-    file_type2 = BooleanField("PDF", default=True)
-    file_type3 = BooleanField("JPG", default=True)
-    file_type4 = BooleanField("PNG")
-
-class Flyer_Options(FlaskForm):
-
-    theme_color = StringField("Theme Color(s)")
-    flyer_title = StringField("Flyer Title")
-    tag_line = StringField("Tag Line (Optional)")
-    hash_tags = StringField("#tag(s)")
-    content = TextAreaField("Content")
-    instructional_info = TextAreaField("Design Instructions")
-    file_type1 = BooleanField("EPS")
-    file_type2 = BooleanField("PDF", default=True)
-    file_type3 = BooleanField("JPG", default=True)
-    file_type4 = BooleanField("PNG")
-
-class Brochure_Options(FlaskForm):
-
-    brochure_types = SelectField('Type of Brochure',
-                                  choices=[("Half Fold", "Half Fold"), ("Tri Fold", "Tri Fold"),
-                                           ("Z Fold", "Z Fold"),("Parallel Fold", "Parallel Fold"),
-                                           ("Gate Fold", "Gate Fold"),("Double Gate Fold", "Double Gate Fold"),("Roll Fold", "Roll Fold")
-                                           ,("Accordion Fold", "Accordion Fold"),("Half then Half", "Half then Half"),("Half then Tri", "Half then Tri")])
-    theme_color = StringField("Theme Color(s)")
-    brochure_title = StringField("Flyer Title")
-    tag_line = StringField("Tag Line (Optional)")
-    hash_tags = StringField("#tag(s)")
-    brochure_content = TextAreaField("Content")
-    instructional_info = TextAreaField("Design Instructions")
-    file_type1 = BooleanField("EPS")
-    file_type2 = BooleanField("PDF", default=True)
-    file_type3 = BooleanField("JPG", default=True)
-    file_type4 = BooleanField("PNG")
-
-class Ecommerce_Options(FlaskForm):
-
-    theme_color = StringField("Theme Color(s)")
-    flyer_title = StringField("Flyer Title")
-    tag_line = StringField("Tag Line (Optional)")
-    hash_tags = StringField("#tag(s)")
-    content = TextAreaField("Content")
-    instructional_info = TextAreaField("Design Instructions")
-    file_type1 = BooleanField("EPS")
-    file_type2 = BooleanField("PDF", default=True)
-    file_type3 = BooleanField("JPG", default=True)
-    file_type4 = BooleanField("PNG")
-
 class Login(FlaskForm):
     email = StringField('email', validators=[DataRequired(),Email()])
     password = PasswordField('password', validators=[DataRequired(), Length(min=8, max=64)])
@@ -461,60 +396,6 @@ class Project_Form(FlaskForm):
 
     submit = SubmitField('Submit')
 
-class Web_Design_Brief(Project_Form):
-
-    current_website = BooleanField("Do you currently have a website?")
-    # Project Goals
-    # Ask for your client’s definition of success.Do they want to increase the amount of visitors, up the average order size, or boost the users on their web forum? Perhaps
-    # they want to encourage greater engagement via their blog, increase their brand visibility, or encourage people to sign up for their email newsletter/free trial/white paper, etc.
-    web_traffic = BooleanField("We aim to increase traffic and establish an online presence")
-    web_forum = BooleanField("We aim to boost the number users on our web forum")
-    build_brand = BooleanField("We want to building our brand")
-    web_ui_interactivity = BooleanField("We want improve the User Interactivity")
-    web_new_look= BooleanField("We want a whole new on our Website")
-    curr_web_comments = StringField("Comments about the current website")
-
-    company_profile = BooleanField("Do you have any document you can upload i.e. business profile?")
-
-    payment_options = SelectField('Choose Best Payment Option', choices=[("On-time Payment","On-time Payment"),("Pay Deposit + Balance Later","Pay Deposit + Balance Later"),
-                                                                         ("Pay Deposit + with 2-3 Months Installments"),("Pay Deposit + with 2-3 Months Installments")])
-    hosting = SelectField('Do you a Domain Name for site', choices=[("Yes, I have a domain","Yes, I have a domain"),("Yes, but I need a new one","Yes, but I need a new one"),
-                                                                         ("No, I will need advice from You","No, I will need advice from You")])
-    dns = SelectField('Do you a Hosting Server', choices=[("Yes, I have a hosting site", "Yes, I have a hosting site"),("Yes, but I need a new one","Yes, but I need a new one"),
-                                                                ("No, I will need your advice","No, I will need your advice")])
-    pages = SelectField('How many page does your site need?', choices=[("1 Page Website", "1 Page Website"),("1 Page divided by Sections","1 Page divided by Sections"),
-                                                                ("3-4 Pages","3-4 Pages"),("4+ Pages","4+ Pages")])
-    type = SelectField('Type of Website', choices=[("Business website", "Business website"), ("Business with eCommerce website", "Business with eCommerce website"),
-                                                  ("Blog website", "Blog website"),("Portfolio website", "Portfolio website"),("Nonprofit website", "Nonprofit website"),
-                                                   ("Other", "Other")])
-
-    model = SelectField('Your business with your clients', choices=[("B2B - Business-to-Business", "B2B - Business-to-Business"), ("B2C - Business-to-Customer", "B2C - Business-to-Customer"),
-                                                   ("Both", "Both")])
-
-    feel1= BooleanField("Executive")
-    feel2 = BooleanField("Modern Look")
-    feel3 = BooleanField("Youthful")
-    feel4 = BooleanField("Motion Effects")
-    feel5 = BooleanField("More Graphics than content")
-    feel6 = BooleanField("Content & Pictures")
-
-    inspiration = URLField("Can you link us to an any website that inspires you")
-    inspiration2 = URLField("Can you link us to an any website that inspires you")
-
-
-
-
-    def validate_email(self,email):
-        from app import db, User
-        if current_user.email != self.email.data:
-            #Check if email exeists in database
-            user_email = User.query.filter_by(email = self.email.data).first()
-            if user_email:
-                raise ValidationError(f"email, {email.value}, already taken by someone")
-
-
-    update = SubmitField('Update')
-
 class Reset(FlaskForm):
 
     old_password = PasswordField('old password', validators=[DataRequired(), Length(min=8, max=64)])
@@ -525,7 +406,7 @@ class Reset(FlaskForm):
 
 class Reset_Request(FlaskForm):
 
-    email = StringField('email', validators=[DataRequired(), Email()])
+    phone = NormalizedPhoneField('Enter Registered Cell Number', validators=[DataRequired()])
 
     reset = SubmitField('Submit')
 
@@ -580,9 +461,13 @@ class EmailPasswordResetForm(FlaskForm):
             raise ValidationError("No account found with that email address.")
         
 class SMSPasswordResetForm(FlaskForm):
-    phone = StringField('Registered Phone Number', validators=[DataRequired()])
+    phone = NormalizedPhoneField('Enter Registered Cell Number', validators=[DataRequired()])
     submit = SubmitField('Get Code')
 
+    def validate_phone(self, field):
+        phone = field.data.strip()
+        if not re.match(r'^\+?\d{9,15}$', phone):
+            raise ValidationError("Enter a valid phone number with country code (e.g., +26876xxxxxx)")
 
 class SMSCodeVerificationForm(FlaskForm):
     code = StringField('Verification Code', validators=[DataRequired(), Length(min=5, max=5)])
@@ -593,3 +478,27 @@ class SMSCodeVerificationForm(FlaskForm):
         if not re.match(r'^\d{5}$', self.code.data):
             raise ValidationError("Invalid verification code. Please enter a 5-digit code.")
 
+class RegistrationForm(FlaskForm):
+
+    username = HiddenField(validators=[DataRequired()])
+    name = StringField("Name",validators=[DataRequired(), Length(min=3, max=80)])
+    email = StringField("Email",validators=[DataRequired(), Email()])
+    phone = NormalizedPhoneField("Phone Number",validators=[DataRequired()])
+    company_name = StringField("Company Name",validators=[DataRequired()])
+    password = PasswordField("Password",validators=[DataRequired()])
+    pKey = HiddenField(validators=[DataRequired()])
+    country = SelectField(choices=[
+        ('Eswatini', 'Eswatini'), ('South Africa', 'South Africa'),
+        ('Lesotho', 'Lesotho'), ('Mozambique', 'Mozambique'),
+        ('Namibia', 'Namibia'), ('Botswana', 'Botswana'),
+        ('Zimbabwe', 'Zimbabwe'), ('Malawi', 'Malawi'),
+    ])
+    submit = SubmitField('Register')
+
+class PasswordResetWizard(FlaskForm):
+
+    new_password = PasswordField('new password', validators=[DataRequired(), Length(min=8, max=64)])
+    confirm_password = PasswordField('confirm password', validators=[DataRequired(), EqualTo('new_password'), Length(min=8, max=64)])
+
+    reset = SubmitField('Reset')
+   

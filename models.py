@@ -44,7 +44,6 @@ class chat_user(db.Model,UserMixin):
     user_details = relationship("User", backref='chat_user', lazy=True)
     visitors_id = relationship("Visitors", backref='chat_user', lazy=True)
     
-
 #Users class, The class table name 'h1t_users_cvs'
 class User(db.Model,UserMixin):
 
@@ -406,3 +405,4 @@ class SMSMarketing(db.Model):
             "start_date": self.start_date.strftime("%Y-%m-%d") if self.start_date else None,
             "end_date": self.end_date.strftime("%Y-%m-%d") if self.end_date else None
         }
+    

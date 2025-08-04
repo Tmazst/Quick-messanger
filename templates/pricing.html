@@ -253,7 +253,7 @@ html, body {
         <a class="pricing-btn" href="/about">Learn More</a>
     </div>
     <!-- window.userCountry = "{{ current_user.country_code|default('') }}"; -->
-    <script>
+    <script nonce="{{ nonce }}">
     // --- Currency Localization Script with Country Selector ---
     const countryToCurrency = {
     'US': 'USD',

@@ -8,26 +8,87 @@
   <div class="register-company"><input type="checkbox" id="register-company" name="register-company" />
     <label for="register-company">Register a Company?</label></div><br>
   <form class="form" method="post" action="">
-    <input type="hidden"  class="form-control" id="username" name="username" autocomplete="off" placeholder="username" required />
-    <input class="form-control" id="name" name="name" placeholder="name" required />
-    <input class="form-control" id="email" name="email" placeholder="Your email" required />
-    <input class="form-control" id="company_name" name="company_name" placeholder="Company name" required />
-    <input class="form-control" id="password" name="password" type="password" placeholder="Password" required />
-    <input type="hidden" class="form-control" id="pKey" name="pKey" placeholder="Public Key" required />
-    <select id="countries" name="country" class="form-control" required>
-        <option value="" disabled >Select your country</option>
-        <option value="Eswatini" selected>Eswatini</option>
-        <option value="South Africa">South Africa</option>
-        <option value="Lesotho">Lesotho</option>
-        <option value="Mozambique">Mozambique</option>
-        <option value="Namibia">Namibia</option>
-        <option value="Botswana">Botswana</option>
-        <option value="Zimbabwe">Zimbabwe</option>
-        <option value="Malawi">Malawi</option>
-        <!-- Add more countries as needed -->
-    </select>
+    {{form.hidden_tag()}}
     
-    <button id="submit-btn" class="btns">Register</button><br><br>
+    {{ form.username(class="form-control",id="username", placeholder="username")}}
+
+    <div class="group">
+        <div class="acc-labels">{{ form.name.label(class="labels")}}</div>
+        {{ form.name(class="form-control",id="name", placeholder="name")}}
+        {% if form.name.errors %}
+            {% for error in form.name.errors %}
+                <span class="span-error" >*{{error}}</span>
+            {% endfor %}
+        {% endif %}
+        <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+    </div>
+                    
+    <div class="group">
+        <div class="acc-labels">{{ form.email.label(class="labels")}}</div>
+        {{ form.email(class="form-control",id="email", placeholder="email")}}
+        {% if form.email.errors %}
+            {% for error in form.email.errors %}
+                <span class="span-error" >*{{error}}</span>
+            {% endfor %}
+        {% endif %}
+        <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+    </div>
+
+    <div class="group password-wrapper">
+        <div class="acc-labels">{{ form.password.label(class="labels")}}</div>
+        {{ form.password(class="form-control",id="password", placeholder="password")}}
+        <span id="toggle-password">
+            👁️
+        </span>
+        {% if form.password.errors %}
+            {% for error in form.password.errors %}
+                <span class="span-error" >*{{error}}</span>
+            {% endfor %}
+        {% endif %}
+        <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+    </div>
+
+    <div class="group">
+        <div class="acc-labels">{{ form.phone.label(class="labels")}}</div>
+        {{ form.phone(class="form-control",id="phone", placeholder="Phone Number")}}
+        {% if form.phone.errors %}
+            {% for error in form.phone.errors %}
+                <span class="span-error" >*{{error}}</span>
+            {% endfor %}
+        {% endif %}
+        <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+    </div>
+
+    <div class="group">
+        <div class="acc-labels">{{ form.company_name.label(class="labels")}}</div>
+        {{ form.company_name(class="form-control",id="company_name", placeholder="Company name")}}
+        {% if form.company_name.errors %}
+            {% for error in form.company_name.errors %}
+                <span class="span-error" >*{{error}}</span>
+            {% endfor %}
+        {% endif %}
+        <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+    </div>
+
+    <div class="group">
+        <div class="acc-labels">{{ form.country.label(class="labels")}}</div>
+        {{ form.country(class="form-control",id="countries", placeholder="Company name")}}
+        {% if form.country.errors %}
+            {% for error in form.country.errors %}
+                <span class="span-error" >*{{error}}</span>
+            {% endfor %}
+        {% endif %}
+        <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+    </div>
+
+    <div class="group">
+        {{ form.submit(class="btns")}}
+        <!--<input type="email" class="form-control" id="email" name="email" placeholder="Email">-->
+    </div>
+
+    {{ form.pKey(class="form-control",id="pKey", placeholder="Company name")}}
+
+    <br>
     <label style="color:#3667ef">Already have an account?</label><br>
     <button onclick="window.location.href='/manual_login'" style="background-color:#3667ef;" class="btns gen-flex">Recover Account</button><br>
     
@@ -53,7 +114,7 @@
 
 
 
-<script>
+<script nonce="{{ nonce }}">
 
 
 let db_ind;
@@ -96,9 +157,17 @@ window.addEventListener('load', async function(){
         });
     }
     
-
-    
 });
+
+function togglePassword() {
+  const passwordInput = document.getElementById('password');
+  const icon = document.getElementById('toggleIcon');
+  const isPassword = passwordInput.type === 'password';
+  
+  passwordInput.type = isPassword ? 'text' : 'password';
+  icon.classList.toggle('fa-eye');
+  icon.classList.toggle('fa-eye-slash');
+}
 
 
 </script>
