@@ -391,15 +391,15 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                  Discover new business partners with QM’s dynamic directory —<span style="font-weight: 400;color:rgb(96, 120, 139)"> connect and grow your network today.</span>
             </div>
             <button onclick="window.location.href='/advert_form'" class="advert-btn" >Register</button>
-             <img src="static/icons/add-icon.png" class="close-btn" />
+             <img src="{{ url_for('static', filename='icons/add-icon.png') }}" class="close-btn" />
         </div>
     </div>
     <h2></h2>
 <!-- Toggle View  -->
 <div class="toggle-container">
   <button id="toggle-general" class="toggle-btn" aria-pressed="false">Default</button>
-  <button id="toggle-grid" class="toggle-btn" aria-pressed="{{ 'true' if view == 'grid' else 'false' }}"><img src="static/icons/grid-icon.png" /> <span>Grid</span></button>
-  <button id="toggle-list" class="toggle-btn" aria-pressed="{{ 'true' if view == 'list' else 'false' }}"><img src="static/icons/list-icon.png" /> <span>List</span></button>
+  <button id="toggle-grid" class="toggle-btn" aria-pressed="{{ 'true' if view == 'grid' else 'false' }}"><img src="{{ url_for('static', filename='icons/grid-icon.png') }}" /> <span>Grid</span></button>
+  <button id="toggle-list" class="toggle-btn" aria-pressed="{{ 'true' if view == 'list' else 'false' }}"><img src="{{ url_for('static', filename='icons/list-icon.png') }}" /> <span>List</span></button>
 </div>
 
 <!-- Grid View  -->
@@ -407,7 +407,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
     {%for company in companies%}
         {%if  company.category%}
         <div data-cid="{{ser.dumps({'cid':company.id})}}" class="company-logos-cards"> 
-            <img src="static/uploads/{{company.logo}}" class="comp-logos" />
+            <img src="{{ url_for('static', filename='uploads/' + company.logo) }}" class="comp-logos" />
         </div>
         {%endif%}
     {%endfor%}
@@ -417,7 +417,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
     {%for category in categories%}
         {%if  category%}
         <div style="justify-content: flex-start;" class="gen-flex">
-            <img src="static/icons/category-icon.png" class="cat-icon" />
+            <img src="{{ url_for('static', filename='icons/category-icon.png') }}" class="cat-icon" />
             <div class="btns">{{ category }}</div>
         </div><br>
         <div class="list-view gen-flex">
@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                 {%if category == company.category%}
                     <div class="company-logos-cards"> 
                         <div data-cid="{{ser.dumps({'cid':company.id})}}" style="justify-content: flex-start;" class="list-card gen-flex">
-                            <img style="height:80px !important" src="static/uploads/{{company.logo}}" class="comp-logos" />
+                            <img style="height:80px !important" src="{{ url_for('static', filename='uploads/' + company.logo) }}" class="comp-logos" />
                             <div class="gen-flex-col">
                                 <div  class="comp-name">{{company.company_name}} <span style="font-family: Montserrat;color:#868686;font-weight: 500;font-size:16px"> - {{company.country}}</span></div>
                                     
@@ -450,7 +450,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
     {%for category in categories%}
     {%if  category%}
     <div class="category-cont gen-flex sticky-category">
-        <img src="static/icons/category-icon.png" class="cat-icon" />
+        <img src="{{ url_for('static', filename='icons/category-icon.png') }}" class="cat-icon" />
         <div class="category-title category-title-animated">{{ category }}</div>
         <div style="flex-grow: 1;"></div>
         {% set count = companies | selectattr('category', 'equalto', category) | list | length %}
@@ -483,7 +483,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                                 {%if company.company_contacts%}
                                     <a href="tel:{{company.company_contacts}}" target="_blank">
                                         <div class="comm-icons-cont gen-flex">
-                                            <img src="static/icons/tel-blue-outline.png" />
+                                            <img src="{{ url_for('static', filename='icons/tel-blue-outline.png') }}" />
                                             <span>{{company.company_contacts}}</span>
                                         </div>
                                     </a>
@@ -492,7 +492,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                                 {%if company.email%}
                                     <a href="mailto:{{company.email}}">
                                         <div style="margin-bottom: 7px;" class="comm-icons-cont gen-flex">
-                                            <img src="static/icons/email-blue-outline.png" />
+                                            <img src="{{ url_for('static', filename='icons/email-blue-outline.png') }}" />
                                             <span>{{company.email}}</span>
                                         </div>
                                     </a>
@@ -511,28 +511,28 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                         {%if company.website_link %}
                         <a href="{{company.website_link}}" target="_blank">
                             <div class="social-media-cont">
-                                <img src="static/icons/website-outline-icon.png" />
+                                <img src="{{ url_for('static', filename='icons/website-outline-icon.png') }}" />
                             </div>
                         </a>
                         {%endif%}
                         {%if company.facebook_link %}
                         <a href="{{company.facebook_link}}" target="_blank">
                             <div class="social-media-cont">
-                                <img src="static/icons/facebook-outline-icon.png" />
+                                <img src="{{ url_for('static', filename='icons/facebook-outline-icon.png') }}" />
                             </div>
                         </a>
                         {%endif%}
                         {%if company.instagram_link%}
                         <a href="{{comapny.instagram_link}}" target="_blank">
                             <div class="social-media-cont">
-                                <img src="static/icons/insta-outline-icon.png" />
+                                <img src="{{ url_for('static', filename='icons/insta-outline-icon.png') }}" />
                             </div>
                         </a>
                         {%endif%}
                         {%if company.linkedIn_link%}
                         <a href="{{company.linkedIn_link}}" target="_blank">
                             <div class="social-media-cont">
-                                <img src="static/icons/linkedin-outline-icon.png" />
+                                <img src="{{ url_for('static', filename='icons/linkedin-outline-icon.png') }}" />
                             </div>
                         </a>
                         {%endif%}
@@ -540,13 +540,13 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
 <!-- style="display: none;" -->
                     <div style="display: none;"  id="msg-icon-mobile" class="imbc-icon">
                         <a id="href_route" href="/compose_mobile?id={{ser.dumps({'data':company.id})}}" target="_blank">
-                            <img src="static/icons/imbc-icon.png" />
+                            <img src="{{ url_for('static', filename='icons/imbc-icon.png') }}" />
                         </a>
                     </div>
                     
                     <div id="msg-icon"  class="imbc-icon">
                         <a id="href_route" href="/compose?id={{ser.dumps({'data':company.id})}}" target="_blank">
-                            <img src="static/icons/imbc-icon.png" />
+                            <img src="{{ url_for('static', filename='icons/imbc-icon.png') }}" />
                         </a>
                     </div>
                     
@@ -571,7 +571,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                                     {%endif%}
                                 </div>
                                 <div style="justify-self: flex-end;">
-                                    <div class="community-logo"><img src="static\uploads\{{company.logo}}"></div>
+                                    <div class="community-logo"><img src="{{ url_for('static', filename='uploads/'+company.logo ) }}"></div>
                                 </div>
                             </div>
 
@@ -589,7 +589,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                                     {%if company.company_contacts%}
                                         <a href="tel:{{company.company_contacts}}" target="_blank">
                                             <div class="comm-icons-cont gen-flex">
-                                                <img src="static/icons/tel-blue-outline.png" />
+                                                <img src="{{ url_for('static', filename='icons/tel-blue-outline.png') }}" />
                                                 <span>{{company.company_contacts}}</span>
                                             </div>
                                         </a>
@@ -598,7 +598,7 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                                     {%if company.email%}
                                         <a href="mailto:{{company.email}}">
                                             <div class="comm-icons-cont gen-flex">
-                                                <img src="static/icons/email-blue-outline.png" />
+                                                <img src="{{ url_for('static', filename='icons/email-blue-outline.png') }}" />
                                                 <span>{{company.email}}</span>
                                             </div>
                                         </a>
@@ -608,13 +608,13 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                                 
                                     <div style="display: none;"  id="msg-icon-mobile" class="imbc-icon-mobile">
                                         <a id="href_route" href="/compose_mobile?id={{ser.dumps({'data':company.id})}}" >
-                                            <img src="static/icons/imbc-icon.png" />
+                                            <img src="{{ url_for('static', filename='icons/imbc-icon.png') }}" />
                                         </a>
                                     </div>
                                     
                                     <div id="msg-icon" style="z-index: 500;" class="imbc-icon">
                                         <a id="href_route" href="/compose?id={{ser.dumps({'data':company.id})}}" target="_blank">
-                                            <img src="static/icons/imbc-icon.png" />
+                                            <img src="{{ url_for('static', filename='icons/imbc-icon.png') }}" />
                                         </a>
                                     </div>
                                 </div>
@@ -631,28 +631,28 @@ document.addEventListener('DOMContentLoaded', animateAllCategoryTitles);
                         {%if company.website %}
                         <a href="{{company.website}}" target="_blank">
                             <div class="social-media-cont">
-                                <img src="static/icons/website-outline-icon.png" />
+                                <img src="{{ url_for('static', filename='icons/website-outline-icon.png ') }}" />
                             </div>
                         </a>
                         {%endif%}
                         {%if company.fb_link %}
                         <a href="{{company.fb_link}}" target="_blank">
                             <div class="social-media-cont">
-                                <img src="static/icons/facebook-outline-icon.png" />
+                                <img src="{{ url_for('static', filename='icons/facebook-outline-icon.png ') }}" />
                             </div>
                         </a>
                         {%endif%}
                         {%if company.instagram_link%}
                         <a href="{{comapny.instagram_link}}" target="_blank">
                             <div class="social-media-cont">
-                                <img src="static/icons/insta-outline-icon.png" />
+                                <img src="{{ url_for('static', filename='icons/insta-outline-icon.png') }}" />
                             </div>
                         </a>
                         {%endif%}
                         {%if company.linkedIn_link%}
                         <a href="{{company.linkedIn_link}}" target="_blank">
                             <div class="social-media-cont">
-                                <img src="static/icons/linkedin-outline-icon.png" />
+                                <img src="{{ url_for('static', filename='icons/linkedin-outline-icon.png') }}" />
                             </div>
                         </a>
                         {%endif%}

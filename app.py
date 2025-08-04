@@ -1641,7 +1641,7 @@ def notify_all_subscribers_async(curr_user, msg, title="Q-Messanger", url="/"):
             all_subs = NotificationsAccess.query.all()
             for sub in all_subs:
                 try:
-                    print(f"Sending Notification to {curr_user} Message{msg}")
+                    print(f"Sending Notification to {all_subs.ip} Message{msg}")
                     app_notification(sub, curr_user, msg, title, url)
                 except Exception as e:
                     print(f"Notification failed for {sub.id}: {e}")
@@ -1798,7 +1798,12 @@ def register():
                 print("register==Registration Successful")
                 flash("✔ Registration Successful","success")
                 # After successful registration and db.session.commit()
-
+                new_user_n_access = NotificationsAccess.query.filter_by(ip=request.remote_addr).first()
+                if new_user_n_access:
+                     msg=f"🤝🏼Welcome to Quick Messanger. Enjoy cutting-edge digital services, crafted for modern professionals like you"
+                     title = f"Hi {user_details.name}"
+                     app_notification(new_user_n_access,user_details.name,msg,title=title,url="https://qm.techxolutions.com")
+                     print("WELCOME MESSAGE SENT TO: ",user_details.name)
                 # session['username'] = get_user.username
                 # session['pubKey']=get_user.pkey
                 # session.permanent = True  # Make the session permanent 
@@ -1968,7 +1973,7 @@ def company_account():
                     curr_user=current_user.name,
                     msg=f"{tagline}. Discover {cmp_usr.company_name} on Quick Messenger Today!",
                     title=cmp_usr.company_name + " is now on Quick Messenger!",
-                    url="/business_community"
+                    url="https://qm.techxolutions.com"
                 )
                 print(f"{cmp_usr.company_name} sending Notification to all subscribers")
             else:
@@ -2141,7 +2146,7 @@ def adverts_form():
         flash("Advert Uploaded Successfully","success")
         msg = company.company_name +"  just dropped a brand-new advert — check it out and don’t miss your chance to be part of something exciting!"
         title="Q-Messanger Adverts"
-        url = "/adverts"
+        url = "https://qm.techxolutions.com"
 
         try:
             recipient_sub = NotificationsAccess.query.filter_by(usr_id=current_user.id).order_by(NotificationsAccess.timestamp.desc()).first()
@@ -2187,7 +2192,6 @@ def edit_advert_form():
         flash("Edit Successful","success")
 
     return render_template("edit_advert_form.html",form=form,comp_news=comp_news,advert=advert)
-
 
 @app.route("/adverts")
 def adverts():
@@ -2393,6 +2397,13 @@ def push_notif_form():
         recipient_subs = NotificationsAccess.query.all()
         for recipient_sub in recipient_subs:
             app_notification(recipient_sub,current_user.name,content,title=title,url=url)
+
+        notify_all_subscribers_async(
+                    curr_user=current_user.name,
+                    msg=content,
+                    title=title,
+                    url="https://qm.techxolutions.com"
+                )
 
     return render_template("pushnote_marketing_form.html",form=form)
 
@@ -2778,7 +2789,7 @@ def reg_confirmation(email, company_name):
     <title>Welcome to Quick Messenger!</title>
 </head>
 <body style="margin:0; padding:0; background:#f7f7f9; font-family:'Segoe UI', Arial, sans-serif;">
-    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7f7f9; min-height:100vh;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7f7f9;max-width: 700px; min-height:100vh;">
         <tr>
             <td align="center">
                     <table width="100%" cellpadding="0" cellspacing="0" style="background:#fff; border-radius:16px; box-shadow:0 4px 24px rgba(0,0,0,0.07); margin:40px 0; max-width:480px;"></table>
@@ -2879,7 +2890,6 @@ def ends_with_phone_match(db_phone, input_phone):
         return True
 
     return False
-
 
 
 # step 1 insert phone number 

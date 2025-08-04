@@ -69,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function() {
   if (form) {
     form.addEventListener('input', () => {
       const data = {};
-      const excludedKeys = ['password', 'pKey', 'username', 'new_passowrd', 'confirm_password', 'code','csrf_token'];
+      const excludedKeys = ['password', 'pKey', 'username', 'new_password', 'confirm_password', 'code','csrf_token'];
 
       new FormData(form).forEach((value, key) => {
         if (!excludedKeys.includes(key)) {
