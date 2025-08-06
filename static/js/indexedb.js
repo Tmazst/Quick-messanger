@@ -757,6 +757,7 @@ async function register() {
         var usrName= document.querySelector("#username");
         //const pubBase64 = btoa(String.fromCharCode(...new Uint8Array(jwk)));// Convert the public key to a base64 string for transmission
         // console.log("Base64 Public Key:", pubBase64);
+        if(usrName){
         setTimeout(() => {
             usrName.value = "";
             pKey.value = pubBase64;
@@ -766,7 +767,7 @@ async function register() {
         }, 500);
 
         var username = myUsername;
-
+        
         // var response = await fetch("/recovery_status_reg",{
         //     method: 'POST',
         //     headers: {
@@ -787,7 +788,8 @@ async function register() {
         // }
     // });
 
-    observer.observe(usrName, { attributes: true, childList: true, subtree: true });  
+    observer.observe(usrName, { attributes: true, childList: true, subtree: true }); 
+    } 
     };
 };
 

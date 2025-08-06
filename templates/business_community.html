@@ -956,7 +956,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     🌐*Website:* ${company.website_link || '-'}
 
                     🔗 Explore other services here: https://qm.techxolutions.com`;
-
+        wame_tagline = tagline;
+        const encodedTagline = encodeURIComponent(tagline);
         const html = `
         <div class="company-modal-body-content">
             <div style="text-align:center;">
@@ -980,7 +981,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <small style="color:#888;font-size:0.9em;font-family:Montserrat;font-size:13px">Get updates on specials, new products and related updates from ${company.company_name} tailoured for you?</small>
             <div style="padding-bottom:9px" data-uid={{current}} data-cid=${company.id} id="follower-trigger" class="lead-gen-icons btns gen-flex"><span>${follow_descr}<span></div>
             <hr>
-            <a href="https://wa.me/?text=${company.company_name} %0A%0A ${tagline}%0A%0A📞Contact: ${company.company_contacts || ''}%0A🏭Address: ${company.company_address || ''}%0A👨‍👧‍👧Facebook: ${company.facebook_link || '-'}%0A🌐Website: ${company.website_link || '-'}%0A%0AThis business profile is registered & shared from Quick Messanger, dynamically : %0A🔗 Explore Quick Messanger, register and boost your brand awareness here: https://qm.techxolutions.com"   target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/?text=${company.company_name} %0A%0A ${tagline}%0A%0A📞Contact: ${company.company_contacts || ''}%0A🏭Address: ${company.company_address || ''}%0A👨‍👧‍👧Facebook: ${company.facebook_link || '-'}%0A🌐Website: ${company.website_link || '-'}%0A%0AThis business profile is shared via Quick Messanger, dynamically : %0A🔗 Explore Quick Messanger, register and boost your brand awareness here: https://qm.techxolutions.com"   target="_blank" rel="noopener noreferrer">
                 <img style="height:50px;width:50px" src="static/icons/whatsapp-col-icon.png" /> <span> Share on WhatsApp</span>
             </a><br><br><br><br><br>
         </div><br>

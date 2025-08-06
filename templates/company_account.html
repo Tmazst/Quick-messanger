@@ -90,164 +90,163 @@ form{
 </style>
 <div style="max-width:900px !important;margin:0 auto;" class="tags">
   <h3><br> <span class="spans"></span></h3>
-        <!-- <div class="flash-messages">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for  category, message in messages %}
-                        <div class="flash-messages alert-{{category}}"> {{ message }} </div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-        </div> -->
- {{ company_update.hidden_tag() }}
-        <form _lpchecked="1" action="" id="updateForm" method="post"  enctype="multipart/form-data" onsubmit="return confirmSubmit();">
-              <div style=""  class="img-cont">
-                {% if current_user.image %}
-                      <img class="prf-image" src="{{url_for('static', filename='uploads/' + company.image)}}"/>
-                {% else %}
-                      <img class="prf-image" src="static/images/default.jpg"/>
-                {% endif %}
-              </div>
+    <div id="flash-mobile" class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for  category, message in messages %}
+                    <div class="flash-messages alert-{{category}}"> {{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+    {{ company_update.hidden_tag() }}
+    <form _lpchecked="1" action="" id="updateForm" method="post"  enctype="multipart/form-data" onsubmit="return confirmSubmit();">
+          <div style=""  class="img-cont">
+            {% if current_user.image %}
+                  <img class="prf-image" src="{{url_for('static', filename='uploads/' + company.image)}}"/>
+            {% else %}
+                  <img class="prf-image" src="static/images/default.jpg"/>
+            {% endif %}
+          </div>
 
-                <h3 style="font-size:25px;">{{company.company_name.title()}} {%if company.other2%}({{company.other2}}){%endif%}<br> <span class="spans" style="font-size:16px">{{company.email}}</span></h3>
-            
-            <h3 style="font-size:32px;" class="">Corporate Details</h3>
+            <h3 style="font-size:25px;">{{company.company_name.title()}} {%if company.other2%}({{company.other2}}){%endif%}<br> <span class="spans" style="font-size:16px">{{company.email}}</span></h3>
+        
+        <h3 style="font-size:32px;" class="">Corporate Details</h3>
 
-            <hr>
-            <!-- Abbreviation  -->
-            <div class="group">
-                  <div class="acc-labels">{{ company_update.abbreviation.label(class="labels")}}</div>
-                  {{ company_update.abbreviation(class="form-control",placeholder="Also Known As (AKA)",value=cmp_obj["abbreviation"])}}
-                  {% if company_update.abbreviation.errors %}
-                    {% for error in company_update.abbreviation.errors %}
-                        <span class="span-error" >*{{error}}</span>
-                    {% endfor %}
-                 {% endif %}
-            </div>
-            
-            <!-- Email  -->
-            <div class="group">
-                  <div class="acc-labels">{{ company_update.company_email.label(class="labels")}}</div>
-                  {{ company_update.company_email(class="form-control",placeholder="Email",value=cmp_obj["email"])}}
-                  {% if company_update.company_email.errors %}
-                    {% for error in company_update.company_email.errors %}
-                        <span class="span-error" >*Company Email{{error}}</span>
-                    {% endfor %}
-                 {% endif %}
-            </div>
+        <hr>
+        <!-- Abbreviation  -->
+        <div class="group">
+              <div class="acc-labels">{{ company_update.abbreviation.label(class="labels")}}</div>
+              {{ company_update.abbreviation(class="form-control",placeholder="Also Known As (AKA)",value=cmp_obj["abbreviation"])}}
+              {% if company_update.abbreviation.errors %}
+                {% for error in company_update.abbreviation.errors %}
+                    <span class="span-error" >*{{error}}</span>
+                {% endfor %}
+              {% endif %}
+        </div>
+        
+        <!-- Email  -->
+        <div class="group">
+              <div class="acc-labels">{{ company_update.company_email.label(class="labels")}}</div>
+              {{ company_update.company_email(class="form-control",placeholder="Email",value=cmp_obj["email"])}}
+              {% if company_update.company_email.errors %}
+                {% for error in company_update.company_email.errors %}
+                    <span class="span-error" >*Company Email{{error}}</span>
+                {% endfor %}
+              {% endif %}
+        </div>
 
-            <!-- Category  -->
-            <div class="group">
-                  <div class="acc-labels">{{ company_update.category.label(class="labels")}}</div>
-                  {{ company_update.category(class="form-control",placeholder="Category",id="category-select" ,value=cmp_obj["category"])}}
-                  {% if company_update.category.errors %}
-                    {% for error in company_update.category.errors %}
-                        <span class="span-error" >*{{error}}</span>
-                    {% endfor %}
-                 {% endif %}
-            </div>
-            
-            <!-- Other Category  -->
-            <div id="category-other-cont" class="group">
-                  <div class="acc-labels">{{ company_update.category_other.label(class="labels")}}</div>
-                  {{ company_update.category_other(class="form-control",placeholder="Please Specify", id="category-other-group")}}
-                  {% if company_update.category_other.errors %}
-                    {% for error in company_update.category_other.errors %}
-                        <span class="span-error" >*{{error}}</span>
-                    {% endfor %}
-                 {% endif %}
-            </div>
+        <!-- Category  -->
+        <div class="group">
+              <div class="acc-labels">{{ company_update.category.label(class="labels")}}</div>
+              {{ company_update.category(class="form-control",placeholder="Category",id="category-select" ,value=cmp_obj["category"])}}
+              {% if company_update.category.errors %}
+                {% for error in company_update.category.errors %}
+                    <span class="span-error" >*{{error}}</span>
+                {% endfor %}
+              {% endif %}
+        </div>
+        
+        <!-- Other Category  -->
+        <div id="category-other-cont" class="group">
+              <div class="acc-labels">{{ company_update.category_other.label(class="labels")}}</div>
+              {{ company_update.category_other(class="form-control",placeholder="Please Specify", id="category-other-group")}}
+              {% if company_update.category_other.errors %}
+                {% for error in company_update.category_other.errors %}
+                    <span class="span-error" >*{{error}}</span>
+                {% endfor %}
+              {% endif %}
+        </div>
 
-            <!-- Contacts  -->
-            <div class="group">
-                <div class="acc-labels">{{ company_update.company_contacts.label(class="labels")}}</div>
-                 {{ company_update.company_contacts(class="form-control",placeholder="Contacts",value=cmp_obj["company_contacts"])}}
-                 {% if company_update.company_contacts.errors %}
-                    {% for error in company_update.company_contacts.errors %}
-                        <span class="span-error" >* {{error}}</span>
-                    {% endfor %}
-                 {% endif %}
-            </div>
+        <!-- Contacts  -->
+        <div class="group">
+            <div class="acc-labels">{{ company_update.company_contacts.label(class="labels")}}</div>
+              {{ company_update.company_contacts(class="form-control",placeholder="Contacts",value=cmp_obj["company_contacts"])}}
+              {% if company_update.company_contacts.errors %}
+                {% for error in company_update.company_contacts.errors %}
+                    <span class="span-error" >* {{error}}</span>
+                {% endfor %}
+              {% endif %}
+        </div>
 
-            <!-- Address  -->
-            <div class="group">
-                 <div class="acc-labels">{{ company_update.company_address.label(class="labels")}}</div>
-                 {{ company_update.company_address(style="font-weight:500", class="form-control", id="company_address",placeholder="Physical Address",value=cmp_obj["company_address"])}}
-                 {% if company_update.company_address.errors %}
-                    {% for error in company_update.company_address.errors %}
-                        <span class="span-error" >*{{error}}</span>
-                    {% endfor %}
-                 {% endif %}
-            </div>
+        <!-- Address  -->
+        <div class="group">
+              <div class="acc-labels">{{ company_update.company_address.label(class="labels")}}</div>
+              {{ company_update.company_address(style="font-weight:500", class="form-control", id="company_address",placeholder="Physical Address",value=cmp_obj["company_address"])}}
+              {% if company_update.company_address.errors %}
+                {% for error in company_update.company_address.errors %}
+                    <span class="span-error" >*{{error}}</span>
+                {% endfor %}
+              {% endif %}
+        </div>
 
-            <!-- tagline  -->
-            <div class="group">
-                 <div class="acc-labels">{{ company_update.tagline.label(class="labels")}}</div>
-                 {{ company_update.tagline(style="font-weight:500", class="form-control", id="tagline",placeholder="Tagline",value=cmp_obj["tagline"])}}
-                 {% if company_update.tagline.errors %}
-                    {% for error in company_update.tagline.errors %}
-                        <span class="span-error" >*{{error}}</span>
-                    {% endfor %}
-                 {% endif %}
-            </div>
+        <!-- tagline  -->
+        <div class="group">
+              <div class="acc-labels">{{ company_update.tagline.label(class="labels")}}</div>
+              {{ company_update.tagline(style="font-weight:500", class="form-control", id="tagline",placeholder="Tagline",value=cmp_obj["tagline"])}}
+              {% if company_update.tagline.errors %}
+                {% for error in company_update.tagline.errors %}
+                    <span class="span-error" >*{{error}}</span>
+                {% endfor %}
+              {% endif %}
+        </div>
 
-              <!-- Website  -->
-            <div class="group">
-                 <div class="acc-labels">{{ company_update.website_link.label(class="labels")}}</div>
-                 {{ company_update.website_link(class="form-control",placeholder="Website Link",value=cmp_obj["website_link"])}}
-                 {% if company_update.website_link.errors %}
-                    {% for error in company_update.facebook_link.errors %}
-                        <span class="span-error" >*{{error}}</span>
-                    {% endfor %}
-                 {% endif %}
-            </div>
+          <!-- Website  -->
+        <div class="group">
+              <div class="acc-labels">{{ company_update.website_link.label(class="labels")}}</div>
+              {{ company_update.website_link(class="form-control",placeholder="Website Link",value=cmp_obj["website_link"])}}
+              {% if company_update.website_link.errors %}
+                {% for error in company_update.facebook_link.errors %}
+                    <span class="span-error" >*{{error}}</span>
+                {% endfor %}
+              {% endif %}
+        </div>
 
-            <!-- Facebook  -->
-            <div class="group">
-                 <div class="acc-labels">{{ company_update.facebook_link.label(class="labels")}}</div>
-                 {{ company_update.facebook_link(class="form-control",placeholder="Facebook Link",value=cmp_obj["facebook_link"])}}
-                 {% if company_update.facebook_link.errors %}
-                    {% for error in company_update.facebook_link.errors %}
-                        <span class="span-error" >*{{error}}</span>
-                    {% endfor %}
-                 {% endif %}
-             </div>
+        <!-- Facebook  -->
+        <div class="group">
+              <div class="acc-labels">{{ company_update.facebook_link.label(class="labels")}}</div>
+              {{ company_update.facebook_link(class="form-control",placeholder="Facebook Link",value=cmp_obj["facebook_link"])}}
+              {% if company_update.facebook_link.errors %}
+                {% for error in company_update.facebook_link.errors %}
+                    <span class="span-error" >*{{error}}</span>
+                {% endfor %}
+              {% endif %}
+          </div>
 
-            <div class="group">
-                  <div class="acc-labels">{{ company_update.twitter_link.label(class="labels")}}</div>
-                 {{ company_update.twitter_link(class="form-control",placeholder="Twitter Link",value=cmp_obj["twitter_link"])}}
-                 {% if company_update.twitter_link.errors %}
-                    {% for error in company_update.twitter_link.errors %}
-                        <span class="span-error" >*{{error}}</span>
-                    {% endfor %}
-                 {% endif %}
-            </div>
+        <div class="group">
+              <div class="acc-labels">{{ company_update.twitter_link.label(class="labels")}}</div>
+              {{ company_update.twitter_link(class="form-control",placeholder="Twitter Link",value=cmp_obj["twitter_link"])}}
+              {% if company_update.twitter_link.errors %}
+                {% for error in company_update.twitter_link.errors %}
+                    <span class="span-error" >*{{error}}</span>
+                {% endfor %}
+              {% endif %}
+        </div>
 
-            <div class="group">
-                 <div class="acc-labels">{{ company_update.youtube_link.label(class="labels")}}</div>
-                 {{ company_update.youtube_link(class="form-control",placeholder="YouTube Link",value=cmp_obj["youtube_link"])}}
-                 {% if company_update.youtube_link.errors %}
-                    {% for error in company_update.youtube_link.errors %}
-                        <span class="span-error" >*{{error}}</span>
-                    {% endfor %}
-                 {% endif %}
-            </div>
+        <div class="group">
+              <div class="acc-labels">{{ company_update.youtube_link.label(class="labels")}}</div>
+              {{ company_update.youtube_link(class="form-control",placeholder="YouTube Link",value=cmp_obj["youtube_link"])}}
+              {% if company_update.youtube_link.errors %}
+                {% for error in company_update.youtube_link.errors %}
+                    <span class="span-error" >*{{error}}</span>
+                {% endfor %}
+              {% endif %}
+        </div>
 
-            <br><br>
+        <br><br>
 
-            <div style="padding-left:50px;width:80%;min-width:350px" class="form-group">
-                 <h3> Update Company Logo</h3>
-                 {{ company_update.company_logo(id="imageInput", class="acc-form-control",placeholder="reference_2")}}
-            </div><br>
+        <div style="padding-left:50px;width:80%;min-width:350px" class="form-group">
+              <h3> Update Company Logo</h3>
+              {{ company_update.company_logo(id="imageInput", class="acc-form-control",placeholder="reference_2")}}
+        </div><br>
 
-            <div style="width:40% !important;padding-left:45px;" class="d-flex flex-row align-items-center justify-content-between">
-                 {{ company_update.submit(class="btns") }}
-            </div>
-            <br><br>
+        <div style="width:40% !important;padding-left:45px;" class="d-flex flex-row align-items-center justify-content-between">
+              {{ company_update.submit(class="btns") }}
+        </div>
+        <br><br>
 
-         </form>
-         <div style="height:500px"></div>
-   
+    </form>
+    <div style="height:500px"></div>
 </div>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/places.js@1.19.0/dist/cdn/places.min.css">
 <script src="https://cdn.jsdelivr.net/npm/places.js@1.19.0"></script>

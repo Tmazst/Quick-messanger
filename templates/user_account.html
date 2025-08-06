@@ -104,6 +104,15 @@ section > div {
 
 
         <div style="width:80%;margin-left:1px" class="card-body py-md-4">
+          <div id="flash-mobile" class="flash-messages">
+              {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                      {% for  category, message in messages %}
+                          <div class="flash-messages alert-{{category}}"> {{ message }}</div>
+                      {% endfor %}
+                  {% endif %}
+              {% endwith %}
+          </div>
 
         <form _lpchecked="1" action="" method="post"  enctype="multipart/form-data" >
             <!-- <div id="cmpny-acc-prl-cont" style="width:100%;background-color:" class="my-card"> -->
@@ -178,24 +187,27 @@ section > div {
  <script src="https://unpkg.com/cropperjs"></script>
     <script nonce="{{ nonce }}">
          // Add event listener to the image input field
-         document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('imageInput').addEventListener('change', function() {
-            var image = this.files[0];
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var img = document.createElement('img');
-                img.src = e.target.result;
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('imageInput').addEventListener('change', function() {
+        var image = this.files[0];
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var img = document.createElement('img');
+            img.src = e.target.result;
 
-                // Initialize Cropper.js after the image is loaded
-                img.onload = function() {
-                    var cropper = new Cropper(img, {
-                        aspectRatio: 1, // Example aspect ratio 1:1
-                        viewMode: 2, // Set cropper to fit the container
-                    });
-                };
+            // Initialize Cropper.js after the image is loaded
+            img.onload = function() {
+                var cropper = new Cropper(img, {
+                    aspectRatio: 1, // Example aspect ratio 1:1
+                    viewMode: 2, // Set cropper to fit the container
+                });
             };
-            reader.readAsDataURL(image);
-        });
-        });
+        };
+        reader.readAsDataURL(image);
+    });
+
+});
+
+
     </script>
 {% endblock %}

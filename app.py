@@ -30,6 +30,8 @@ from flask_wtf.csrf import CSRFProtect
 import random
 import logging
 from functools import wraps
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 # import bleach
 
@@ -108,6 +110,7 @@ referers = [
     'techxolutions.com',  # Replace with your actual domain
 ]
 
+#Security
 @app.before_request
 def block_cmd_and_unknown_referers():
     user_agent = request.headers.get('User-Agent', '').lower()
@@ -140,6 +143,9 @@ def block_cmd_and_unknown_referers():
     #     logging.warning(f"Blocked due to unknown Referer: {referer}")
     #     abort(403)
 
+#Security
+# Option A: Memory-based (default)
+limiter = Limiter(app=app, key_func=lambda: session.get("user_id") or get_remote_address(),default_limits=["1000 per day"])
 
 # export db after init 
 DB_INIT = db
@@ -1560,9 +1566,17 @@ def login(id=None):
 
     return jsonify({"message":"User Logged in"}),200
 
+# Handle rate limit error globally
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    return jsonify({
+        "error": "Ooops! Limit Exceeded",
+        "Retry": "Later"
+    }), 429
+
 # Login using indexedDB's Username'
-@csrf.exempt
 @app.route('/manual_login', methods=['GET',"POST"])
+@limiter.limit("6 per 60 minutes")  # Limit login attempts
 def manual_login(id=None):
     form = Login()
     print("Check Id: ",id)
@@ -1589,6 +1603,7 @@ def manual_login(id=None):
             # return redirect(url_for("home"))
 
     return render_template("manual_login.html",form=form)
+
 
 @app.route('/register_new_keys', methods=['POST','GET'])
 @login_required

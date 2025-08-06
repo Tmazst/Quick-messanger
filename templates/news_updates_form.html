@@ -118,6 +118,15 @@ section > div {
                 <img class="prf-image" src="" id="image" />
                 </div>
             <!-- </div> -->
+             <div id="flash-mobile" class="flash-messages">
+                  {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                          {% for  category, message in messages %}
+                              <div class="flash-messages alert-{{category}}"> {{ message }}</div>
+                          {% endfor %}
+                      {% endif %}
+                  {% endwith %}
+              </div>
 
             <h3 style="font-size:25px" class="">Upload Story</h3>
 

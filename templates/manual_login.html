@@ -5,18 +5,18 @@
 <div style="position: relative;" class="container form-container">
   <label>Login</label><br>
   <h2 style="color:#EF4036">Login Details</h2>
-    {{form.hidden_tag()}}<br>
+    <br>
     <div class="flash-messages">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for  category, message in messages %}
-                    <div class="flash-messages alert-{{category}}"> {{ message }}</div>
+                    <div id="alert-{{category}}" class="flash-messages alert-{{category}}"> {{ message }}</div>
                 {% endfor %}
             {% endif %}
         {% endwith %}
     </div>
   <form class="form" method="post" action="">
-    <input type="hidden"  class="form-control" id="username" name="username" autocomplete="off" placeholder="username" required />
+    {{form.hidden_tag()}}
      <div class="group">
         <div class="acc-labels">{{ form.email.label(class="labels")}}</div>
         {{ form.email(class="form-control",placeholder="Your email")}}
@@ -37,7 +37,7 @@
     </div>
     
     <div style="width:100% !important;" class="flex d-flex flex-row align-items-center justify-content-between">
-        {{ form.submit(class="btns") }}
+        {{ form.submit(class="btns",id="loginBtn") }}
     </div>
     <div class="group d-flex flex-row align-items-center justify-content-between">
         <a href="/register" style="color:#3667ef;font-weight: 600;">Signup instead?</a>
@@ -72,8 +72,75 @@ window.addEventListener("DOMContentLoaded", async function(){
         });
 
     };
+
+    
+    const loginBtn = document.querySelector("#loginBtn");
+    const flashError = document.querySelector("#alert-error");
+    const attemptKey = "loginAttempts";
+    const blockKey = "loginBlockUntil";
+    const maxAttempts = 5;
+    const blockDuration = 60 * 60 * 1000; // 60 mins
+
+    const now = Date.now();
+    const blockUntil = localStorage.getItem(blockKey);
+
+    const messageDiv = document.createElement("div");
+    messageDiv.style.marginTop = "10px";
+    loginBtn.parentNode.insertBefore(messageDiv, loginBtn.nextSibling);
+
+    // If currently blocked
+    if (blockUntil && now < parseInt(blockUntil)) {
+        const secondsLeft = Math.ceil((parseInt(blockUntil) - now) / 1000);
+        blockLogin(secondsLeft);
+        return;
+    }
+
+    // If login just failed
+    if (flashError) {
+        let attempts = parseInt(localStorage.getItem(attemptKey)) || 0;
+        attempts += 1;
+        localStorage.setItem(attemptKey, attempts);
+        console.log("Attempts");
+        if (attempts >= maxAttempts) {
+            const newBlockUntil = now + blockDuration;
+            localStorage.setItem(blockKey, newBlockUntil);
+            localStorage.removeItem(attemptKey); // reset
+            blockLogin(blockDuration / 1000);
+        } else {
+            const remaining = maxAttempts - attempts;
+            messageDiv.innerText = `⚠️ You have ${remaining} login attempt${remaining > 1 ? "s" : ""} left.`;
+            messageDiv.style.color = "orange";
+        }
+    }
+
+    // Function to show countdown & disable button
+    function blockLogin(seconds) {
+        if (loginBtn) loginBtn.disabled = true;
+        let remaining = seconds;
+
+        const interval = setInterval(() => {
+            messageDiv.innerText = `🚫 Too many login attempts. Try again in ${formatTime(remaining)}.`;
+            messageDiv.style.color = "red";
+            remaining--;
+
+            if (remaining <= 0) {
+                clearInterval(interval);
+                loginBtn.disabled = false;
+                messageDiv.innerText = "";
+                localStorage.removeItem(blockKey);
+                localStorage.removeItem(attemptKey);
+            }
+        }, 1000);
+    }
+
+    function formatTime(seconds) {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m}m ${s}s`;
+    }
     
 });
+
 window.addEventListener('load', async function(){
 
     // console.log("SaveIs Called: ");

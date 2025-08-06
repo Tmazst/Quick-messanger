@@ -7,6 +7,15 @@
   <h2 style="color:#EF4036">Register</h2>
   <div class="register-company"><input type="checkbox" id="register-company" name="register-company" />
     <label for="register-company">Register a Company?</label></div><br>
+    <div id="flash-mobile" class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for  category, message in messages %}
+                    <div class="flash-messages alert-{{category}}"> {{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
   <form class="form" method="post" action="">
     {{form.hidden_tag()}}
     
