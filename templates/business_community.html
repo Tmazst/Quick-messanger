@@ -972,7 +972,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 ${company.email ? `<div class="modal-field link-overflow-x"><span class="modal-label"><img src="/static/icons/email-blue-outline.png" alt="Email"></span> <a href="mailto:${company.email}">${company.email}</a></div>` : ''}
                 ${company.website_link ? `<div class="modal-field link-overflow-x"><span class="modal-label"><img src="/static/icons/website-outline-icon.png" alt="Website"></span> <a href="${company.website_link}" target="_blank">${company.website_link}</a></div>` : ''}
                 ${company.facebook_link ? `<div class="modal-field link-overflow-x"><span class="modal-label"><img src="/static/icons/facebook-outline-icon.png" alt="Facebook"></span> <a href="mailto:${company.facebook_link}">${company.facebook_link}</a></div>` : ''}
-            
             </div>
             <div class="gen-flex line-bottom"><img src="static/icons/portfolio-icon.png" style="height:40px;width:40px;" />Work We've Done</div>
             <hr>
@@ -981,26 +980,24 @@ document.addEventListener('DOMContentLoaded', function() {
             <small style="color:#888;font-size:0.9em;font-family:Montserrat;font-size:13px">Get updates on specials, new products and related updates from ${company.company_name} tailoured for you?</small>
             <div style="padding-bottom:9px" data-uid={{current}} data-cid=${company.id} id="follower-trigger" class="lead-gen-icons btns gen-flex"><span>${follow_descr}<span></div>
             <hr>
-            <a href="https://wa.me/?text=*${company.company_name}* %0A%0A ${encodedTagline}%0A%0A📞*Contact:* ${company.company_contacts || ''}%0A🏭*Address:* ${company.company_address || ''}%0A👨‍👧‍👧*Facebook:* ${company.facebook_link || ''}%0A*🌐Website:* ${company.website_link || ''}%0A%0AThis business profile is shared via Quick Messanger.: %0A%0A🔗 Explore, register and boost your brand awareness today: https://qm.techxolutions.com"   target="_blank" rel="noopener noreferrer">
+            <a href="https://wa.me/?text=%0A*${company.company_name}* %0A%0A 🎯${encodedTagline}%0A%0A📞Contact::: ${company.company_contacts || ''}%0A🏭Address::: ${company.company_address || ''}%0A👨‍👧‍👧Facebook::: ${company.facebook_link || ''}%0A🌐Website::: ${company.website_link || ''}%0A%0AThis business profile is shared via Quick Messanger: %0A%0A🔗 Explore, register and boost your brand awareness today: https://qm.techxolutions.com"   target="_blank" rel="noopener noreferrer">
                 <img style="height:50px;width:50px" src="static/icons/whatsapp-col-icon.png" /> <span> Share on WhatsApp</span>
             </a><br><br><br><br><br>
         </div><br>
         `;
         return html;
-        
     }
 
-        function Listen() {
-            const el = document.getElementById('follower-trigger');
-            if (!el) return;
+    function Listen() {
+        const el = document.getElementById('follower-trigger');
+        if (!el) return;
 
-            el.addEventListener('click', function () {
-                const userId = this.getAttribute('data-uid');
-                const companyId = this.getAttribute('data-cid');
-                followCompany(userId, companyId);
-            });
-        }
-
+        el.addEventListener('click', function () {
+            const userId = this.getAttribute('data-uid');
+            const companyId = this.getAttribute('data-cid');
+            followCompany(userId, companyId);
+        });
+    }
 
     function followCompany(uid,cid) {
         // const uid = document.getElementById('follower-trigger').getAttribute('data-uid') || '';
@@ -1025,7 +1022,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add data-cid attribute to each card for secure lookup
     function addCidToCards() {
-        
         document.querySelectorAll('.company-logos-cards, .list-card').forEach(function(card) {
             // Only add if not already present
             if (!card.getAttribute('data-cid')) {
@@ -1040,7 +1036,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     addCidToCards();
     attachCardListeners();
-
 
     // Reviews Section 
     const reviewsBtnSelector = '.gen-flex img[src*="reviews-icon"]';
@@ -1103,6 +1098,7 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `).join('');
     }
+
     function renderStars(rating) {
         let stars = '';
         for (let i = 1; i <= 5; i++) {
@@ -1110,6 +1106,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return stars;
     }
+
 });
 
 </script>
