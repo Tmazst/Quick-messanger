@@ -205,7 +205,7 @@ class NotificationManager(db.Model):
     payload = db.Column(db.Text)
     sent_at = db.Column(db.DateTime)
     subscription_id = db.Column(db.Integer, db.ForeignKey('notifications_access.id'))
-    send_status = db.Column(db.String)  # sent / failed
+    send_status = db.Column(db.String(20))  # sent / failed
     delivery_confirmed = db.Column(db.Boolean, default=False)
     confirmed_at = db.Column(db.DateTime)
     retry_count = db.Column(db.Integer, default=0)
