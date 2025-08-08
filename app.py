@@ -32,12 +32,22 @@ import logging
 from functools import wraps
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_migrate import Migrate
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # import bleach
 
 
 
-#Did latest commit with the requirement file
+
+migrate = Migrate()
+
+# Task Scheduler 
+def start_scheduler():
+    print("Running Task Scheduler: ", current_time_wlzone())
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(retry_undelivered, 'interval', minutes=1)  # run every 1 min
+    scheduler.start()
 
 #Change App
 app = Flask(__name__)
@@ -48,6 +58,8 @@ def create_app():
     def liked_by_ip(likes, remote_ip):
         return any(like.ip == remote_ip for like in likes)
     
+    migrate.init_app(app, db)
+    
     # Register the Jinja filter
     # app.jinja_env.filters['sanitize_styles'] = sanitize_inline_styles
 
@@ -57,6 +69,7 @@ app = create_app()
 
 app.config['SECRET_KEY'] = "45BFdfhfh-IKMwnfhdfcA7cR08RWECfzfhfdhfdfmYHFCeXFx97-P2_ZFxddfhfddfhdhdf5DDHtyoEP4yYCQ38aIVjI"
 csrf = CSRFProtect(app)
+
 
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle':280}
 app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
@@ -84,8 +97,8 @@ VAPID_CLAIMS = {
 }
 
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=365)
-
 db.init_app(app)
+db = db
 CORS(app)  # Allow cross-origin requests
 
 referers = [
@@ -151,7 +164,7 @@ limiter = Limiter(app=app, key_func=lambda: session.get("user_id") or get_remote
 DB_INIT = db
 
 login_manager = LoginManager(app)
-login_manager.login_view = "register"
+login_manager.login_view = "manual_login"
 
 # Encrypt Password
 encrypt_password = Bcrypt(app)
@@ -474,7 +487,7 @@ def send_af_sms():
     return jsonify(results)
 
 
-@app.route('/sms_marketing_form') #, methods=['POST']
+@app.route('/sms_marketing_form', methods=["POST","GET"]) #, methods=['POST']
 @login_required
 def sms_marketing():
     print("Phone Number to Validate:xxx ")
@@ -486,71 +499,72 @@ def sms_marketing():
     sent_numbers = set()
     # Temporally closed 
     if request.method == 'POST':
-        # if not form.validate_on_submit():
-        #     flash("Please fill in all required fields", "warning")
-        #     return render_template("sms_marketing.html", form=form)
+        if not form.validate_on_submit():
+            flash("Please fill in all required fields", "warning")
+            return render_template("sms_marketing.html", form=form)
 
-        # if not current_user.is_authenticated:
-        #     flash("You must be logged in to send SMS marketing messages", "warning")
-        #     return redirect(url_for('login'))
+        if not current_user.is_authenticated:
+            flash("You must be logged in to send SMS marketing messages", "warning")
+            return redirect(url_for('login'))
 
-        # all_companies = company_info.query.all()
-        # users = User.query.all()
+        all_companies = company_info.query.all()
+        users = User.query.all()
 
-        # message = form.message.data
-        # title = form.title.data
-        # start_date = form.start_date.data
-        # end_date = form.end_date.data
-        # url = form.url.data    
+        message = form.message.data
+        title = form.title.data
+        start_date = form.start_date.data
+        end_date = form.end_date.data
+        url = form.url.data 
+           
 
-        # # SMS Marketing Entries 
-        # sms_maerketing_entry = SMSMarketing(
-        #     title=title,
-        #     message=message,
-        #     url=url,
-        #     start_date=start_date,
-        #     end_date=end_date,
-        #     sender=current_user.name if current_user.is_authenticated else "Anonymous",
-        #     company_id=current_user.company_id[0].company_name if current_user.company_id else "N/A"
-        # )
+        # SMS Marketing Entries 
+        sms_maerketing_entry = SMSMarketing(
+            title=title,
+            message=message,
+            url=url,
+            start_date=start_date,
+            end_date=end_date,
+            sender=current_user.name if current_user.is_authenticated else "Anonymous",
+            company=current_user.company_id[0].company_name if current_user.company_id else "N/A"
+        )
 
-        # db.session.add(sms_maerketing_entry)
-        # db.session.commit()
-        # # if not phone or not message:
-        # #     return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
+        db.session.add(sms_maerketing_entry)
+        db.session.commit()
+        # if not phone or not message:
+        #     return jsonify({'status': 'error', 'msg': 'Phone and message required'}), 400
 
-        # # Company Contacts 
-        # for company in all_companies:
-        #     if company and company.company_contacts:
-        #         phone = company.company_contacts
-        #         try:
-        #             val_phone = phone_validator(phone).validate()
-        #             # Only send if this number hasn't been sent to yet
-        #             if val_phone in sent_numbers:
-        #                 continue
-        #             sent_numbers.add(val_phone)
-        #         except PhoneNumberError as e:
-        #             flash(f"Invalid phone number: {e}", "error")
-        #             results.append({"company": company.company_name, "status": "appending error", "error": str(e)})
-        #             continue
+        # Company Contacts 
+        for company in all_companies:
+            if company and company.company_contacts:
+                phone = company.company_contacts
+                try:
+                    val_phone = phone_validator(phone).validate()
+                    # Only send if this number hasn't been sent to yet
+                    if val_phone in sent_numbers:
+                        continue
+                    sent_numbers.add(val_phone)
+                except PhoneNumberError as e:
+                    flash(f"Invalid phone number: {e}", "error")
+                    results.append({"company": company.company_name, "status": "appending error", "error": str(e)})
+                    continue
 
-        # # User Contacts
-        # for user in users:
-        #     if user and user.contacts:
-        #         phone = user.contacts
-        #         try:
-        #             val_phone = phone_validator(phone).validate()
-        #             # Only send if this number hasn't been sent to yet
-        #             if val_phone in sent_numbers:
-        #                 continue
-        #             sent_numbers.add(val_phone)
+        # User Contacts
+        for user in users:
+            if user and user.contacts:
+                phone = user.contacts
+                try:
+                    val_phone = phone_validator(phone).validate()
+                    # Only send if this number hasn't been sent to yet
+                    if val_phone in sent_numbers:
+                        continue
+                    sent_numbers.add(val_phone)
                     
-        #         except PhoneNumberError as e:
-        #             flash(f"Invalid phone number: {e}", "error")
-        #             results.append({"user": user.name, "status": "appending error", "error": str(e)})
-        #             continue
+                except PhoneNumberError as e:
+                    flash(f"Invalid phone number: {e}", "error")
+                    results.append({"user": user.name, "status": "appending error", "error": str(e)})
+                    continue
 
-        # # Send SMS to all validated phone numbers
+        # Send SMS to all validated phone numbers
         # for val_phone in sent_numbers:
         #     if val_phone and message:
         #         # Send SMS to each validated phone number
@@ -562,21 +576,54 @@ def sms_marketing():
         #             results.append({"user": user.name, "status": "error", "error": str(e)})
         #             continue
 
-        # date = current_time_wlzone()
-        # date_str = date.strftime("%Y-%m-%d %H:%M:%S")
-        # company_name = current_user.company_id[0].company_name if current_user.company_id else "N/A"
-        # file_name = f"{company_name}__sms_marketing__results-{date_str.replace(' ', '_').replace(':', '-')}.txt"
-        # format_date_to_string = lambda date: date.strftime("%Y-%m-%d") if date else "N/A"
+        date = current_time_wlzone()
+        date_str = date.strftime("%Y-%m-%d %H:%M:%S")
+        company_name = current_user.company_id[0].company_name if current_user.company_id else "N/A"
+        file_name = f"{company_name}__sms_marketing__results-{date_str.replace(' ', '_').replace(':', '-')}.txt"
+        format_date_to_string = lambda date: date.strftime("%Y-%m-%d") if date else "N/A"
 
-        # results.append({"SENDER": current_user.name, "COMPANY": company_name, "DATE": format_date_to_string, "TITLE": title, "MESSAGE": message, "URL": url, "START_DATE": start_date, "END_DATE": end_date})
-        # with open(os.path.join('static', file_name), 'w', encoding='utf-8') as f:
-        #     json.dump(results, f, ensure_ascii=False, indent=2)
-        # print(f"SMS marketing results saved to {file_name}")
+        results.append({"SENDER": current_user.name, "COMPANY": company_name, "DATE": format_date_to_string, "TITLE": title, "MESSAGE": message, "URL": url, "START_DATE": start_date, "END_DATE": end_date})
+        with open(os.path.join('static', file_name), 'w', encoding='utf-8') as f:
+            json.dump(results[0], f, ensure_ascii=False, indent=2)
+        print(f"SMS marketing results saved to {file_name}")
         
-        # return jsonify(results)
-        pass
+        return jsonify(results[0])
+        # pass
     
     return render_template("sms_marketing_form.html", form=form, results=results)
+
+@app.route('/edit_sms_marketing_form', methods=["POST","GET"]) #, methods=['POST']
+@login_required
+def edit_sms_marketing():
+
+    sid = ser.loads(request.args.get('sid')).get('data')
+    sms_obj = SMSMarketing.query.filter_by(id=sid).first()
+    if not sms_obj:
+        flash("SMS Object not found")
+        return redirect(url_for('sms_marketing'))
+    
+    form = SMSMarketingForm(obj=sms_obj)
+
+    message = form.message.data
+    title = form.title.data
+    start_date = form.start_date.data
+    end_date = form.end_date.data
+    url = form.url.data 
+
+    if request.method == "POST":
+        sms_obj.title=title
+        sms_obj.message=message
+        sms_obj.url=url
+        sms_obj.start_date=start_date
+        sms_obj.end_date=end_date
+        sms_obj.sender=current_user.name if current_user.is_authenticated else "Anonymous"
+        sms_obj.company=current_user.company_id[0].company_name if current_user.company_id else "N/A"
+
+        db.session.commit()
+        flash("✔Update was Successful!","success")
+        return redirect(url_for('digital_marketing_manager'))
+
+    return render_template("edit_sms_marketing_form.html", form=form)
 
 @app.route('/email_marketing_form') #, methods=['POST']
 @login_required
@@ -677,7 +724,7 @@ serializer = URLSafeSerializer(app.config['SECRET_KEY'])
 
 @app.route("/", methods=['POST','GET'])
 def home():
-
+    # start_scheduler()
     # Example usage:
     # compress_folder(app.config["NEWS_IMAGES"])
     # compress_folder(app.config["ADVERTS_IMAGES"])
@@ -1430,7 +1477,7 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="https:
     failed_num = 0
     pushed_ip_list = []
     failed_ip_list = []
-
+    # status = ""
     recipient_sub_info = {
             "endpoint": recipient_sub .endpoint,
             "keys": {
@@ -1444,6 +1491,7 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="https:
         webpush(
             recipient_sub_info,
             data=json.dumps({
+                "sub_id":recipient_sub.id,
                 "title": title,
                 "body": msg,
                 "url": url if url else "https://qm.techxolutions.com",
@@ -1456,7 +1504,7 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="https:
         pushed_num += 1
         pushed_ip_list.append(recipient_sub.ip)
         print("Web Push Activated, Update!")
-
+        # status="sent"
     except WebPushException as ex:
         if 'unsubscribed or expired' in str(ex):
             # Remove subscription from DB
@@ -1467,12 +1515,15 @@ def app_notification(recipient_sub,curr_user,msg,title="Q-Messanger",url="https:
             print("Web push failed, update: {}", repr(ex))
         failed_num += 1
         failed_ip_list.append(recipient_sub.ip)
+        # status="failed"
 
     print("Q-MESSANGER NOTIFICATIONS - Successfully pushed notifications: ",pushed_num)
     print("Q-MESSANGER NOTIFICATIONS - Failed notifications: ",failed_num)
 
     with open("Push Notifications Report.txt", "w") as file:
         pass
+
+    # return status
 
 # Adverts Code 
 # {% for row in adverts|batch(3, '') %}
@@ -1653,17 +1704,150 @@ def logout():
 def is_logged_in():
     return jsonify({'logged_in': current_user.is_authenticated})
 
-def notify_all_subscribers_async(curr_user, msg, title="Q-Messanger", url="/"):
+def notify_all_subscribers_async(curr_user, msg, title="Q-Messanger", url="https://qm.techxolutions.com"):
     def notify():
+        sent_count, fail_count = 0, 0
         with app.app_context():
             all_subs = NotificationsAccess.query.all()
             for sub in all_subs:
+                log = NotificationManager(subscription_id=sub.id,sender_id=curr_user.id, payload=msg, sent_at=current_time_wlzone())
+                db.session.add(log)
+                note_id=log.id
                 try:
                     print(f"Sending Notification Message{msg}")
-                    app_notification(sub, curr_user, msg, title, url)
+                    sent_status = app_notification_global(note_id,sub, curr_user.name, msg, title, url)
+                    log.send_status = sent_status
+                    sent_count +=1 #not accounted for yet
                 except Exception as e:
                     print(f"Notification failed for {sub.id}: {e}")
+                    fail_count  +=1 #not accounted for yet
+                
+            db.session.commit()
     threading.Thread(target=notify).start()
+
+def app_notification_global(note_id,recipient_sub,curr_user,msg,title="Q-Messanger",url="https://qm.techxolutions.com"):
+    pushed_num = 0
+    failed_num = 0
+    pushed_ip_list = []
+    failed_ip_list = []
+    status = ""
+    recipient_sub_info = {
+            "endpoint": recipient_sub .endpoint,
+            "keys": {
+                "p256dh": recipient_sub .p256dh,
+                "auth": recipient_sub .auth
+            }
+        }
+    
+    try:
+        print(f"Updates from! {curr_user}")
+        webpush(
+            recipient_sub_info,
+            data=json.dumps({
+                "note_id":note_id,
+                "sub_id":recipient_sub.id,
+                "title": title,
+                "body": msg,
+                "url": url if url else "https://qm.techxolutions.com",
+                "username": curr_user
+            }),
+            vapid_private_key=VAPID_PRIVATE_KEY,
+            vapid_claims=VAPID_CLAIMS,
+            ttl=200
+        )
+        pushed_num += 1
+        pushed_ip_list.append(recipient_sub.ip)
+        print("Web Push Activated, Update!")
+        status="sent"
+    except WebPushException as ex:
+        if 'unsubscribed or expired' in str(ex):
+            # Remove subscription from DB
+            db.session.delete(recipient_sub)
+            db.session.commit()
+            print(f"Removed expired subscription uid: {recipient_sub.usr_id}")
+        else:
+            print("Web push failed, update: {}", repr(ex))
+        failed_num += 1
+        failed_ip_list.append(recipient_sub.ip)
+        status="failed"
+
+    print("Q-MESSANGER NOTIFICATIONS - Successfully pushed notifications: ",pushed_num)
+    print("Q-MESSANGER NOTIFICATIONS - Failed notifications: ",failed_num)
+
+    with open("Push Notifications Report.txt", "w") as file:
+        pass
+
+    return status
+
+@app.route("/confirm_delivery", methods=["POST"])
+def confirm_delivery():
+    data = request.json
+    log =  NotificationManager.query.get(data.get("notification_id"))
+    if log:
+        log.delivery_confirmed = True
+        log.confirmed_at = current_time_wlzone()
+        db.session.commit()
+        return jsonify({"status": "ok"})
+    return jsonify({"error": "not found"}), 404
+
+# Monitor undelivered Notifications 
+def retry_undelivered():
+    grace_period = timedelta(minutes=5)  # wait before retry
+    now = current_time_wlzone()
+
+    undelivered = NotificationManager.query.filter(
+        NotificationManager.send_status == "sent",
+        NotificationManager.delivery_confirmed == False,
+        NotificationManager.retry_count < 5,
+        NotificationManager.sent_at < now - grace_period
+    ).all()
+
+    total_checked = len(undelivered)
+    failed_retries = 0
+
+    for log in undelivered:
+        sub = NotificationsAccess.query.get(log.subscription_id)
+        note_info = qm_updates.query.get(log.note_id) 
+        if not sub:
+            continue
+        try:
+            webpush(
+                subscription_info={
+                    "endpoint": sub.endpoint,
+                    "keys": {"p256dh": sub.p256dh, "auth": sub.auth}
+                },
+                data=json.dumps({
+                "sub_id":undelivered.id,
+                "title": note_info.title,
+                "body": note_info.content,
+                "url": note_info.url if note_info.url else "https://qm.techxolutions.com",
+                "username": undelivered.sender_id
+                }),
+                vapid_private_key=VAPID_PRIVATE_KEY,
+                vapid_claims=VAPID_CLAIMS
+            )
+            log.retry_count += 1
+            log.sent_at = current_time_wlzone()
+        except WebPushException as ex:
+            failed_retries += 1
+            log.retry_count += 1
+            log.send_status = "failed"
+            if ex.response and ex.response.status_code in [404, 410]:
+                db.session.delete(sub)
+        db.session.add(log)
+
+    db.session.commit()
+
+    # Alert if more than 50% failed
+    if total_checked > 0 and failed_retries / total_checked > 0.5:
+        print("⚠️ ALERT: High failure rate in retries")
+        # TODO: Send email or Slack alert here
+
+
+
+# @app.before_serving
+# def init_scheduler():
+    
 
 #Reporting Error
 @app.route('/log_sw_unregistration', methods=['POST'])
@@ -1983,16 +2167,22 @@ def company_account():
                 except PhoneNumberError as e:
                     print(f"company: {company_name}, No: {phone}; Invalid phone number: {e}", "error")
 
+                title =cmp_usr.company_name + " is now on Quick Messenger!"     
+                msg = f"{tagline}. Discover {cmp_usr.company_name} on Quick Messenger Today!"
+                url="https://qm.techxolutions.com"
                 # Notify All users about new company registration 
                 tagline = cmp_usr.tagline
                 if tagline and len(tagline) > 80:
                     tagline = tagline[:77] + "..."
                 notify_all_subscribers_async(
-                    curr_user=current_user.name,
-                    msg=f"{tagline}. Discover {cmp_usr.company_name} on Quick Messenger Today!",
-                    title=cmp_usr.company_name + " is now on Quick Messenger!",
-                    url="https://qm.techxolutions.com"
+                    curr_user=current_user,
+                    msg=msg,
+                    title=title,
+                    url=url
                 )
+                reg_note = qm_updates(title=title,content=msg,timestamp=current_time_wlzone(),url=url)
+                db.session.add(reg_note)
+                db.session.commit()
                 print(f"{cmp_usr.company_name} sending Notification to all subscribers")
             else:
                 print(f"company_account== Company Contacts Provided {cmp_usr.company_name}, SMS not sent")
@@ -2412,16 +2602,20 @@ def push_notif_form():
         content = form.content.data
         url = form.url.data
 
-        recipient_subs = NotificationsAccess.query.all()
-        for recipient_sub in recipient_subs:
-            app_notification(recipient_sub,current_user.name,content,title=title,url=url)
+        # recipient_subs = NotificationsAccess.query.all()
+        # for recipient_sub in recipient_subs:
+        #     app_notification(recipient_sub,current_user.name,content,title=title,url=url)
 
         notify_all_subscribers_async(
-                    curr_user=current_user.name,
-                    msg=content,
-                    title=title,
-                    url="https://qm.techxolutions.com"
-                )
+            current_user,
+            content,
+            title=title,
+            url="https://qm.techxolutions.com"
+            )
+        
+        reg_note = qm_updates(title=title,content=content,timestamp=current_time_wlzone(),url=url)
+        db.session.add(reg_note)
+        db.session.commit()
 
     return render_template("pushnote_marketing_form.html",form=form)
 
@@ -2485,6 +2679,14 @@ def business_profile():
 def digital_marketing():
 
     return render_template("digital_marketing.html")
+
+@app.route('/digital_marketing_manager', methods=['POST',"GET"])
+@login_required
+def digital_marketing_manager():
+    company = company_info.query.filter_by(usr_id=current_user.id).first()
+    smses = SMSMarketing.query.filter_by(company=company.company_name).all()
+    # notifications = 
+    return render_template('manage_marketing_tools.html',smses=smses)
 
 @app.route('/get_messages', methods=['GET'])
 @login_required
@@ -3108,6 +3310,7 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
         db.session.commit()
+        
 
     app.run(debug=True, port=5001)
 

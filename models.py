@@ -186,18 +186,31 @@ class clientuser(User):
         }
 
 class qm_updates(db.Model):
-
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(20))
+    # sender_id = db.Column(db.Integer)
+    # company_id = db.Column(db.Integer, ForeignKey('company_info.id'), name='fk_qm_updates_company_id')
     content = db.Column(db.String(200))
     url = db.Column(db.String(200))
     end_date = db.Column(db.DateTime)
     start_date = db.Column(db.DateTime)
     days = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime)
+    notifications_rep = relationship('NotificationManager',backref="qm_updates",lazy=True)
+
+class NotificationManager(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    note_id = db.Column(db.Integer, ForeignKey('qm_updates.id'))
+    sender_id = db.Column(db.Integer)
+    payload = db.Column(db.Text)
+    sent_at = db.Column(db.DateTime)
+    subscription_id = db.Column(db.Integer, db.ForeignKey('notifications_access.id'))
+    send_status = db.Column(db.String)  # sent / failed
+    delivery_confirmed = db.Column(db.Boolean, default=False)
+    confirmed_at = db.Column(db.DateTime)
+    retry_count = db.Column(db.Integer, default=0)
 
 class company_info(db.Model):
-
     id = db.Column(db.Integer, primary_key=True)
     usr_fKey = db.Column(db.Integer, ForeignKey('chat_user.id'))
     usr_id = db.Column(db.Integer, ForeignKey('user.id'))
@@ -222,6 +235,7 @@ class company_info(db.Model):
     payment_options = db.Column(db.String(100))
     adverts_id = relationship('Advert',backref="company_info",lazy=True)
     news_id = relationship('News',backref="company_info",lazy=True)
+    # notifications_id = relationship('NotificationManager',backref="company_info",lazy=True)
     followers = relationship('Followers', backref='company_info', lazy=True)
 
     def to_dict(self):
@@ -359,7 +373,8 @@ class NotificationsAccess(db.Model):
     auth = db.Column(db.String(255))
     ip = db.Column(db.String(100))
     timestamp = db.Column(db.DateTime)
-
+    notifications_man = relationship('NotificationManager',backref="notifications_access",lazy=True)
+    
 class Likes(db.Model):
     """Model for storing likes on adverts by users."""
     id = db.Column(db.Integer, primary_key=True)

@@ -1,0 +1,264 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root {
+    --theme-color: #EF4036;
+    --ribbon-color: #ffcece;
+    --background-color: #d3d2d2;
+    --el-background-color: #e4e4e4;
+    --my-blue:#3667ef;
+}
+        /* Tabs container */
+        .tabs-container {
+            display: flex;
+            justify-content: flex-start;
+            margin-bottom: 10px;
+            overflow: auto;
+            width: 100%;
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #dfdfdf;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            color:#333
+        }
+
+        .tab-button.active {
+            background-color: var(--theme-color);
+            color: white;
+        }
+
+        /* Content sections */
+        .tab-content {
+            display: none;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            background-color: #fff;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+        .spacer{
+            height:250px;
+            width:100%;
+        }
+        body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f6f9;
+        padding: 20px;
+    }
+
+    .tools-cont {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 10px rgba(252, 98, 98, 0.08);
+        border:1px solid #fdbcb8;
+        transition: transform 0.2s ease;
+        max-width: 500px;
+    }
+
+    .tools-cont:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .body-content {
+        font-size: 15px;
+        color: #555;
+        margin-bottom: 10px;
+        line-height: 1.6;
+    }
+
+    .body-content.url {
+        word-break: break-all;
+        color: var(--theme-color);
+        font-style: italic;
+    }
+
+    .dates-cont {
+        margin-top: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: space-between;
+    }
+
+    .sms-dates {
+        font-size: 13px;
+        color: #666;
+        flex: 1 1 200px;
+    }
+
+    .sms-btns, .sms-btns-outline {
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .sms-btns {
+        background-color: var(--theme-color);
+        color: white;
+        border: none;
+    }
+
+    .sms-btns:hover {
+        background-color: #fc7d29;
+    }
+
+    .sms-btns-outline {
+        background-color: transparent;
+        border: 2px solid var(--theme-color);
+        color: var(--theme-color);
+    }
+
+    .sms-btns-outline:hover {
+        background-color: var(--theme-color);
+        color: white;
+    }
+    .tools-main-cont{
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+    .left{
+        flex: 1;
+    }
+    .create-btn{
+        font-size: 18px;
+    }
+
+    @media (max-width: 700px) {
+        .dates-cont {
+            flex-direction: column;
+            gap: 10px;
+        }
+        .spacer{display :none;}
+    }
+</style>
+<div class="advertise-here">
+        <div style="position: relative;height:inherit;width:100%">
+            <div class="advert-welcome">
+                How can a business thrive without selling? 
+                <span style="font-weight: 400;color:rgb(96, 120, 139)">Don’t wait another day — take your products and services across regions.  
+                Start promoting your business today!</span>
+            </div>
+            <img src="static/icons/add-icon.png" class="close-btn" />
+        </div>
+        
+    </div>
+    <div class="spacer">
+
+    </div>
+
+<div class="tabs-container">
+    <button class="tab-button active" data-target="bulk-sms-tab">Bulk SMS</button>
+    <button class="tab-button" data-target="push-note-tab">Push Notifications</button>
+    <button class="tab-button" data-target="email-marketing-tab">Email Marketing</button>
+    <button class="tab-button" data-target="advert-pinning-tab">Advert Pinning</button>
+</div>
+
+<div>
+    <div class="tab-content bulk-sms-tab active">
+        <div class="header-info gen-flex">
+            <div class="left">
+                <h2>Bulk SMS</h2>
+                <p>Reach customers instantly with Bulk SMS Campaigns</p>
+            </div>
+            <div class="right">
+                <a href="/sms_marketing_form" class="sms-btns-outline create-btn" ><b>+</b> create</a>
+            </div>
+        </div>
+        <hr>
+        <div class="tools-main-cont gen-flex">
+            {%for sms in smses%}
+            <div class="tools-cont">
+                <div class="title">{{sms.title}}</div>
+                <hr>
+                <div class="body-content">{{sms.message}}</div>
+                <div class="body-content url">{{sms.url}}</div>
+                <div class="dates-cont gen-flex">
+                    <div class="sms-dates">Created: {{sms.date}}</div>
+                    <div class="sms-dates">Last Update: {{sms.date}}</div>
+                    <div class="sms-dates">Start Date: {{sms.start_date}}</div>
+                    <div class="sms-dates">End Date: {{sms.end_date}}</div>
+                </div>
+                <div class="dates-cont gen-flex">
+                    <div>
+                        <button class="sms-btns">Resend</button>
+                        <a href="/edit_sms_marketing_form?sid={{ser.dumps({'data':sms.id})}}" class="sms-btns-outline">Edit</a>
+                    </div>
+                    <button class="sms-btns-outline"><i>See Report</i></button>
+                </div>
+            </div>
+            {%endfor%}
+        </div>
+    </div>
+    <div class="tab-content push-note-tab">
+        <div class="header-info gen-flex">
+            <div class="left">
+                <h2>Push Notifications</h2>
+                <p>Send real-time notifications to devices or browsers</p>
+            </div>
+            <div class="right">
+                <a href="/push_notif_form" class="sms-btns-outline create-btn" ><b>+</b> create</a>
+            </div>
+        </div>
+    </div>
+    <div class="tab-content email-marketing-tab">
+        <h2>Email Marketing</h2>
+        <p>Professional email campaigns with your branding</p>
+    </div>
+    <div class="tab-content advert-pinning-tab">
+        <div class="header-info gen-flex">
+            <div class="left">
+                <h2>Advert Pinning</h2>
+                <p>Attach useful links to your ads</p>
+            </div>
+            <div class="right">
+                <a href="/company-adverts" class="sms-btns-outline create-btn" ><b>📌</b> Adverts</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const tabButtons = document.querySelectorAll(".tab-button");
+    const tabContents = document.querySelectorAll(".tab-content");
+
+    tabButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            // Remove active class from all buttons
+            tabButtons.forEach(btn => btn.classList.remove("active"));
+
+            // Hide all content
+            tabContents.forEach(content => content.classList.remove("active"));
+
+            // Activate clicked tab
+            button.classList.add("active");
+            const target = button.getAttribute("data-target");
+            document.querySelector(`.${target}`).classList.add("active");
+        });
+    });
+</script>
+
+{%endblock%}

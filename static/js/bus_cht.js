@@ -73,12 +73,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
       new FormData(form).forEach((value, key) => {
         if (!excludedKeys.includes(key)) {
-          console.log(`Saving ${key} with value: ${value}`);
           data[key] = value;
         }
       });
 
       localStorage.setItem('formData', JSON.stringify(data));
+    });
+    
+    // Clear saved data on successful submit
+    form.addEventListener('submit', () => {
+      localStorage.removeItem('formData');
     });
   }
 
