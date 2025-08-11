@@ -62,6 +62,34 @@
             background-color: #f1f1f1 !important;
 
         }
+        .active{
+            color:#EF4036 !important;
+            background: none !important;
+        }
+        .mobile-bottom-navigation{
+            position: absolute;
+            bottom: 0;
+            left:0;
+            width:100%;
+            background: rgba(255,255,255,0.2) !important;
+            backdrop-filter: blur(5px) !important;
+            gap:0 !important;
+            z-index: 2000;
+        }
+        .mobile-bottom-navigation a{
+            color:white;
+            padding:10px 10px;
+            background-color: #EF4036;
+        }
+        #first-btn{
+            border-top-left-radius: 14px;
+            /* border-right: 1px solid #c23129; */
+        }
+        #last-btn{
+            border-top-right-radius: 14px;
+            /* border-left: 1px solid #c23129; */
+        }
+        
     </style>
 <!-- <button class="menu burger">Menu</button> -->
 </head>
@@ -71,7 +99,7 @@
     {%endblock%}
     {% block about%}
     {%endblock%} 
-    <button style="z-index:1900;display:none" onclick="openQMenu()" id="quick-menu-btn">Q-Menu</button>
+    <!-- <button style="z-index:1900;display:none" onclick="openQMenu()" id="quick-menu-btn">Q-Menu</button> -->
     <!-- <div style="display: none;z-index:1900;width:max-content" id="download-icon-" class="app-nav-icons gen-flex">
         <img src="{{ url_for('static', filename='icons/download-pwa-icon.png') }}" alt="Logo" class="app-nav-icon">
         <small style="color:white">Install App</small>
@@ -563,6 +591,12 @@
         </div>
     </div>
 
+    <div class="mobile-bottom-navigation gen-flex">
+        <a id="first-btn" class="bot-navigation-btn" href="/business_community">Business Community</a>
+        <a class="bot-navigation-btn" href="/adverts">Advertising</a>
+        <a id="last-btn" class="bot-navigation-btn" href="/digital_marketing">Digital Marketing</a>
+    </div>
+
     <script nonce="{{ nonce }}">
         var currentFromServ = {{ current|tojson|safe }};
     </script>
@@ -730,6 +764,24 @@ function skipRecovery(){
                 // sessionStorage.setItem("recCredInfo", "NA");
             });
         }
+
+    //Bottom Navigation
+    // Get current page path without query params
+    const navCurrentPath = window.location.pathname;
+
+    // Loop through all bottom navigation links
+    document.querySelectorAll(".bot-navigation-btn").forEach(link => {
+        if (link.getAttribute("href") === navCurrentPath) {
+            link.classList.add("active");
+        }
+
+        // Optional: add click focus behavior
+        link.addEventListener("click", () => {
+            document.querySelectorAll(".bot-navigation-btn").forEach(btn => btn.classList.remove("active"));
+            link.classList.add("active");
+        });
+    });
+
 });
 
     // Register Service Worker
