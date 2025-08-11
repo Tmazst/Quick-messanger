@@ -123,7 +123,7 @@ section > div {
             <div class="group">
                 {{form.hidden_tag()}}
                 <div class="acc-labels">{{ form.title.label(class="labels")}}</div>
-                    {{ form.title(class="form-control",placeholder="Story Title",id="ImageInput")}}
+                    {{ form.title(class="form-control",placeholder="Title",id="ImageInput")}}
                     {% if form.title.errors %}
                         {% for error in form.title.errors %}
                             <span class="span-error" >* {{error}}</span>
