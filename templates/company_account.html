@@ -22,6 +22,19 @@ section > div {
     cursor: not-allowed;
   }
 }
+.logo-avator{
+  height:200px;
+}
+.logo-avator{
+  border-radius: 14px;
+}
+.logo-avator:hover{
+  cursor: pointer;
+  opacity: 0.8;
+}
+#imageInput{
+  display: none;
+}
 form{
   width:100%;
 }
@@ -33,7 +46,7 @@ form{
   border-radius: 20px;
   padding: 1rem;
   margin-bottom: 1rem;
-  //margin: 1rem;
+  /* margin: 1rem; */
   text-align: center;
   box-shadow: 0px 3px 10px -2px hsla(150, 5%, 65%, 0.5);
   position: relative;
@@ -41,7 +54,7 @@ form{
 #pay-opt-div input[type="radio"]:checked + label {
   background: coral;
   color: hsla(215, 0%, 100%, 1);
-  //box-shadow: 0px 0px 20px hsla(150, 100%, 50%, 0.75);
+  /* box-shadow: 0px 0px 20px hsla(150, 100%, 50%, 0.75); */
   &::after {
     color: coral;
     font-family: FontAwesome;
@@ -80,7 +93,9 @@ form{
     width:150px; !important;
     height:auto !important;
 }
-
+.inmage-inputs{
+  width:80%;min-width:350px
+}
 
 @media only screen and (max-width: 700px) {
   section {
@@ -101,15 +116,14 @@ form{
     </div>
     {{ company_update.hidden_tag() }}
     <form _lpchecked="1" action="" id="updateForm" method="post"  enctype="multipart/form-data" onsubmit="return confirmSubmit();">
-          <div style=""  class="img-cont">
-            {% if current_user.image %}
-                  <img class="prf-image" src="{{url_for('static', filename='uploads/' + company.image)}}"/>
-            {% else %}
-                  <img class="prf-image" src="static/images/default.jpg"/>
-            {% endif %}
-          </div>
+        <div class="form-group ">
+          <label for="imageInput">
+            <img src="{{url_for('static',filename='uploads/'+cmp_obj['logo'])}}" id="uploadImage" class="logo-avator" />
+          </label>
+              {{ company_update.company_logo(id="imageInput", class="acc-form-control",placeholder="reference_2")}}
+        </div><br>
 
-            <h3 style="font-size:25px;">{{company.company_name.title()}} {%if company.other2%}({{company.other2}}){%endif%}<br> <span class="spans" style="font-size:16px">{{company.email}}</span></h3>
+            <h3 style="font-size:25px;">{{company.company_name.title()}} {%if company.other2%}({{company.other2}}){%endif%}<br> <span class="spans" style="font-size:16px">{{company.email}}</span></h3><br>
         
         <h3 style="font-size:32px;" class="">Corporate Details</h3>
 
@@ -233,12 +247,7 @@ form{
               {% endif %}
         </div>
 
-        <br><br>
-
-        <div style="padding-left:50px;width:80%;min-width:350px" class="form-group">
-              <h3> Update Company Logo</h3>
-              {{ company_update.company_logo(id="imageInput", class="acc-form-control",placeholder="reference_2")}}
-        </div><br>
+        <br>
 
         <div style="width:40% !important;padding-left:45px;" class="d-flex flex-row align-items-center justify-content-between">
               {{ company_update.submit(class="btns") }}
@@ -256,24 +265,33 @@ form{
 document.addEventListener('DOMContentLoaded', function() {
     // Cropper.js logic
     var imageInput = document.getElementById('imageInput');
-    if (imageInput) {
-        imageInput.addEventListener('change', function() {
-            var image = this.files[0];
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var img = document.createElement('img');
-                img.src = e.target.result;
-                // Initialize Cropper.js after the image is loaded
-                img.onload = function() {
-                    var cropper = new Cropper(img, {
-                        aspectRatio: 1, // Example aspect ratio 1:1
-                        viewMode: 2, // Set cropper to fit the container
-                    });
-                };
-            };
-            reader.readAsDataURL(image);
-        });
-    }
+    imageInput.addEventListener('change', function(e) {
+        if (this.files && this.files[0]) {
+            let reader = new FileReader();
+            reader.onload = function(event) {
+                document.getElementById('uploadImage').src = event.target.result;
+            }
+            reader.readAsDataURL(this.files[0]);
+        }
+    });
+    // if (imageInput) {
+    //     imageInput.addEventListener('change', function() {
+    //         var image = this.files[0];
+    //         var reader = new FileReader();
+    //         reader.onload = function(e) {
+    //             var img = document.createElement('img');
+    //             img.src = e.target.result;
+    //             // Initialize Cropper.js after the image is loaded
+    //             img.onload = function() {
+    //                 var cropper = new Cropper(img, {
+    //                     aspectRatio: 1, // Example aspect ratio 1:1
+    //                     viewMode: 2, // Set cropper to fit the container
+    //                 });
+    //             };
+    //         };
+    //         reader.readAsDataURL(image);
+    //     });
+    // }
 
     // Category toggle logic
     var categorySelect = document.getElementById('category-select');

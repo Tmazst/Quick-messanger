@@ -2168,12 +2168,13 @@ def company_account():
                     print(f"company: {company_name}, No: {phone}; Invalid phone number: {e}", "error")
 
                 title =cmp_usr.company_name + " is now on Quick Messenger!"     
-                msg = f"{tagline}. Discover {cmp_usr.company_name} on Quick Messenger Today!"
+                
                 url="https://qm.techxolutions.com"
                 # Notify All users about new company registration 
                 tagline = cmp_usr.tagline
                 if tagline and len(tagline) > 80:
                     tagline = tagline[:77] + "..."
+                msg = f"{tagline}. Discover {cmp_usr.company_name} on Quick Messenger Today!"
                 notify_all_subscribers_async(
                     curr_user=current_user,
                     msg=msg,
