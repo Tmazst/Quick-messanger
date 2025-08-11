@@ -296,6 +296,7 @@ class Company_Register_Form(FlaskForm):
             ("Photography & Filming", "Photography & Filming"),
             ("Public Relations", "Public Relations"),
             ("Real Estate", "Real Estate"),
+            ("Restaurant & Agric Services", "Restaurant & Agric Services"),
             ("Retail", "Retail"),
             ("Sustainability and CleanTech", "Sustainability and CleanTech"),
             ("Software Development", "Software Development"),
