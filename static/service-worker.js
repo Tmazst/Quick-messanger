@@ -86,14 +86,15 @@ self.addEventListener('push', function(event) {
 
     event.waitUntil(
       self.registration.showNotification(data.title || 'New Message', options)
-    ).then(() => {
-            // Confirm delivery
-            fetch("/confirm_delivery", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ notification_id: data.note_id })
-            });
-        });
+        .then(() => {
+          // Confirm delivery
+          return fetch("/confirm_delivery", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ notification_id: data.note_id })
+          });
+        })
+    );
 
     // console.log(">>>>");
     self.clients.matchAll({type: 'window'}).then(function(clients) {

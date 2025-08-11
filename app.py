@@ -42,12 +42,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 migrate = Migrate()
 
-# Task Scheduler 
-def start_scheduler():
-    print("Running Task Scheduler: ", current_time_wlzone())
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(retry_undelivered, 'interval', minutes=1)  # run every 1 min
-    scheduler.start()
 
 #Change App
 app = Flask(__name__)
@@ -353,8 +347,6 @@ ser = Serializer(app.config['SECRET_KEY'])
 # @app.context_processor
 # def inject_nonce():
 #     return dict(nonce=g.nonce)
-
-
 
 # @app.after_request
 # def set_csp(response):
@@ -720,11 +712,71 @@ def follow_company():
 
 serializer = URLSafeSerializer(app.config['SECRET_KEY'])
 
+# Monitor undelivered Notifications 
+def retry_undelivered():
+    # from app import app  # if not already in scope
 
+    with app.app_context():
+        grace_period = timedelta(minutes=5)  # wait before retry
+        now = current_time_wlzone()
+
+        undelivered = NotificationManager.query.filter(
+            NotificationManager.send_status == "sent",
+            NotificationManager.delivery_confirmed == False,
+            NotificationManager.retry_count < 5,
+            NotificationManager.sent_at < now - grace_period
+        ).all()
+
+        total_checked = len(undelivered)
+        failed_retries = 0
+
+        for log in undelivered:
+            sub = NotificationsAccess.query.get(log.subscription_id)
+            note_info = qm_updates.query.get(log.note_id) 
+            if not sub:
+                continue
+            try:
+                webpush(
+                    subscription_info={
+                        "endpoint": sub.endpoint,
+                        "keys": {"p256dh": sub.p256dh, "auth": sub.auth}
+                    },
+                    data=json.dumps({
+                        "sub_id": log.id,  # fixed: was using `undelivered.id`
+                        "title": note_info.title,
+                        "body": note_info.content,
+                        "url": note_info.url if note_info.url else "https://qm.techxolutions.com",
+                        "username": log.sender_id
+                    }),
+                    vapid_private_key=VAPID_PRIVATE_KEY,
+                    vapid_claims=VAPID_CLAIMS
+                )
+                log.retry_count += 1
+                log.sent_at = current_time_wlzone()
+            except WebPushException as ex:
+                failed_retries += 1
+                log.retry_count += 1
+                log.send_status = "failed"
+                if ex.response and ex.response.status_code in [404, 410]:
+                    db.session.delete(sub)
+            db.session.add(log)
+
+        db.session.commit()
+
+        # Alert if more than 50% failed
+        if total_checked > 0 and failed_retries / total_checked > 0.5:
+            print("⚠️ ALERT: High failure rate in retries")
+
+# Task Scheduler 
+def start_scheduler():
+    print("Running Task Scheduler: ", current_time_wlzone())
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(retry_undelivered, 'interval', minutes=1)  # run every 1 min
+    scheduler.start()
 
 @app.route("/", methods=['POST','GET'])
 def home():
-    # start_scheduler()
+    
     # Example usage:
     # compress_folder(app.config["NEWS_IMAGES"])
     # compress_folder(app.config["ADVERTS_IMAGES"])
@@ -1704,25 +1756,37 @@ def logout():
 def is_logged_in():
     return jsonify({'logged_in': current_user.is_authenticated})
 
-def notify_all_subscribers_async(curr_user, msg, title="Q-Messanger", url="https://qm.techxolutions.com"):
+def notify_all_subscribers_async(curr_user, msg, title="Q-Messanger", url="https://qm.techxolutions.com",notification_id=None):
+    print("Notify all Current User: ", notification_id)
+
+    user_id = curr_user.id
+    user_name = curr_user.name
+
     def notify():
         sent_count, fail_count = 0, 0
         with app.app_context():
             all_subs = NotificationsAccess.query.all()
             for sub in all_subs:
-                log = NotificationManager(subscription_id=sub.id,sender_id=curr_user.id, payload=msg, sent_at=current_time_wlzone())
+                log = NotificationManager(
+                    subscription_id=sub.id,
+                    note_id=notification_id,
+                    sender_id=user_id,
+                    payload=msg,
+                    sent_at=current_time_wlzone()
+                )
                 db.session.add(log)
-                note_id=log.id
+                db.session.commit()
+                note_id = log.id
                 try:
-                    print(f"Sending Notification Message{msg}")
-                    sent_status = app_notification_global(note_id,sub, curr_user.name, msg, title, url)
+                    print(f"Sending Notification Message {msg}")
+                    sent_status = app_notification_global(note_id, sub, user_name, msg, title, url)
                     log.send_status = sent_status
-                    sent_count +=1 #not accounted for yet
+                    sent_count += 1
                 except Exception as e:
                     print(f"Notification failed for {sub.id}: {e}")
-                    fail_count  +=1 #not accounted for yet
-                
-            db.session.commit()
+                    fail_count += 1
+            
+
     threading.Thread(target=notify).start()
 
 def app_notification_global(note_id,recipient_sub,curr_user,msg,title="Q-Messanger",url="https://qm.techxolutions.com"):
@@ -1741,6 +1805,7 @@ def app_notification_global(note_id,recipient_sub,curr_user,msg,title="Q-Messang
     
     try:
         print(f"Updates from! {curr_user}")
+        print(f"Note_id! {note_id}")
         webpush(
             recipient_sub_info,
             data=json.dumps({
@@ -1779,9 +1844,11 @@ def app_notification_global(note_id,recipient_sub,curr_user,msg,title="Q-Messang
 
     return status
 
+@csrf.exempt
 @app.route("/confirm_delivery", methods=["POST"])
 def confirm_delivery():
     data = request.json
+    print("Notification ID: ",data.get("notification_id"))
     log =  NotificationManager.query.get(data.get("notification_id"))
     if log:
         log.delivery_confirmed = True
@@ -1790,58 +1857,8 @@ def confirm_delivery():
         return jsonify({"status": "ok"})
     return jsonify({"error": "not found"}), 404
 
-# Monitor undelivered Notifications 
-def retry_undelivered():
-    grace_period = timedelta(minutes=5)  # wait before retry
-    now = current_time_wlzone()
 
-    undelivered = NotificationManager.query.filter(
-        NotificationManager.send_status == "sent",
-        NotificationManager.delivery_confirmed == False,
-        NotificationManager.retry_count < 5,
-        NotificationManager.sent_at < now - grace_period
-    ).all()
-
-    total_checked = len(undelivered)
-    failed_retries = 0
-
-    for log in undelivered:
-        sub = NotificationsAccess.query.get(log.subscription_id)
-        note_info = qm_updates.query.get(log.note_id) 
-        if not sub:
-            continue
-        try:
-            webpush(
-                subscription_info={
-                    "endpoint": sub.endpoint,
-                    "keys": {"p256dh": sub.p256dh, "auth": sub.auth}
-                },
-                data=json.dumps({
-                "sub_id":undelivered.id,
-                "title": note_info.title,
-                "body": note_info.content,
-                "url": note_info.url if note_info.url else "https://qm.techxolutions.com",
-                "username": undelivered.sender_id
-                }),
-                vapid_private_key=VAPID_PRIVATE_KEY,
-                vapid_claims=VAPID_CLAIMS
-            )
-            log.retry_count += 1
-            log.sent_at = current_time_wlzone()
-        except WebPushException as ex:
-            failed_retries += 1
-            log.retry_count += 1
-            log.send_status = "failed"
-            if ex.response and ex.response.status_code in [404, 410]:
-                db.session.delete(sub)
-        db.session.add(log)
-
-    db.session.commit()
-
-    # Alert if more than 50% failed
-    if total_checked > 0 and failed_retries / total_checked > 0.5:
-        print("⚠️ ALERT: High failure rate in retries")
-        # TODO: Send email or Slack alert here
+    # TODO: Send email or Slack alert here
 
 
 
@@ -2150,7 +2167,7 @@ def company_account():
             db.session.commit()
             flash("Account updated!", "success")
             # Send SMS to the company if company_contacts is empty
-            if not company_contacts and cmp_usr.company_contacts:
+            if company_contacts and cmp_usr.company_contacts:
                 company_name = cmp_usr.company_name
                 if len(company_name) > 17:
                     company_name = company_name[:17] + "..."
@@ -2161,8 +2178,9 @@ def company_account():
                     val_phone = phone_validator(phone).validate()
                     message = f"Welcome to Quick Messanger {company_name}! Grow your market presence, improve B2B/B2C communication & build networks. Visit: https://qm.techxolutions.com"
                     # print("Phone Number to Validate2: ", val_phone)
-                    result = send_sms_via_africastalking(val_phone, message)
-                    print(f"company: {company_name}, status: success, response: {result}")
+
+                    # result = send_sms_via_africastalking(val_phone, message) ------------------
+                    # print(f"company: {company_name}, status: success, response: {result}")
                     
                 except PhoneNumberError as e:
                     print(f"company: {company_name}, No: {phone}; Invalid phone number: {e}", "error")
@@ -2171,25 +2189,27 @@ def company_account():
                 
                 url="https://qm.techxolutions.com"
                 # Notify All users about new company registration 
+                print(f"{cmp_usr.company_name} with {current_user.name} sending Notification to all subscribers")
                 tagline = cmp_usr.tagline
                 if tagline and len(tagline) > 80:
                     tagline = tagline[:77] + "..."
                 msg = f"{tagline}. Discover {cmp_usr.company_name} on Quick Messenger Today!"
-                notify_all_subscribers_async(
-                    curr_user=current_user,
-                    msg=msg,
-                    title=title,
-                    url=url
-                )
                 reg_note = qm_updates(title=title,content=msg,timestamp=current_time_wlzone(),url=url)
                 db.session.add(reg_note)
                 db.session.commit()
-                print(f"{cmp_usr.company_name} sending Notification to all subscribers")
+                notify_all_subscribers_async(
+                    current_user,msg,
+                    title=title,
+                    url=url,
+                    notification_id=reg_note.id
+                )
+                print(f"{cmp_usr.company_name} with {reg_note.id} sending Notification to all subscribers")
+                
             else:
                 print(f"company_account== Company Contacts Provided {cmp_usr.company_name}, SMS not sent")
             
             # Send email confirmation
-            if cmp_usr.email:
+            if cmp_usr.email and not os.environ.get('EMAIL_INFO'):
                 print(f"company_account== Preparing to send email to {cmp_usr.company_name}")
                 reg_confirmation(cmp_usr.email, cmp_usr.company_name)
                     
@@ -3307,7 +3327,7 @@ def password_reset():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-
+    start_scheduler()
     with app.app_context():
         db.create_all()
         db.session.commit()
