@@ -62,7 +62,7 @@
             background-color: #f1f1f1 !important;
 
         }
-        .active{
+        .active-nav{
             color:#EF4036 !important;
             background: none !important;
         }
@@ -772,13 +772,13 @@ function skipRecovery(){
     // Loop through all bottom navigation links
     document.querySelectorAll(".bot-navigation-btn").forEach(link => {
         if (link.getAttribute("href") === navCurrentPath) {
-            link.classList.add("active");
+            link.classList.add("active-nav");
         }
 
         // Optional: add click focus behavior
         link.addEventListener("click", () => {
-            document.querySelectorAll(".bot-navigation-btn").forEach(btn => btn.classList.remove("active"));
-            link.classList.add("active");
+            document.querySelectorAll(".bot-navigation-btn").forEach(btn => btn.classList.remove("active-nav"));
+            link.classList.add("active-nav");
         });
     });
 
