@@ -44,9 +44,10 @@ migrate = Migrate()
 
 
 #Change App
-app = Flask(__name__)
+
 
 def create_app():
+    app = Flask(__name__)
     @app.template_filter('liked_by_ip')
     def liked_by_ip(likes, remote_ip):
         return any(like.ip == remote_ip for like in likes)
