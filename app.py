@@ -45,17 +45,17 @@ migrate = Migrate()
 
 #Change App
 app = Flask(__name__)
-def create_app():
-    app = Flask(__name__)
 
+def create_app():
     @app.template_filter('liked_by_ip')
     def liked_by_ip(likes, remote_ip):
         return any(like.ip == remote_ip for like in likes)
     
     migrate.init_app(app, db)
-    
-    # Register the Jinja filter
-    # app.jinja_env.filters['sanitize_styles'] = sanitize_inline_styles
+    # start_scheduler()
+    with app.app_context():
+        db.create_all()
+        db.session.commit()
 
     return app
 
@@ -3327,7 +3327,7 @@ def password_reset():
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    start_scheduler()
+    
     with app.app_context():
         db.create_all()
         db.session.commit()

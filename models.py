@@ -252,6 +252,7 @@ class company_info(db.Model):
             "logo": clean(self.image),
             "company_contacts": clean(self.company_contacts),
             "website_link": clean(self.website),
+            "instragram_link": clean(self.instragram_link),
             "tagline": clean(self.tagline),
             "facebook_link": clean(self.fb_link),
             "twitter_link": clean(self.twitter_link),
