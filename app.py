@@ -42,25 +42,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 migrate = Migrate()
 
+app = Flask(__name__)
 
-#Change App
-
-
-def create_app():
-    app = Flask(__name__)
-    @app.template_filter('liked_by_ip')
-    def liked_by_ip(likes, remote_ip):
-        return any(like.ip == remote_ip for like in likes)
-    
-    migrate.init_app(app, db)
-    # start_scheduler()
-    with app.app_context():
-        db.create_all()
-        db.session.commit()
-
-    return app
-
-app = create_app()
 
 app.config['SECRET_KEY'] = "45BFdfhfh-IKMwnfhdfcA7cR08RWECfzfhfdhfdfmYHFCeXFx97-P2_ZFxddfhfddfhdhdf5DDHtyoEP4yYCQ38aIVjI"
 csrf = CSRFProtect(app)
@@ -91,9 +74,28 @@ VAPID_CLAIMS = {
     "sub": "mailto:pro.dignitron@gmail.com"
 }
 
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=365)
+
 db.init_app(app)
 db = db
+
+#Change App
+def create_app():
+    @app.template_filter('liked_by_ip')
+    def liked_by_ip(likes, remote_ip):
+        return any(like.ip == remote_ip for like in likes)
+    
+    migrate.init_app(app, db)
+    # start_scheduler()
+    with app.app_context():
+        db.create_all()
+        db.session.commit()
+
+    return app
+
+app = create_app()
+
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=365)
+
 CORS(app)  # Allow cross-origin requests
 
 referers = [
