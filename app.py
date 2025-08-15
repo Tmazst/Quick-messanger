@@ -67,7 +67,7 @@ else:#Online
     app.config[
     "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://qmuser:!Tmazst4185#@localhost/quickmessanger" 
 
-
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 VAPID_PRIVATE_KEY = app.config["VAPID_PRIVATE_KEY"]
 VAPID_PUBLIC_KEY = app.config["VAPID_PUBLIC_KEY"] 
 VAPID_CLAIMS = {
