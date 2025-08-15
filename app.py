@@ -65,7 +65,7 @@ if os.environ.get('EMAIL_INFO') == 'info@techxolutions.com':
     app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///business_chat_db_wv.db" #'mysql+pymysql://root:tmazst41@localhost/quick_messanger'
 else:#Online
     app.config[
-    "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://techtlnf_tmaz:!Tmazst41#@localhost/techtlnf_quick_m_db" 
+    "SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://qmuser:!Tmazst4185#@localhost/quickmessanger" 
 
 
 VAPID_PRIVATE_KEY = app.config["VAPID_PRIVATE_KEY"]
